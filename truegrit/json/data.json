@@ -22,12 +22,12 @@
          "last_name": "MacReady"
       }
    ],
-   "server_manufacturer":[
+   "server_manufacturers":[
       {
          "name":"Genetec"
       }
    ],
-   "camera_manufacturer":[
+   "camera_manufacturers":[
       {
          "name":"Axis"
       },
@@ -35,7 +35,7 @@
          "name":"Hanwha"
       }
    ],
-   "server_role": [
+   "server_roles": [
       {
          "name":"archiver"
       },
@@ -46,7 +46,7 @@
          "name":"directory"
       }
    ],
-   "installation_mounttype": [
+   "installation_mounttypes": [
       {
          "name":"pipe down"
       },

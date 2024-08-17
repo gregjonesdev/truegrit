@@ -6,3 +6,20 @@ class ProjectStatus(CoreModel):
     name = models.CharField(
         max_length=64,
     )
+
+class Manufacturer(CoreModel):
+
+    class Meta:
+        abstract = True 
+
+    name = models.CharField(
+        max_length=64,
+    )
+
+class ServerManufacturer(Manufacturer):
+
+    pass
+
+class CameraManufacturer(Manufacturer):
+
+    pass

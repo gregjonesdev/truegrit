@@ -8,6 +8,16 @@ from truegrit.models import ProjectStatus
 
 class Command(BaseCommand):  
 
+    def create_servermanufacturer(self, manufacturer):
+        try: 
+            ServerManufacturer.objects.get(name=manufacturer["name"])
+        except ObjectDoesNotExist:    
+            new_manufacturer = ProjectStatus(
+                name=manufacturer["name"]
+            )
+            new_manufacturer.set_fields_to_base()
+            new_manufacturer.save()
+
     def create_projectstatus(self, status):
         try: 
             ProjectStatus.objects.get(name=status["name"])
@@ -31,6 +41,22 @@ class Command(BaseCommand):
             )
             user.save()      
 
+    # def seed_servermanufacturers(self, server_manufacturers):
+    #     for manufacturer in server_manufacturers:
+    #         self.create_servermanufacturer(manufacturer)
+
+    # def seed_cameramanufacturers(self, camera_manufacturers):
+    #     for manufacturer in camera_manufacturers:
+    #         self.create_cameramanufacturer(manufacturer)
+
+    # def seed_serverroles(self, server_roles):
+    #     for role in server_roles:
+    #         self.create_serverrole(role)  
+
+    # def seed_installationmounttypes(self, installationmounttypes):
+    #     for type in installationmounttypes:
+    #         self.create_installationmounttype(type)       
+
     def seed_projectstatus(self, project_status):
         print("Seeding project status..")
         for status in project_status:
@@ -47,3 +73,7 @@ class Command(BaseCommand):
         jsonData = json.loads(open('./truegrit/json/data.json').read())
         self.seed_users(jsonData["users"])
         self.seed_projectstatus(jsonData["project_status"])
+        # self.seed_servermanufacturers(jsonData["server_manufacturers"])
+        # self.seed_cameramanufacturers(jsonData["camera_manufacturers"])
+        # self.seed_serverroles(jsonData["server_roles"])
+        # self.seed_installationmounttypes(jsonData["installation_mounttypes"])
