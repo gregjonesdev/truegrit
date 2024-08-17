@@ -16,6 +16,18 @@ class Manufacturer(CoreModel):
         max_length=64,
     )
 
+class ServerRole(CoreModel):
+
+    name = models.CharField(
+        max_length=64,
+    )    
+
+class InstallationMountType(CoreModel):
+
+    name = models.CharField(
+        max_length=64,
+    )       
+
 class ServerManufacturer(Manufacturer):
 
     pass
