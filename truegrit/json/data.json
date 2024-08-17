@@ -13,6 +13,15 @@
          "name":"closed"
       }
    ],
+   "users":[
+      {
+         "username": "rjmacready",
+         "is_superuser": true,
+         "is_active": true,
+         "first_name": "R.J.",
+         "last_name": "MacReady"
+      }
+   ],
    "server_manufacturer":[
       {
          "name":"Genetec"
