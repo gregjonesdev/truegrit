@@ -1,0 +1,57 @@
+{
+   "project_status":[
+      {
+         "name":"lost"
+      },
+      {
+         "name":"current"
+      },
+      {
+         "name":"pending"
+      },
+      {
+         "name":"closed"
+      }
+   ],
+   "server_manufacturer":[
+      {
+         "name":"Genetec"
+      }
+   ],
+   "camera_manufacturer":[
+      {
+         "name":"Axis"
+      },
+      {
+         "name":"Hanwha"
+      }
+   ],
+   "server_role": [
+      {
+         "name":"archiver"
+      },
+      {
+         "name":"access_manager"
+      },
+      {
+         "name":"directory"
+      }
+   ],
+   "installation_mounttype": [
+      {
+         "name":"pipe down"
+      },
+      {
+         "name":"ceiling"
+      },
+      {
+         "name":"wall"
+      },
+      {
+         "name":"corner"
+      },
+      {
+         "name":"surface"
+      }
+   ]
+}
