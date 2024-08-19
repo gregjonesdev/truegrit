@@ -68,3 +68,39 @@ class CameraInstallation(CoreModel):
     # ip_address
 
     # installation mount type
+
+class DistributionFrameRole(CoreModel):
+
+    name = models.CharField(
+        max_length=64,
+    ) 
+    abbreviation = models.CharField(
+        max_length=64,
+    )  
+
+class DistributionFrame(CoreModel):
+
+    number = models.CharField(
+        max_length=8,
+    )  
+    role = models.ForeignKey(
+        DistributionFrameRole,
+        on_delete=models.CASCADE
+    )     
+
+
+class VideoCompressionStandard(CoreModel):
+
+    name = models.CharField(
+        max_length=64,
+    )     
+
+class VideoQualityResolution(CoreModel):
+
+    name = models.CharField(
+        max_length=64,
+        null=True
+    ) 
+
+    pixel_cols = models.IntegerField()
+    pixel_rows = models.IntegerField()           

@@ -10,6 +10,7 @@ from truegrit.models import (
     ServerManufacturer, 
     CameraManufacturer, 
     InstallationMountType,
+    DistributionFrameRole,
 )
 
 class Command(BaseCommand):  
@@ -24,15 +25,16 @@ class Command(BaseCommand):
             new_manufacturer.set_fields_to_base()
             new_manufacturer.save()
 
-    def create_cameramanufacturer(self, manufacturer):
+    def get_cameramanufacturer(self, manufacturer_name):
         try: 
-            CameraManufacturer.objects.get(name=manufacturer["name"])
+            return CameraManufacturer.objects.get(name=manufacturer_name)
         except ObjectDoesNotExist:    
             new_manufacturer = CameraManufacturer(
-                name=manufacturer["name"]
+                name=manufacturer_name
             )
             new_manufacturer.set_fields_to_base()
-            new_manufacturer.save()        
+            new_manufacturer.save()   
+            return new_manufacturer     
 
     def create_projectstatus(self, status):
         try: 
@@ -77,13 +79,28 @@ class Command(BaseCommand):
             new_role.set_fields_to_base()
             new_role.save()  
 
+    def create_framerole(self, framerole):
+        try: 
+            DistributionFrameRole.objects.get(name=framerole["name"])
+        except ObjectDoesNotExist:    
+            new_role = DistributionFrameRole(
+                name=framerole["name"],
+                abbreviation=framerole["abbreviation"]
+            )
+            new_role.set_fields_to_base()
+            new_role.save()  
+
+    def seed_distributionframeroles(self, distributionframeroles):
+        for framerole in distributionframeroles:
+            self.create_framerole(framerole)        
+
     def seed_servermanufacturers(self, server_manufacturers):
         for manufacturer in server_manufacturers:
             self.create_servermanufacturer(manufacturer)
 
-    def seed_cameramanufacturers(self, camera_manufacturers):
-        for manufacturer in camera_manufacturers:
-            self.create_cameramanufacturer(manufacturer)
+    def seed_cameramodels(self, camera_models):
+        for model in camera_models:
+            manufacturer = self.get_cameramanufacturer(model["manufacturer"])
 
     def seed_serverroles(self, server_roles):
         for role in server_roles:
@@ -110,6 +127,7 @@ class Command(BaseCommand):
         self.seed_users(jsonData["users"])
         self.seed_projectstatus(jsonData["project_status"])
         self.seed_servermanufacturers(jsonData["server_manufacturers"])
-        self.seed_cameramanufacturers(jsonData["camera_manufacturers"])
+        self.seed_cameramodels(jsonData["camera_models"])
         self.seed_serverroles(jsonData["server_roles"])
         self.seed_installationmounttypes(jsonData["installation_mounttypes"])
+        self.seed_distributionframeroles(jsonData["distribution_frameroles"])

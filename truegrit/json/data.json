@@ -1,5 +1,5 @@
 {
-   "project_status":[
+   "project_status": [
       {
          "name":"lost"
       },
@@ -13,7 +13,7 @@
          "name":"closed"
       }
    ],
-   "users":[
+   "users": [
       {
          "username": "rjmacready",
          "is_superuser": true,
@@ -22,19 +22,51 @@
          "last_name": "MacReady"
       }
    ],
-   "server_manufacturers":[
+   "server_manufacturers": [
       {
          "name":"Genetec"
       }
    ],
-   "camera_manufacturers":[
+   "distribution_frameroles": [
       {
-         "name":"Axis"
+         "name": "Main",
+         "abbreviation": "MDF"
       },
       {
-         "name":"Hanwha"
+         "name":"Intermediate",
+         "abbreviation": "IDF"
       }
    ],
+   "camera_models": [
+      {
+          "manufacturer": "Axis",
+          "model": "P3735-PLE"
+      },
+      {
+          "manufacturer": "Axis",
+          "model": "P3265-LV"
+      },
+      {
+          "manufacturer": "Axis",
+          "model": "P3818-LE"
+      },
+      {
+          "manufacturer": "Hanwha",
+          "model": "P3735-PLE"
+      },
+      {
+          "manufacturer": "Hanwha",
+          "model": "P3265-LV"
+      },
+      {
+          "manufacturer": "Hanwha",
+          "model": "P3818-LE"
+      },
+      {
+          "manufacturer": "Hanwha",
+          "model": "P3818-LE"
+      }
+  ],
    "server_roles": [
       {
          "name":"archiver"
