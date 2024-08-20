@@ -26,7 +26,13 @@ class InstallationMountType(CoreModel):
 
     name = models.CharField(
         max_length=64,
-    )       
+    )    
+    
+class InstallationStatus(CoreModel):
+
+    name = models.CharField(
+        max_length=64,
+    )         
 
 class ServerManufacturer(Manufacturer):
 

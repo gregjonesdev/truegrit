@@ -40,31 +40,27 @@
    "camera_models": [
       {
           "manufacturer": "Axis",
-          "model": "P3735-PLE"
+          "name": "P3735-PLE"
       },
       {
           "manufacturer": "Axis",
-          "model": "P3265-LV"
+          "name": "P3265-LV"
       },
       {
           "manufacturer": "Axis",
-          "model": "P3818-LE"
+          "name": "P3818-LE"
       },
       {
           "manufacturer": "Hanwha",
-          "model": "P3735-PLE"
+          "name": "PNM-9031RV"
       },
       {
           "manufacturer": "Hanwha",
-          "model": "P3265-LV"
+          "name": "PND-A6081RV"
       },
       {
           "manufacturer": "Hanwha",
-          "model": "P3818-LE"
-      },
-      {
-          "manufacturer": "Hanwha",
-          "model": "P3818-LE"
+          "name": "PNM-9085RQZ"
       }
   ],
    "server_roles": [
@@ -94,5 +90,26 @@
       {
          "name":"surface"
       }
+   ],
+   "installation_status": [
+      {
+         "name":"pulled"
+      },
+      {
+         "name":"dropped"
+      },
+      {
+         "name":"installed"
+      },
+      {
+         "name":"pre-test"
+      },
+      {
+         "name":"tested"
+      },
+      {
+         "name":"commissioned"
+      }
    ]
+
 }

@@ -10,7 +10,9 @@ from truegrit.models import (
     ServerManufacturer, 
     CameraManufacturer, 
     InstallationMountType,
+    InstallationStatus,
     DistributionFrameRole,
+    CameraModel,
 )
 
 class Command(BaseCommand):  
@@ -46,15 +48,25 @@ class Command(BaseCommand):
             new_status.set_fields_to_base()
             new_status.save()
 
-    def create_installationmounttype(self, status):
+    def create_installationmounttype(self, type):
         try: 
-            InstallationMountType.objects.get(name=status["name"])
+            InstallationMountType.objects.get(name=type["name"])
         except ObjectDoesNotExist:    
             new_mounttype = InstallationMountType(
+                name=type["name"]
+            )
+            new_mounttype.set_fields_to_base()
+            new_mounttype.save()   
+
+    def create_installationstatus(self, status):
+        try: 
+            InstallationStatus.objects.get(name=status["name"])
+        except ObjectDoesNotExist:    
+            new_mounttype = InstallationStatus(
                 name=status["name"]
             )
             new_mounttype.set_fields_to_base()
-            new_mounttype.save()        
+            new_mounttype.save()                
 
     def create_user(self, user):
         try:
@@ -101,6 +113,17 @@ class Command(BaseCommand):
     def seed_cameramodels(self, camera_models):
         for model in camera_models:
             manufacturer = self.get_cameramanufacturer(model["manufacturer"])
+            try: 
+                CameraModel.objects.get(
+                    name=model["name"],
+                    manufacturer=manufacturer)
+            except ObjectDoesNotExist:    
+                new_model = CameraModel(
+                    name=model["name"],
+                    manufacturer=manufacturer
+                )
+                new_model.set_fields_to_base()
+                new_model.save() 
 
     def seed_serverroles(self, server_roles):
         for role in server_roles:
@@ -108,7 +131,11 @@ class Command(BaseCommand):
 
     def seed_installationmounttypes(self, installationmounttypes):
         for type in installationmounttypes:
-            self.create_installationmounttype(type)       
+            self.create_installationmounttype(type)    
+
+    def seed_installationstatus(self, installationstatus):
+        for status in installationstatus:
+            self.create_installationstatus(status)              
 
     def seed_projectstatus(self, project_status):
         print("Seeding project status..")
@@ -123,6 +150,7 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+        InstallationMountType.objects.all().delete()
         jsonData = json.loads(open('./truegrit/json/data.json').read())
         self.seed_users(jsonData["users"])
         self.seed_projectstatus(jsonData["project_status"])
@@ -130,4 +158,5 @@ class Command(BaseCommand):
         self.seed_cameramodels(jsonData["camera_models"])
         self.seed_serverroles(jsonData["server_roles"])
         self.seed_installationmounttypes(jsonData["installation_mounttypes"])
+        self.seed_installationstatus(jsonData["installation_status"])
         self.seed_distributionframeroles(jsonData["distribution_frameroles"])
