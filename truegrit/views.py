@@ -9,6 +9,7 @@ from truegrit.models import (
     InstallationMountType,
     DistributionFrameRole,
     ProjectStatus,
+    VideoQualityResolution,
 )    
 
 
@@ -25,4 +26,5 @@ class FrontPage(View):
         self.context["installation_status"] = InstallationStatus.objects.all()
         self.context["distributionframeroles"] = DistributionFrameRole.objects.all()
         self.context["project_status"] = ProjectStatus.objects.all()
+        self.context["resolutions"] = VideoQualityResolution.objects.all()
         return render(request, self.template_name, self.context)

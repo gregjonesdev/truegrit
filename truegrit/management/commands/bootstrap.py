@@ -118,12 +118,14 @@ class Command(BaseCommand):
         try:
             VideoQualityResolution.objects.get(
                 name=resolution["name"],
+                abbreviation=resolution["abbreviation"],
                 pixel_rows=resolution["pixel_rows"],
                 pixel_cols=resolution["pixel_cols"],
             ) 
         except ObjectDoesNotExist:
             new_resolution = VideoQualityResolution(
                 name=resolution["name"],
+                abbreviation=resolution["abbreviation"],
                 pixel_rows=resolution["pixel_rows"],
                 pixel_cols=resolution["pixel_cols"],
             )  
@@ -185,7 +187,7 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        InstallationMountType.objects.all().delete()
+        VideoQualityResolution.objects.all().delete()
         jsonData = json.loads(open('./truegrit/json/data.json').read())
         self.seed_users(jsonData["users"])
         self.seed_projectstatus(jsonData["project_status"])

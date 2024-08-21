@@ -106,6 +106,10 @@ class VideoQualityResolution(CoreModel):
     name = models.CharField(
         max_length=64,
         null=True
-    ) 
+    )
+    abbreviation = models.CharField(
+        max_length=16,
+        null=True
+    )  
     pixel_cols = models.IntegerField()
     pixel_rows = models.IntegerField()           
