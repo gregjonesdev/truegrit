@@ -1,5 +1,6 @@
 from django.db import models
 from truegrit.applib.models import CoreModel
+from django.contrib.auth.models import User
 
 class ProjectStatus(CoreModel):
 
@@ -112,4 +113,10 @@ class VideoQualityResolution(CoreModel):
         null=True
     )  
     pixel_cols = models.IntegerField()
-    pixel_rows = models.IntegerField()           
+    pixel_rows = models.IntegerField()   
+
+
+class UserSettings(CoreModel):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    dark_mode = models.BooleanField(default=False)
