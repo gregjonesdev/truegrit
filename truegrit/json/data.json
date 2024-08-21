@@ -110,6 +110,71 @@
       {
          "name":"commissioned"
       }
+   ],
+   "video_quality_resolutions": [
+      {
+         "name": "Standard Definition",
+         "abbreviation": "SD",
+         "pixel_cols": 640,
+         "pixel_rows": 480
+      },
+      {
+         "name": "High Definition",
+         "abbreviation": "HD",
+         "pixel_cols": 1280,
+         "pixel_rows": 720
+      },
+      {
+         "name": "Full High Definition",
+         "abbreviation": "FHD",
+         "pixel_cols": 1920,
+         "pixel_rows": 1080
+      },
+      {
+         "name": "Quad High Definition",
+         "abbreviation": "QHD",
+         "pixel_cols": 2560,
+         "pixel_rows": 1440
+      }
+   ],
+   "video_compression_standards": [
+      {
+         "name": "H.265/HEVC"
+      }
+   ],
+   "video_unit_enrollment": [
+      {
+         "step": 0,
+         "description": "In Genetec Config Tool, right click on the archiver to which the video unit will be enrolled."
+      },
+      {
+         "step": 1,
+         "description": "Hover over the option 'Add an entity'. On the submenu that appears, click on 'Video unit'."
+      },
+      {
+         "step": 2,
+         "description": "Select the manufacturer and product type."
+      },
+      {
+         "step": 3,
+         "description": "Enter the IP address of the video unit. Click the plus symbol to the right of the input field to enter a range of IP addresses."
+      },
+      {
+         "step": 4,
+         "description": "From the project matrix, enter the username and password for the camera."
+      },
+      {
+         "step": 5,
+         "description": "Click 'Add and close'."
+      },
+      {
+         "step": 6,
+         "description": "Confirm new video units appear under archiver."
+      },
+      {
+         "step": 7,
+         "description": "Rename to match existing video units."
+      }
    ]
 
 }

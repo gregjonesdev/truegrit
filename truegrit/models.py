@@ -107,6 +107,5 @@ class VideoQualityResolution(CoreModel):
         max_length=64,
         null=True
     ) 
-
     pixel_cols = models.IntegerField()
     pixel_rows = models.IntegerField()           

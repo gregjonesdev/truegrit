@@ -13,6 +13,8 @@ from truegrit.models import (
     InstallationStatus,
     DistributionFrameRole,
     CameraModel,
+    VideoCompressionStandard,
+    VideoQualityResolution,
 )
 
 class Command(BaseCommand):  
@@ -102,6 +104,32 @@ class Command(BaseCommand):
             new_role.set_fields_to_base()
             new_role.save()  
 
+    def create_video_compression_standard(self, standard):
+        try:
+            VideoCompressionStandard.objects.get(name=standard["name"])
+        except ObjectDoesNotExist:
+            new_standard = VideoCompressionStandard(
+                name=standard["name"]
+            )         
+            new_standard.set_fields_to_base()
+            new_standard.save()
+
+    def create_resolution(self, resolution):
+        try:
+            VideoQualityResolution.objects.get(
+                name=resolution["name"],
+                pixel_rows=resolution["pixel_rows"],
+                pixel_cols=resolution["pixel_cols"],
+            ) 
+        except ObjectDoesNotExist:
+            new_resolution = VideoQualityResolution(
+                name=resolution["name"],
+                pixel_rows=resolution["pixel_rows"],
+                pixel_cols=resolution["pixel_cols"],
+            )  
+            new_resolution.set_fields_to_base()
+            new_resolution.save()     
+
     def seed_distributionframeroles(self, distributionframeroles):
         for framerole in distributionframeroles:
             self.create_framerole(framerole)        
@@ -145,8 +173,15 @@ class Command(BaseCommand):
     def seed_users(self, users):
         print("Seeding users..")
         for user in users:
-            print(user)
-            self.create_user(user)        
+            self.create_user(user)
+
+    def seed_videocompressionstandards(self, video_compression_stds):
+        for std in video_compression_stds:
+            self.create_video_compression_standard(std)  
+
+    def seed_videoqualityresolutions(self, resolutions):
+        for resolution in resolutions:
+            self.create_resolution(resolution)                      
 
 
     def handle(self, *args, **options):
@@ -160,3 +195,7 @@ class Command(BaseCommand):
         self.seed_installationmounttypes(jsonData["installation_mounttypes"])
         self.seed_installationstatus(jsonData["installation_status"])
         self.seed_distributionframeroles(jsonData["distribution_frameroles"])
+        self.seed_videocompressionstandards(jsonData["video_compression_standards"])
+        self.seed_videoqualityresolutions(jsonData["video_quality_resolutions"])
+        #video compression resolutions
+
