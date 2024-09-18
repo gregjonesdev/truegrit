@@ -54,27 +54,35 @@ class CameraModel(CoreModel):
         max_length=64,
     )
 
+
+class Network(CoreModel):
+
+    subnet = models.GenericIPAddressField(protocol='IPv4')
+    gateway = models.GenericIPAddressField(protocol='IPv4')
+
+
 class Camera(CoreModel):
 
     model = models.ForeignKey(
         CameraModel,
         on_delete=models.CASCADE
     )
-
     mac_address = models.CharField(
         max_length=12,
+        null=True
+    ) 
+    network = models.ForeignKey(
+        Network,
+        on_delete=models.CASCADE,
+        null=True
     )
+    ip_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True)
+    name = models.CharField(
+        max_length=255,
+        null=True
+    ) 
 
-class CameraInstallation(CoreModel):
 
-    camera = models.ForeignKey(
-        Camera,
-        on_delete=models.CASCADE
-    )    
-
-    # ip_address
-
-    # installation mount type
 
 class DistributionFrameRole(CoreModel):
 
@@ -128,20 +136,21 @@ class StoreChain(CoreModel):
         unique=True
     )
 
-class StoreLocation(CoreModel):
+class MarketArea(CoreModel):
     chain = models.ForeignKey(
         StoreChain, 
-        related_name='locations', 
+        related_name='areas', 
         on_delete=models.CASCADE
     )
     name = models.CharField(
         max_length=255
     )
 
-class Store(CoreModel):
+class BusinessUnit(CoreModel):
 
     identifier = models.CharField(
-        max_length=255
+        max_length=255,
+        null=True
     )
     description = models.CharField(
         max_length=255
@@ -158,6 +167,5 @@ class Project(CoreModel):
         ProjectStatus,
         related_name='status',
         on_delete=models.CASCADE,
-        
         )
     
