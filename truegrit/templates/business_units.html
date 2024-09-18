@@ -10,7 +10,7 @@
     <table>
         {% for unit in units %}
             <tr>
-                <td>{{ unit.identifier }}-{{ unit.description }}</td>
+                <td><a href="{% url 'business_unit_detail' unit.uuid %}">{{ unit.identifier }}-{{ unit.description }}</td>
                
             </tr>
         {% empty %}

@@ -3,6 +3,7 @@ from django.urls import re_path, path
 from truegrit.views import (
     FrontPage,
     BusinessUnitListView,
+    BusinessUnitDetailView,
 )
 
 urlpatterns = [
@@ -14,4 +15,8 @@ urlpatterns = [
         'business-units/', 
         BusinessUnitListView.as_view(), 
         name='business_units'),
-]    
+    path(
+        'business-unit/<uuid:uuid>/', 
+        BusinessUnitDetailView.as_view(), 
+        name='business_unit_detail'),
+]
