@@ -1,8 +1,9 @@
-from django.views.generic import View
+from django.views.generic import View, ListView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from truegrit.models import (
+    BusinessUnit,
     Camera,
     ServerRole, 
     CameraModel,
@@ -30,3 +31,9 @@ class FrontPage(View):
         # self.context["project_status"] = ProjectStatus.objects.all()
         # self.context["resolutions"] = VideoQualityResolution.objects.all()
         return render(request, self.template_name, self.context)
+    
+class BusinessUnitListView(ListView):
+    model = BusinessUnit
+    template_name = 'business_units.html'  
+    context_object_name = 'units'       
+
