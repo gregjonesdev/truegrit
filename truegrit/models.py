@@ -55,8 +55,25 @@ class CameraModel(CoreModel):
     )
 
 
+class BusinessUnit(CoreModel):
+
+    identifier = models.CharField(
+        max_length=255,
+        null=True
+    )
+    description = models.CharField(
+        max_length=255,
+        null=True
+    )    
+
+
 class Network(CoreModel):
 
+    business_unit = models.ForeignKey(
+        BusinessUnit,
+        on_delete=models.CASCADE,
+        null=True
+    )
     subnet = models.GenericIPAddressField(protocol='IPv4')
     gateway = models.GenericIPAddressField(protocol='IPv4')
 
@@ -81,6 +98,11 @@ class Camera(CoreModel):
         max_length=255,
         null=True
     ) 
+
+    def get_upnp_name(self):
+        return "{}-{}".format(
+            self.network.business_unit.identifier,
+            self.name)
 
 
 
@@ -143,16 +165,6 @@ class MarketArea(CoreModel):
         on_delete=models.CASCADE
     )
     name = models.CharField(
-        max_length=255
-    )
-
-class BusinessUnit(CoreModel):
-
-    identifier = models.CharField(
-        max_length=255,
-        null=True
-    )
-    description = models.CharField(
         max_length=255
     )
 
