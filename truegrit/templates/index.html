@@ -15,6 +15,7 @@
           <td>{{ camera.name }}</td>
           <td>{{ camera.ip_address }}</td>
           <td>{{ camera.get_upnp_name }}</td>
+          <td>{{ camera.network.business_unit.identifier }}-{{ camera.network.business_unit.description }}</td>
         </tr>
       {% endfor %}
     </table>
