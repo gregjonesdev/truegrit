@@ -120,3 +120,44 @@ class UserSettings(CoreModel):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     dark_mode = models.BooleanField(default=False)
+
+
+class StoreChain(CoreModel):
+    name = models.CharField(
+        max_length=255, 
+        unique=True
+    )
+
+class StoreLocation(CoreModel):
+    chain = models.ForeignKey(
+        StoreChain, 
+        related_name='locations', 
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(
+        max_length=255
+    )
+
+class Store(CoreModel):
+
+    identifier = models.CharField(
+        max_length=255
+    )
+    description = models.CharField(
+        max_length=255
+    )
+
+class Project(CoreModel):
+
+    number = models.IntegerField()
+    description = models.CharField(
+        max_length=255,
+        null=True
+    )
+    status = models.ForeignKey(
+        ProjectStatus,
+        related_name='status',
+        on_delete=models.CASCADE,
+        
+        )
+    
