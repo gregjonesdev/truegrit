@@ -3,7 +3,12 @@
 {% block content %}
     <h1>{{ business_unit.name }}</h1>
     <p>{{ business_unit.description }}</p>
+    <button type="button" class="btn btn-primary">Print Labels</button>
+    <br/>
     <a href="{% url 'business_units' %}">Back to Business Units</a>
+
+  
+
     <div style="width: 100%; overflow-y: scroll;">
         {% for network in networks %}
             <table class="table table-hover table-sm">
@@ -27,8 +32,6 @@
                         <th>Aimed</th>
                         <th>Focused</th>
                         <th>View Approved</th>
-
-
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
