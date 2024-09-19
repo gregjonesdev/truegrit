@@ -44,7 +44,10 @@ class Command(BaseCommand):
         
     def create_bu(self, identifier, description, market_area):
         try:
-            return BusinessUnit.objects.get(identifier=identifier)
+            bu = BusinessUnit.objects.get(identifier=identifier)
+            bu.market_area = market_area
+            bu.save()
+            return bu
         except ObjectDoesNotExist:
             bu = BusinessUnit(
                 identifier=identifier,
@@ -138,10 +141,11 @@ class Command(BaseCommand):
             split_cell_value =cell_value.split("-")
             identifier = split_cell_value[0].strip()
             description = split_cell_value[1].strip()
+            print(description)
             market_area = self.create_marketarea(heb_chain, sheet['B4'].value.strip())
             business_unit = self.create_bu(identifier, description, market_area)
-            subnet = sheet['G4'].value.strip()
-            gateway = sheet['H4'].value.strip()
+            subnet = sheet['G4'].value.strip() if sheet['G4'].value else None
+            gateway = sheet['H4'].value.strip() if sheet['H4'].value else None
             network = self.createnetwork(business_unit, subnet, gateway)
             for row in sheet.iter_rows(min_row=4, values_only=True):
                 # Print data from each column in the current row
@@ -150,6 +154,6 @@ class Command(BaseCommand):
                 if row[0]:                             
                     camera_name = row[2].strip()
                     camera_model = self.create_axiscameramodel(row[4].upper().strip()) # camera model
-                    ip_address = row[5].split()
+                    print(row[5])
+                    ip_address = row[5].strip() if row[5] else None
                     self.create_camera(network, camera_model, ip_address, camera_name)
-            raise SystemExit(0) # test first sheet

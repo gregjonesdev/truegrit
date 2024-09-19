@@ -97,8 +97,12 @@ class Network(CoreModel):
         on_delete=models.CASCADE,
         null=True
     )
-    subnet = models.GenericIPAddressField(protocol='IPv4')
-    gateway = models.GenericIPAddressField(protocol='IPv4')
+    subnet = models.GenericIPAddressField(
+        protocol='IPv4',
+        null=True)
+    gateway = models.GenericIPAddressField(
+        protocol='IPv4',
+        null=True)
 
 
 class Camera(CoreModel):
