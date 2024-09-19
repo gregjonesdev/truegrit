@@ -10,6 +10,7 @@ from truegrit.models import (
     CameraModel,
     InstallationStatus,
     InstallationMountType,
+    Network,
     DistributionFrameRole,
     ProjectStatus,
     VideoQualityResolution,
@@ -45,5 +46,14 @@ class BusinessUnitDetailView(DetailView):
 
     def get_object(self, queryset=None):
         uuid_ = self.kwargs.get('uuid')
+
+        # business_unit = BusinessUnit.objects.get(uuid=uuid_)
+        # print()
         return get_object_or_404(BusinessUnit, uuid=uuid_)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add another context variable
+        context['networks'] = Network.objects.filter(business_unit=context['business_unit'])
+        return context
+        

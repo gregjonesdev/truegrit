@@ -55,6 +55,24 @@ class CameraModel(CoreModel):
     )
 
 
+
+
+class StoreChain(CoreModel):
+    name = models.CharField(
+        max_length=255, 
+        unique=True
+    )
+
+class MarketArea(CoreModel):
+    chain = models.ForeignKey(
+        StoreChain, 
+        related_name='areas', 
+        on_delete=models.CASCADE
+    )
+    name = models.CharField(
+        max_length=255
+    )
+
 class BusinessUnit(CoreModel):
 
     identifier = models.CharField(
@@ -64,7 +82,12 @@ class BusinessUnit(CoreModel):
     description = models.CharField(
         max_length=255,
         null=True
-    )    
+    )   
+    market_area = models.ForeignKey(
+        MarketArea,
+        on_delete=models.CASCADE,
+        null=True
+    )
 
 
 class Network(CoreModel):
@@ -151,22 +174,6 @@ class UserSettings(CoreModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     dark_mode = models.BooleanField(default=False)
 
-
-class StoreChain(CoreModel):
-    name = models.CharField(
-        max_length=255, 
-        unique=True
-    )
-
-class MarketArea(CoreModel):
-    chain = models.ForeignKey(
-        StoreChain, 
-        related_name='areas', 
-        on_delete=models.CASCADE
-    )
-    name = models.CharField(
-        max_length=255
-    )
 
 class Project(CoreModel):
 

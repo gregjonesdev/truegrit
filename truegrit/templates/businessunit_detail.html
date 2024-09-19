@@ -7,6 +7,50 @@
 <body>
     <h1>{{ business_unit.name }}</h1>
     <p>{{ business_unit.description }}</p>
+    {% for camera in cameras %}
+        {{ camera.model.name }}
+    {% endfor %}
+    <ul>
+        {% for network in networks %}
+            <li>{{ network }}</li>  <!-- Display the name of the network -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Site</th>
+                        <th>Location</th>
+                        <th>Camera Name</th>
+                        <th>Model to Be Replaced</th>
+                        <th>New Model Number</th>
+                        <th>IP</th>
+                        <th>Subnet</th>
+                        <th>Gateway</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+
+
+                    </tr>
+                </thead>
+                {% for camera in network.camera_set.all %}
+                    <tr>
+                        <td>{{ business_unit.identifier }} - {{ business_unit.description }}</td>
+                        <td>{{ business_unit.market_area.name }}</td>
+                        <td>{{camera.name}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+
+                    </tr>
+                {% endfor %}
+            </table>
+
+        {% empty %}
+            <li>No networks associated with this Business Unit.</li>
+        {% endfor %}
+    </ul>
     <a href="{% url 'business_units' %}">Back to Business Units</a>
 </body>
 </html>

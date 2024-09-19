@@ -42,13 +42,14 @@ class Command(BaseCommand):
             store_chain.save()
             return store_chain
         
-    def create_bu(self, identifier, description):
+    def create_bu(self, identifier, description, market_area):
         try:
             return BusinessUnit.objects.get(identifier=identifier)
         except ObjectDoesNotExist:
             bu = BusinessUnit(
                 identifier=identifier,
-                description=description
+                description=description,
+                market_area=market_area,
             )    
             bu.set_fields_to_base()
             bu.save()
@@ -137,8 +138,8 @@ class Command(BaseCommand):
             split_cell_value =cell_value.split("-")
             identifier = split_cell_value[0].strip()
             description = split_cell_value[1].strip()
-            business_unit = self.create_bu(identifier, description)
-            self.create_marketarea(heb_chain, sheet['B4'].value.strip())
+            market_area = self.create_marketarea(heb_chain, sheet['B4'].value.strip())
+            business_unit = self.create_bu(identifier, description, market_area)
             subnet = sheet['G4'].value.strip()
             gateway = sheet['H4'].value.strip()
             network = self.createnetwork(business_unit, subnet, gateway)
