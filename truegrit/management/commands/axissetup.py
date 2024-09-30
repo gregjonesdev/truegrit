@@ -28,6 +28,7 @@ class Command(BaseCommand):
         # send request here    
         
     def updateAuthMethod(self):
+        pass
         # Turn off 802.1 authentication:
         # root.Network.Interface.I0.dot1x.Enabled yes -> no
         # root.Network.Interface.I0.dot1x.Status Unauthorized -> Stopped    
