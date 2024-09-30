@@ -45,21 +45,21 @@ class Command(BaseCommand):
         
     def updateIP(self):
         pass
-        # root.Network.BootProto=dhcp
-        # root.Network.Broadcast=192.168.0.255
-        # root.Network.DefaultRouter=192.168.0.1
-        # root.Network.DNSServer1=0.0.0.0
-        # root.Network.DNSServer2=0.0.0.0
-        # root.Network.DomainName=
-        # root.Network.Enabled=yes
-        # root.Network.HostName=axis-b8a44fb6206d
-        # root.Network.IPAddress=192.168.0.90
-        # root.Network.Media=auto
-        # root.Network.SubnetMask=255.255.255.0     
+        # root.Network.BootProto: none
+        # root.Network.DefaultRouter: 10.20.54.1
+        # root.Network.IPAddress: 10.20.54.53
+        # root.Network.eth0.Broadcast: 192.168.0.255
+        # root.Network.eth0.IPAddress: 10.20.54.53
+        # root.Network.eth0.SubnetMask: 255.255.255.0
+        # root.Network.Resolver.ObtainFromDHCP: no
+        # root.Network.Routing.DefaultRouter: 10.20.54.1
+        # root.Network.VolatileHostName.ObtainFromDHCP: no
+
+        
         
     def disableHTTPS(self, ip):
         pass
-        # root.HTTPS.Enabled=yes 
+        # root.HTTPS.Enabled yes -> no
         # not quite
         # http://10.10.0.2/axis-cgi/param.cgi?action=update&root.HTTPS.Enabled=no
    
