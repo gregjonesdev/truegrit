@@ -30,36 +30,13 @@ class Command(BaseCommand):
             property,
             value
         )
-        # url = "http://10.19.54.107/axis-cgi/login.cgi"
-        headers = {
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate',
-            'Referrer-Policy': 'strict-origin-when-cross-origin',
-            'Connection': 'keep-alive',
-            # 'Cookie': '_axis=g68MI7PkpY',
-            'Host': '10.19.54.107',
-            'Referrer': 'http://10.19.54.107/camera/index.html',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-
-        }
-        # url = "http://{}".format(ip_address)
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
 
         # response = requests.get(url, auth=HTTPDigestAuth(username, password), headers=headers)
         print(response.status_code)
-        # # print(response.__dict__)
-        # session = requests.Session()
-        # print(session.headers)
-        # session.auth = HTTPBasicAuth(username, password)
-        # print("Updated: ")
-        # print(session.__dict__)
-        # login_url = url 
-        # login_data = {
-        #     'username': username,
-        #     'password': password
-        # }
-        # print(session.get(url))
-        # print(session.get(login_url, data=login_data))
+        if not response.status_code == '200':
+            print("Something went wrong...")
+            raise SystemExit(0)
 
    
         
