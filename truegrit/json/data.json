@@ -13,6 +13,20 @@
          "name":"closed"
       }
    ],
+   "camera_ip_status": [
+      {
+         "name":"running"
+      },
+      {
+         "name":"cancelled"
+      },
+      {
+         "name":"success"
+      },
+      {
+         "name":"error"
+      }
+   ],
    "users": [
       {
          "username": "rjmacready",

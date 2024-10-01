@@ -23,7 +23,7 @@ class Command(BaseCommand):
             print(f"Error pinging {ip}: {e}")
             return False
         
-    def updateProperty(self. property, value):
+    def updateProperty(self, property, value):
         pass
         # send request here    
         
@@ -70,7 +70,8 @@ class Command(BaseCommand):
         # http://10.10.0.2/axis-cgi/param.cgi?action=update&root.Network.UPnP.FriendlyName=DidThisWork
 
     def handle(self, *args, **options):
-        print(requests.get(url, auth=HTTPBasicAuth(username, password)))
+        print(subprocess)
+        # print(requests.get(url, auth=HTTPBasicAuth(username, password)))
         # for ip in subnet.hosts():
         #     if self.ping_ip(ip):
         #         print(f"{ip} is reachable")

@@ -126,6 +126,9 @@ class Command(BaseCommand):
              
 
     def handle(self, *args, **options):
+        Camera.objects.all().delete()
+        Network.objects.all().delete()
+        BusinessUnit.objects.all().delete()
         # file_path = input("Enter file path of matrix: ")
         file_path = "/Users/gregjones/Downloads/heb-matrix.xlsx"
         print(file_path)

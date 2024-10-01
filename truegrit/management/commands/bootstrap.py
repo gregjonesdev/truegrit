@@ -13,6 +13,7 @@ from truegrit.models import (
     InstallationStatus,
     DistributionFrameRole,
     CameraModel,
+    CameraIPProcessStatus,
     VideoCompressionStandard,
     VideoQualityResolution,
 )
@@ -183,11 +184,21 @@ class Command(BaseCommand):
 
     def seed_videoqualityresolutions(self, resolutions):
         for resolution in resolutions:
-            self.create_resolution(resolution)                      
+            self.create_resolution(resolution)  
+
+    def seed_camera_ip_status(self, statuses):
+        for status in statuses:
+            try:
+                CameraIPProcessStatus.objects.get(name=status["name"])
+            except ObjectDoesNotExist:
+                new_status = CameraIPProcessStatus(
+                    name=status["name"]
+                ) 
+                new_status.set_fields_to_base()
+                new_status.save()                               
 
 
     def handle(self, *args, **options):
-        VideoQualityResolution.objects.all().delete()
         jsonData = json.loads(open('./truegrit/json/data.json').read())
         self.seed_users(jsonData["users"])
         self.seed_projectstatus(jsonData["project_status"])
@@ -199,5 +210,6 @@ class Command(BaseCommand):
         self.seed_distributionframeroles(jsonData["distribution_frameroles"])
         self.seed_videocompressionstandards(jsonData["video_compression_standards"])
         self.seed_videoqualityresolutions(jsonData["video_quality_resolutions"])
+        self.seed_camera_ip_status(jsonData["camera_ip_status"])
         #video compression resolutions
 

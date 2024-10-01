@@ -130,6 +130,28 @@ class Camera(CoreModel):
         return "{}-{}".format(
             self.network.business_unit.identifier,
             self.name)
+    
+
+class CameraIPProcessStatus(CoreModel):
+
+    name = models.CharField(
+        max_length=64,
+    )
+
+
+class CameraIPProcess(CoreModel):
+
+    camera = models.ForeignKey(
+        Camera,
+        on_delete=models.CASCADE
+    ) 
+    status = models.ForeignKey(
+        CameraIPProcessStatus,
+        on_delete=models.CASCADE
+    )  
+    comment = models.CharField(
+        max_length=255,
+    )    
 
 
 
