@@ -24,19 +24,19 @@ class Command(BaseCommand):
             return False
         
     def updateProperty(self, ip_address, property, value):
-        print("update property 23")
+        print("Update camera {}: {} to {}".format(ip_address, property, value))
         url = "http://{}/axis-cgi/param.cgi?action=update&{}={}".format(
             ip_address,
             property,
             value
         )
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
-
-        # response = requests.get(url, auth=HTTPDigestAuth(username, password), headers=headers)
-        print(response.status_code)
-        if not response.status_code == '200':
+        if not response.status_code == 200:
             print("Something went wrong...")
+            print(response.__dict__)
             raise SystemExit(0)
+        else:
+            print("Success!")
 
    
         
