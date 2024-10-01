@@ -173,13 +173,24 @@ class Command(BaseCommand):
         # camera_count = 1
         # cameras_found = self.scan_cameras(camera_count)
         # print(cameras_found)
-        camera_host_numbers = (38, 45)
+        
+
+        gateways = [
+            {
+                "number": "10.10.0.1",
+                "camera_host_numbers": (38, 45)
+            }
+        ]
         
         current_host_number = camera_host_numbers[0]
-        while current_host_number <= camera_host_numbers[1]:
-            ip_address = self.generate_ip_address(gateway, current_host_number)
-            print(ip_address)
-            current_host_number += 1
+
+        for gateway in gateways:
+            camera_host_numbers = gateway["camera_host_numbers"]
+            current_host_number = camera_host_numbers[0]
+            while current_host_number <= camera_host_numbers[1]:
+                ip_address = self.generate_ip_address(gateway, current_host_number)
+                print(ip_address)
+                current_host_number += 1
             # ip_address = self.generate_ip_address(gateway, host_number)
             # if self.is_online_camera(ip_address):
             #     mac_address_string = str(self.get_attribute_string('root.Network.eth0.MACAddress'))
