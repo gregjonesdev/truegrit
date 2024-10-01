@@ -71,17 +71,17 @@ class Command(BaseCommand):
             default_router
         ))
        
-        # self.updateProperty(device_ip, "root.Network.BootProto", "none")
-        # self.updateProperty(device_ip, "root.Network.DefaultRouter", default_router)
-        # self.updateProperty(device_ip, "root.Network.VolatileHostName.ObtainFromDHCP", "no")
-        # self.updateProperty(device_ip, "root.Network.eth0.SubnetMask", "255.255.255.0")
+        # self.updateProperty(device_ip, "root.Network.Routing.DefaultRouter", default_router)
         # self.updateProperty(device_ip, "root.Network.eth0.Broadcast", "192.168.0.255")
         # self.updateProperty(device_ip, "root.Network.eth0.IPAddress", camera.ip_address)
-        # self.updateProperty(device_ip, "root.Network.IPAddress", camera.ip_address)
+        # self.updateProperty(device_ip, "root.Network.eth0.SubnetMask", "255.255.255.0")
         # self.updateProperty(device_ip, "root.Network.Resolver.ObtainFromDHC", "no")
-        # self.updateProperty(device_ip, "root.Network.Routing.DefaultRouter", default_router)
+        # self.updateProperty(device_ip, "root.Network.BootProto", "none")
 
 
+        # self.updateProperty(device_ip, "root.Network.DefaultRouter", default_router)
+        # self.updateProperty(device_ip, "root.Network.VolatileHostName.ObtainFromDHCP", "no")
+        # self.updateProperty(device_ip, "root.Network.IPAddress", camera.ip_address)
         # root.Network.eth0.IPAddress: 10.20.54.53
         # root.Network.IPAddress: 10.20.54.53
        
@@ -105,9 +105,6 @@ class Command(BaseCommand):
     def updateAuthMethod(self, ip_address):
          # Turn off 802.1 authentication:
         self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Enabled", "no")
-
-        # Not working. Unnecessary?
-        # self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Status", "Stopped")
 
     def extract_value(self, input_string):
         parts = input_string.split('=') 
@@ -168,12 +165,10 @@ class Command(BaseCommand):
         ip_address = camera.ip_address
         print("Current ip: {}".format(device_ip))
         print("Setup camera: {}".format(ip_address))
-
-        # update device ip
-
-        # self.disableHTTPS(ip_address)
-        # self.updateUPnP(ip_address, camera.get_upnp_name())
-        # self.updateAuthMethod(ip_address)
+        # self.update_device_ip(camera, device_ip)
+        self.disableHTTPS(ip_address)
+        self.updateUPnP(ip_address, camera.get_upnp_name())
+        self.updateAuthMethod(ip_address)
 
 
     def generate_ip_address(self, gateway, host_number):
@@ -208,6 +203,7 @@ class Command(BaseCommand):
             "10.19.54.108",
             "10.19.54.12",
             "10.19.54.14",
+            "10.19.54.20",
             "10.19.54.153",
             "10.19.54.157",
             "10.19.54.159",
@@ -237,7 +233,7 @@ class Command(BaseCommand):
         network_list = [
             {
                 "number": "10.10.0.1",
-                "camera_host_numbers": (39, 46)
+                "camera_host_numbers": (40, 46)
             },
         ]
 
