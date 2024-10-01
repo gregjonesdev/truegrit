@@ -58,8 +58,10 @@ class Command(BaseCommand):
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
         return response.content
         
-    def updateIP(self):
-        pass
+    def updateIP(self, camera, gateway, ip_address):
+        print("Udate IP")
+        print(gateway)
+        print(ip_address)
         # root.Network.BootProto: none
         # root.Network.DefaultRouter: 10.20.54.1
         # root.Network.IPAddress: 10.20.54.53
@@ -69,6 +71,10 @@ class Command(BaseCommand):
         # root.Network.Resolver.ObtainFromDHCP: no
         # root.Network.Routing.DefaultRouter: 10.20.54.1
         # root.Network.VolatileHostName.ObtainFromDHCP: no
+
+    def save_mac_address(self, camera, mac_address):
+        camera.mac_address = mac_address
+        camera.save()
     
     def updateAuthMethod(self, ip_address):
          # Turn off 802.1 authentication:
@@ -111,7 +117,7 @@ class Command(BaseCommand):
                     model_number = self.extract_value(model_number_string)
                     if not model_number in discovered_models.keys():
                         discovered_models[model_number] = []
-                    discovered_models[model_number].append(mac_address)    
+                    discovered_models[model_number].append((mac_address, ip_address))    
         return discovered_models            
 
 
@@ -131,12 +137,15 @@ class Command(BaseCommand):
         # return self.is_not_gateway(ip_address) and self.ping_ip(ip_address)    
         return self.is_not_gateway(ip_address)
 
-    def setupCamera(self, camera):
+    def setup_device(self, camera, device_ip):
+        
         ip_address = camera.ip_address
+        print("Current ip: {}".format(device_ip))
         print("Setup camera: {}".format(ip_address))
-        self.disableHTTPS(ip_address)
-        self.updateUPnP(ip_address, camera.get_upnp_name())
-        self.updateAuthMethod(ip_address)
+        # self.update_device_ip(camera)
+        # self.disableHTTPS(ip_address)
+        # self.updateUPnP(ip_address, camera.get_upnp_name())
+        # self.updateAuthMethod(ip_address)
 
 
     def generate_ip_address(self, gateway, host_number):
@@ -183,7 +192,7 @@ class Command(BaseCommand):
         # for camera in cameras:
         #     # print(camera.ip_address)
         #     if self.ping_ip(camera.ip_address):
-        #         self.setupCamera(camera.ip_address)
+        #         self.setup_device(camera.ip_address)
 
         # host_numbers = [
         #     14, 153, 157, 159, 162, 168
@@ -191,7 +200,7 @@ class Command(BaseCommand):
         # for host_number in host_numbers:
         #     ip_address = self.generate_ip_address(gateway, host_number)
         #     camera = Camera.objects.get(ip_address=ip_address)
-        #     self.setupCamera(camera)
+        #     self.setup_device(camera)
         # camera_count = 1
         # cameras_found = self.scan_cameras(camera_count)
         # print(cameras_found)
@@ -218,8 +227,23 @@ class Command(BaseCommand):
                 mac_address__isnull=True,
             ).exclude(ip_address__in=completed).order_by('ip_address')[:model_count]
 
-            for new_camera in new_cameras:
+            index = 0
+            while index < len(new_cameras):
+                new_camera = new_cameras[index]
                 print(new_camera.ip_address)
+                mac_address = discovered_models[model_name][index][0]
+                device_ip = discovered_models[model_name][index][1]
+                print(mac_address)
+                self.save_mac_address(new_camera, mac_address)
+                self.setup_device(new_camera, device_ip)
+                # print("{}\t{}\t{}\t{}".format(
+                #     new_camera.model.name,
+                #     new_camera.get_upnp_name(),
+                #     new_camera.ip_address,
+                #     new_camera.mac_address
+                # ))
+                index += 1
+
 
    
         
