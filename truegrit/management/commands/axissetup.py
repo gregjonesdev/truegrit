@@ -58,16 +58,42 @@ class Command(BaseCommand):
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
         return response.content
         
-    def updateIP(self, camera, gateway, ip_address):
+    def update_device_ip(self, camera, device_ip):
         print("Udate IP")
-        print(gateway)
-        print(ip_address)
+        print(device_ip)
+        print(camera.get_upnp_name())
+        print(camera.network.gateway) # 10.20.54.1
+        print(device_ip) 
+        default_router = camera.network.gateway
+        print('change from {} to {} with gateway {}'.format(
+            device_ip,
+            camera.ip_address,
+            default_router
+        ))
+       
+        # self.updateProperty(device_ip, "root.Network.BootProto", "none")
+        # self.updateProperty(device_ip, "root.Network.DefaultRouter", default_router)
+        # self.updateProperty(device_ip, "root.Network.VolatileHostName.ObtainFromDHCP", "no")
+        # self.updateProperty(device_ip, "root.Network.eth0.SubnetMask", "255.255.255.0")
+        # self.updateProperty(device_ip, "root.Network.eth0.Broadcast", "192.168.0.255")
+        # self.updateProperty(device_ip, "root.Network.eth0.IPAddress", camera.ip_address)
+        # self.updateProperty(device_ip, "root.Network.IPAddress", camera.ip_address)
+        # self.updateProperty(device_ip, "root.Network.Resolver.ObtainFromDHC", "no")
+        # self.updateProperty(device_ip, "root.Network.Routing.DefaultRouter", default_router)
+
+
+        # root.Network.eth0.IPAddress: 10.20.54.53
+        # root.Network.IPAddress: 10.20.54.53
+       
+       
+        
+       
+        # root.Network.eth0.Broadcast: 192.168.0.255
+       
+       
+        # root.Network.eth0.SubnetMask: 255.255.255.0
         # root.Network.BootProto: none
         # root.Network.DefaultRouter: 10.20.54.1
-        # root.Network.IPAddress: 10.20.54.53
-        # root.Network.eth0.Broadcast: 192.168.0.255
-        # root.Network.eth0.IPAddress: 10.20.54.53
-        # root.Network.eth0.SubnetMask: 255.255.255.0
         # root.Network.Resolver.ObtainFromDHCP: no
         # root.Network.Routing.DefaultRouter: 10.20.54.1
         # root.Network.VolatileHostName.ObtainFromDHCP: no
@@ -142,7 +168,9 @@ class Command(BaseCommand):
         ip_address = camera.ip_address
         print("Current ip: {}".format(device_ip))
         print("Setup camera: {}".format(ip_address))
-        # self.update_device_ip(camera)
+
+        # update device ip
+
         # self.disableHTTPS(ip_address)
         # self.updateUPnP(ip_address, camera.get_upnp_name())
         # self.updateAuthMethod(ip_address)
@@ -209,13 +237,12 @@ class Command(BaseCommand):
         network_list = [
             {
                 "number": "10.10.0.1",
-                "camera_host_numbers": (38, 45)
+                "camera_host_numbers": (39, 46)
             },
         ]
 
         discovered_models = self.get_discovered_models(network_list)
         print(discovered_models)
-
         network = Network.objects.get(gateway=store_network)
 
         for model_name in discovered_models:
@@ -224,7 +251,6 @@ class Command(BaseCommand):
                 network=network,
                 model__name=model_name,
                 ip_address__isnull=False,
-                mac_address__isnull=True,
             ).exclude(ip_address__in=completed).order_by('ip_address')[:model_count]
 
             index = 0
@@ -234,7 +260,7 @@ class Command(BaseCommand):
                 mac_address = discovered_models[model_name][index][0]
                 device_ip = discovered_models[model_name][index][1]
                 print(mac_address)
-                self.save_mac_address(new_camera, mac_address)
+                # self.save_mac_address(new_camera, mac_address)
                 self.setup_device(new_camera, device_ip)
                 # print("{}\t{}\t{}\t{}".format(
                 #     new_camera.model.name,
