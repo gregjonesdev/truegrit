@@ -10,6 +10,9 @@ password = 'h3bc4m3r4'
 subnet = ipaddress.ip_network('10.10.0.0/24')
 url = f'http://{camera_ip}/axis-cgi/device/attributes.cgi'
 
+GREEN = '\033[92m'
+RESET = '\033[0m'
+
 class Command(BaseCommand):  
 
     def ping_ip(self, ip):
@@ -24,25 +27,21 @@ class Command(BaseCommand):
             return False
         
     def updateProperty(self, ip_address, property, value):
-        print("\tSetting '{}' to '{}'".format(property, value))
+        text_string = "\tSetting '{}' to '{}'".format(property, value)
+        print(text_string, end=' ',flush=True)
         url = "http://{}/axis-cgi/param.cgi?action=update&{}={}".format(
             ip_address,
             property,
             value
         )
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
-        if not response.status_code == 200:
+        if response.status_code == 200:
+            print(f"\r{text_string} {GREEN}Success{RESET}")
+        else:
             print("Something went wrong...")
             print(response.__dict__)
             raise SystemExit(0)
 
-   
-        
-    def updateAuthMethod(self):
-        pass
-        # Turn off 802.1 authentication:
-        # root.Network.Interface.I0.dot1x.Enabled yes -> no
-        # root.Network.Interface.I0.dot1x.Status Unauthorized -> Stopped    
         
     def listdefinitions(self):
         pass
@@ -65,8 +64,14 @@ class Command(BaseCommand):
         # root.Network.Resolver.ObtainFromDHCP: no
         # root.Network.Routing.DefaultRouter: 10.20.54.1
         # root.Network.VolatileHostName.ObtainFromDHCP: no
+    
+    def updateAuthMethod(self, ip_address):
+         # Turn off 802.1 authentication:
+        self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Enabled", "no")
 
-        
+        # Not working. Unneccessary?
+        # self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Status", "Stopped")
+    
         
     def disableHTTPS(self, ip_address):
         self.updateProperty(ip_address, "root.HTTPS.Enable", "no")
@@ -76,13 +81,13 @@ class Command(BaseCommand):
         self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
         
     def handle(self, *args, **options):
-        ip_address = "10.19.54.108"
+        ip_address = "10.19.54.107"
         camera = Camera.objects.get(ip_address=ip_address)
         print("Update camera: {}".format(camera.ip_address))
         self.disableHTTPS(ip_address)
         self.updateUPnP(camera.ip_address, camera.get_upnp_name())
-        
-        
+        self.updateAuthMethod(ip_address)
+        print("Completed successfully")
         # print(subprocess)
         # url = "http://{}/axis-cgi/device/attributes.cgi".format("10.19.54.108")
         # print(requests.get(url, auth=HTTPBasicAuth(username, password)))
