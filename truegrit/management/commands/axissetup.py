@@ -52,9 +52,9 @@ class Command(BaseCommand):
         #works
         #http://10.10.0.2/axis-cgi/param.cgi?action=listdefinitions&group=root.Brand.ProdFullName&listformat=xmlschema
 
-    def get_attribute_string(self, value_name):
+    def get_attribute_string(self, ip_address, value_name):
         # works
-        url = "http://10.10.0.37/axis-cgi/param.cgi?action=list&group={}".format(value_name)    
+        url = "http://{}/axis-cgi/param.cgi?action=list&group={}".format(ip_address, value_name)    
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
         return response.content
         
@@ -78,7 +78,6 @@ class Command(BaseCommand):
         # self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Status", "Stopped")
 
     def extract_value(self, input_string):
-        print(type(input_string))
         parts = input_string.split('=') 
         if len(parts) > 1:
             value = parts[1] 
@@ -91,6 +90,30 @@ class Command(BaseCommand):
         
     def updateUPnP(self, ip_address, upnp_name):
         self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
+
+    def get_discovered_models(self, network_list):
+        discovered_models = {}
+        for network in network_list:
+            camera_host_numbers = network["camera_host_numbers"]
+            current_host_number = camera_host_numbers[0]
+            gateway = network["number"]
+            while current_host_number <= camera_host_numbers[1]:
+                ip_address = self.generate_ip_address(gateway, current_host_number)
+                current_host_number += 1
+                if self.is_online_camera(ip_address):
+                    mac_address_string = str(self.get_attribute_string(
+                        ip_address,
+                        'root.Network.eth0.MACAddress'))
+                    mac_address = self.extract_value(mac_address_string)
+                    model_number_string = str(self.get_attribute_string(
+                        ip_address,
+                        'root.Brand.ProdNbr'))
+                    model_number = self.extract_value(model_number_string)
+                    print(model_number)
+                    if not model_number in discovered_models.keys():
+                        discovered_models[model_number] = []
+                    discovered_models[model_number].append(mac_address)    
+        return discovered_models            
 
 
     def scan_cameras(self, camera_count):
@@ -106,7 +129,8 @@ class Command(BaseCommand):
             #     print(f"{ip} is not reachable") 
             # 
     def is_online_camera(self, ip_address):
-        return self.is_not_gateway(ip_address) and self.ping_ip(ip_address)    
+        # return self.is_not_gateway(ip_address) and self.ping_ip(ip_address)    
+        return self.is_not_gateway(ip_address)
 
     def setupCamera(self, camera):
         ip_address = camera.ip_address
@@ -179,34 +203,11 @@ class Command(BaseCommand):
             {
                 "number": "10.10.0.1",
                 "camera_host_numbers": (38, 45)
-            }
+            },
         ]
-        
-        for network in network_list:
-            camera_host_numbers = network["camera_host_numbers"]
-            current_host_number = camera_host_numbers[0]
-            gateway = network["number"]
-            while current_host_number <= camera_host_numbers[1]:
-                print(current_host_number)
-                ip_address = self.generate_ip_address(gateway, current_host_number)
-                print(ip_address)
-                current_host_number += 1
-            # ip_address = self.generate_ip_address(gateway, host_number)
-            # if self.is_online_camera(ip_address):
-            #     mac_address_string = str(self.get_attribute_string('root.Network.eth0.MACAddress'))
-            #     print(mac_address_string)
-            #     mac_address = self.extract_value(mac_address_string)
-            #     model_number_string = str(self.get_attribute_string('root.Brand.ProdNbr'))
-            #     model_number = self.extract_value(model_number_string)
-            #     print(model_number)
-            #     camera_model = CameraModel.objects.get(
-            #         manufacturer__name='Axis',
-            #         name=model_number
-            #     )
-            #     print(camera_model)
-                # camera = Camera.objects.get(mac_address=mac_address)
-                # print(camera)
 
+        discovered_models = self.get_discovered_models(network_list)
+        print(discovered_models)
 
 
         # print(subprocess)
