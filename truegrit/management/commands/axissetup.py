@@ -1,7 +1,7 @@
 import subprocess
 import ipaddress
 import requests
-from requests.auth import HTTPBasicAuth
+from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
 
 camera_ip = '10.10.0.2'
@@ -23,9 +23,45 @@ class Command(BaseCommand):
             print(f"Error pinging {ip}: {e}")
             return False
         
-    def updateProperty(self, property, value):
-        pass
-        # send request here    
+    def updateProperty(self, ip_address, property, value):
+        print("update property 23")
+        url = "http://{}/axis-cgi/param.cgi?action=update&{}={}".format(
+            ip_address,
+            property,
+            value
+        )
+        # url = "http://10.19.54.107/axis-cgi/login.cgi"
+        headers = {
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate',
+            'Referrer-Policy': 'strict-origin-when-cross-origin',
+            'Connection': 'keep-alive',
+            # 'Cookie': '_axis=g68MI7PkpY',
+            'Host': '10.19.54.107',
+            'Referrer': 'http://10.19.54.107/camera/index.html',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+
+        }
+        # url = "http://{}".format(ip_address)
+        response = requests.get(url, auth=HTTPDigestAuth(username, password))
+
+        # response = requests.get(url, auth=HTTPDigestAuth(username, password), headers=headers)
+        print(response.status_code)
+        # # print(response.__dict__)
+        # session = requests.Session()
+        # print(session.headers)
+        # session.auth = HTTPBasicAuth(username, password)
+        # print("Updated: ")
+        # print(session.__dict__)
+        # login_url = url 
+        # login_data = {
+        #     'username': username,
+        #     'password': password
+        # }
+        # print(session.get(url))
+        # print(session.get(login_url, data=login_data))
+
+   
         
     def updateAuthMethod(self):
         pass
@@ -70,7 +106,12 @@ class Command(BaseCommand):
         # http://10.10.0.2/axis-cgi/param.cgi?action=update&root.Network.UPnP.FriendlyName=DidThisWork
 
     def handle(self, *args, **options):
-        print(subprocess)
+        ip_address = "10.19.54.108"
+        property = "root.Network.UPnP.FriendlyName"
+        value = "00195-Dept Produce 03"
+        self.updateProperty(ip_address, property, value)
+        # print(subprocess)
+        # url = "http://{}/axis-cgi/device/attributes.cgi".format("10.19.54.108")
         # print(requests.get(url, auth=HTTPBasicAuth(username, password)))
         # for ip in subnet.hosts():
         #     if self.ping_ip(ip):
