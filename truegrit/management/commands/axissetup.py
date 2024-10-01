@@ -163,9 +163,9 @@ class Command(BaseCommand):
     def setup_device(self, camera, device_ip):
         
         ip_address = camera.ip_address
-        print("Current ip: {}".format(device_ip))
+        # print("Current ip: {}".format(device_ip))
         print("Setup camera: {}".format(ip_address))
-        # self.update_device_ip(camera, device_ip)
+        
         self.disableHTTPS(ip_address)
         self.updateUPnP(ip_address, camera.get_upnp_name())
         self.updateAuthMethod(ip_address)
@@ -190,6 +190,7 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+
         store_network = "10.19.54.1"
         completed = [
             "10.19.54.100",
@@ -203,7 +204,6 @@ class Command(BaseCommand):
             "10.19.54.108",
             "10.19.54.12",
             "10.19.54.14",
-            "10.19.54.20",
             "10.19.54.153",
             "10.19.54.157",
             "10.19.54.159",
@@ -232,13 +232,13 @@ class Command(BaseCommand):
 
         network_list = [
             {
-                "number": "10.10.0.1",
-                "camera_host_numbers": (40, 46)
+                "number": "10.19.54.1",
+                "camera_host_numbers": (20, 27)
             },
         ]
 
         discovered_models = self.get_discovered_models(network_list)
-        print(discovered_models)
+        # print(discovered_models)
         network = Network.objects.get(gateway=store_network)
 
         for model_name in discovered_models:
@@ -252,18 +252,18 @@ class Command(BaseCommand):
             index = 0
             while index < len(new_cameras):
                 new_camera = new_cameras[index]
-                print(new_camera.ip_address)
+                # print(new_camera.ip_address)
                 mac_address = discovered_models[model_name][index][0]
                 device_ip = discovered_models[model_name][index][1]
-                print(mac_address)
-                # self.save_mac_address(new_camera, mac_address)
+                # print(mac_address)
+                self.save_mac_address(new_camera, mac_address)
                 self.setup_device(new_camera, device_ip)
-                # print("{}\t{}\t{}\t{}".format(
-                #     new_camera.model.name,
-                #     new_camera.get_upnp_name(),
-                #     new_camera.ip_address,
-                #     new_camera.mac_address
-                # ))
+                print("{}\t{}\t{}\t{}".format(
+                    new_camera.model.name,
+                    new_camera.get_upnp_name(),
+                    new_camera.ip_address,
+                    new_camera.mac_address
+                ))
                 index += 1
 
 
