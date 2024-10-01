@@ -3,15 +3,17 @@ import ipaddress
 import requests
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
-from truegrit.models import Camera
+from truegrit.models import Camera, Network
 camera_ip = '10.10.0.2'
 username = 'root'
 password = 'h3bc4m3r4'
 subnet = ipaddress.ip_network('10.10.0.0/24')
-url = f'http://{camera_ip}/axis-cgi/device/attributes.cgi'
+new_subnet = ipaddress.ip_network('10.19.54.0/24')
 
 GREEN = '\033[92m'
 RESET = '\033[0m'
+
+handy_url = "http://10.10.0.2/axis-cgi/param.cgi?action=list"
 
 class Command(BaseCommand):  
 
@@ -69,7 +71,7 @@ class Command(BaseCommand):
          # Turn off 802.1 authentication:
         self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Enabled", "no")
 
-        # Not working. Unneccessary?
+        # Not working. Unnecessary?
         # self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Status", "Stopped")
     
         
@@ -79,15 +81,52 @@ class Command(BaseCommand):
         
     def updateUPnP(self, ip_address, upnp_name):
         self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
-        
-    def handle(self, *args, **options):
-        ip_address = "10.19.54.107"
-        camera = Camera.objects.get(ip_address=ip_address)
-        print("Update camera: {}".format(camera.ip_address))
+
+
+    def scanSomething(self):
+        for ip in new_subnet.hosts():
+            if self.ping_ip(ip):
+                print(f"{ip} is reachable")
+            else:
+                print(f"{ip} is not reachable")   
+
+    def setupCamera(self, camera):
+        ip_address = camera.ip_address
+        print("Setup camera: {}".format(ip_address))
         self.disableHTTPS(ip_address)
-        self.updateUPnP(camera.ip_address, camera.get_upnp_name())
+        self.updateUPnP(ip_address, camera.get_upnp_name())
         self.updateAuthMethod(ip_address)
         print("Completed successfully")
+
+
+    def generate_ip_address(self, gateway, host_number):
+        parts = gateway.split('.')
+        parts[-1] = str(host_number)
+        return '.'.join(parts)          
+    
+        
+    def handle(self, *args, **options):
+        gateway = "10.19.54.1"
+        # cameras = Camera.objects.filter(network__gateway=gateway)
+        # for camera in cameras:
+        #     # print(camera.ip_address)
+        #     if self.ping_ip(camera.ip_address):
+        #         self.setupCamera(camera.ip_address)
+
+        host_numbers = [
+            14, 153, 157, 159, 162, 165
+        ]
+        for host_number in host_numbers:
+            ip_address = self.generate_ip_address(gateway, host_number)
+            camera = Camera.objects.get(ip_address=ip_address)
+            self.setupCamera(camera)
+
+        
+        
+       
+
+
+
         # print(subprocess)
         # url = "http://{}/axis-cgi/device/attributes.cgi".format("10.19.54.108")
         # print(requests.get(url, auth=HTTPBasicAuth(username, password)))
@@ -98,6 +137,6 @@ class Command(BaseCommand):
         #         print(f"{ip} is not reachable")    
 
 
-        # http://10.10.0.2/axis-cgi/param.cgi?action=list
+   
         
         
