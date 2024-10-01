@@ -24,7 +24,7 @@ class Command(BaseCommand):
             return False
         
     def updateProperty(self, ip_address, property, value):
-        print("Update camera {}: {} to {}".format(ip_address, property, value))
+        print("\tSetting '{}' to '{}'".format(property, value))
         url = "http://{}/axis-cgi/param.cgi?action=update&{}={}".format(
             ip_address,
             property,
@@ -35,8 +35,6 @@ class Command(BaseCommand):
             print("Something went wrong...")
             print(response.__dict__)
             raise SystemExit(0)
-        else:
-            print("Success!")
 
    
         
@@ -70,26 +68,21 @@ class Command(BaseCommand):
 
         
         
-    def disableHTTPS(self, ip):
-        pass
-        # root.HTTPS.Enabled yes -> no
-        # not quite
-        # http://10.10.0.2/axis-cgi/param.cgi?action=update&root.HTTPS.Enabled=no
-   
+    def disableHTTPS(self, ip_address):
+        self.updateProperty(ip_address, "root.HTTPS.Enable", "no")
+        self.updateProperty(ip_address, "root.System.BoaGroupPolicy.admin", "http")
         
-    def updateUPnP(self, name, ip):
-        pass
-        # success, if logged in
-        # http://10.10.0.2/axis-cgi/param.cgi?action=update&root.Network.UPnP.FriendlyName=DidThisWork
-
+    def updateUPnP(self, ip_address, upnp_name):
+        self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
+        
     def handle(self, *args, **options):
         ip_address = "10.19.54.108"
         camera = Camera.objects.get(ip_address=ip_address)
-        print(camera.get_upnp_name())
-        raise SystemExit(0)
-        property = "root.Network.UPnP.FriendlyName"
-        value = "00195-Dept Produce 03"
-        self.updateProperty(ip_address, property, value)
+        print("Update camera: {}".format(camera.ip_address))
+        self.disableHTTPS(ip_address)
+        self.updateUPnP(camera.ip_address, camera.get_upnp_name())
+        
+        
         # print(subprocess)
         # url = "http://{}/axis-cgi/device/attributes.cgi".format("10.19.54.108")
         # print(requests.get(url, auth=HTTPBasicAuth(username, password)))
