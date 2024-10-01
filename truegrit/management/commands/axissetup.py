@@ -136,6 +136,27 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         gateway = "10.10.0.1"
+        store_network = "10.19.54.1"
+        completed = [
+            "10.19.54.100",
+            "10.19.54.101",
+            "10.19.54.102",
+            "10.19.54.103",
+            "10.19.54.104",
+            "10.19.54.105",
+            "10.19.54.106",
+            "10.19.54.107",
+            "10.19.54.108",
+            "10.19.54.12",
+            "10.19.54.14",
+            "10.19.54.153",
+            "10.19.54.157",
+            "10.19.54.159",
+            "10.19.54.162",
+            "10.19.54.165",
+            "10.19.54.168",
+
+        ]
         # cameras = Camera.objects.filter(network__gateway=gateway)
         # for camera in cameras:
         #     # print(camera.ip_address)
@@ -152,24 +173,26 @@ class Command(BaseCommand):
         # camera_count = 1
         # cameras_found = self.scan_cameras(camera_count)
         # print(cameras_found)
-        camera_host_numbers = (
-            37,
-        )
+        camera_host_numbers = (38, 45)
         
-        for host_number in camera_host_numbers:
-            ip_address = self.generate_ip_address(gateway, host_number)
-            if self.is_online_camera(ip_address):
-                mac_address_string = str(self.get_attribute_string('root.Network.eth0.MACAddress'))
-                print(mac_address_string)
-                mac_address = self.extract_value(mac_address_string)
-                model_number_string = str(self.get_attribute_string('root.Brand.ProdNbr'))
-                model_number = self.extract_value(model_number_string)
-                print(model_number)
-                camera_model = CameraModel.objects.get(
-                    manufacturer__name='Axis',
-                    name=model_number
-                )
-                print(camera_model)
+        current_host_number = camera_host_numbers[0]
+        while current_host_number <= camera_host_numbers[1]:
+            ip_address = self.generate_ip_address(gateway, current_host_number)
+            print(ip_address)
+            current_host_number += 1
+            # ip_address = self.generate_ip_address(gateway, host_number)
+            # if self.is_online_camera(ip_address):
+            #     mac_address_string = str(self.get_attribute_string('root.Network.eth0.MACAddress'))
+            #     print(mac_address_string)
+            #     mac_address = self.extract_value(mac_address_string)
+            #     model_number_string = str(self.get_attribute_string('root.Brand.ProdNbr'))
+            #     model_number = self.extract_value(model_number_string)
+            #     print(model_number)
+            #     camera_model = CameraModel.objects.get(
+            #         manufacturer__name='Axis',
+            #         name=model_number
+            #     )
+            #     print(camera_model)
                 # camera = Camera.objects.get(mac_address=mac_address)
                 # print(camera)
 
