@@ -175,19 +175,19 @@ class Command(BaseCommand):
         # print(cameras_found)
         
 
-        gateways = [
+        network_list = [
             {
                 "number": "10.10.0.1",
                 "camera_host_numbers": (38, 45)
             }
         ]
         
-        current_host_number = camera_host_numbers[0]
-
-        for gateway in gateways:
-            camera_host_numbers = gateway["camera_host_numbers"]
+        for network in network_list:
+            camera_host_numbers = network["camera_host_numbers"]
             current_host_number = camera_host_numbers[0]
+            gateway = network["number"]
             while current_host_number <= camera_host_numbers[1]:
+                print(current_host_number)
                 ip_address = self.generate_ip_address(gateway, current_host_number)
                 print(ip_address)
                 current_host_number += 1
