@@ -158,7 +158,6 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
-        gateway = "10.10.0.1"
         store_network = "10.19.54.1"
         completed = [
             "10.19.54.100",
@@ -216,22 +215,11 @@ class Command(BaseCommand):
                 network=network,
                 model__name=model_name,
                 ip_address__isnull=False,
+                mac_address__isnull=True,
             ).exclude(ip_address__in=completed).order_by('ip_address')[:model_count]
 
             for new_camera in new_cameras:
                 print(new_camera.ip_address)
-
-
-
-        # print(subprocess)
-        # url = "http://{}/axis-cgi/device/attributes.cgi".format("10.19.54.108")
-        # print(requests.get(url, auth=HTTPBasicAuth(username, password)))
-        # for ip in subnet.hosts():
-        #     if self.ping_ip(ip):
-        #         print(f"{ip} is reachable")
-        #     else:
-        #         print(f"{ip} is not reachable")    
-
 
    
         
