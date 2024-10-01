@@ -3,7 +3,7 @@ import ipaddress
 import requests
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
-
+from truegrit.models import Camera
 camera_ip = '10.10.0.2'
 username = 'root'
 password = 'h3bc4m3r4'
@@ -84,6 +84,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         ip_address = "10.19.54.108"
+        camera = Camera.objects.get(ip_address=ip_address)
+        print(camera.get_upnp_name())
+        raise SystemExit(0)
         property = "root.Network.UPnP.FriendlyName"
         value = "00195-Dept Produce 03"
         self.updateProperty(ip_address, property, value)
