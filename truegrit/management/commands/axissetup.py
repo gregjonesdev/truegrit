@@ -109,7 +109,6 @@ class Command(BaseCommand):
                         ip_address,
                         'root.Brand.ProdNbr'))
                     model_number = self.extract_value(model_number_string)
-                    print(model_number)
                     if not model_number in discovered_models.keys():
                         discovered_models[model_number] = []
                     discovered_models[model_number].append(mac_address)    
@@ -208,6 +207,20 @@ class Command(BaseCommand):
 
         discovered_models = self.get_discovered_models(network_list)
         print(discovered_models)
+
+        network = Network.objects.get(gateway=store_network)
+
+        for model_name in discovered_models:
+            model_count = len(discovered_models[model_name])
+            new_cameras = Camera.objects.filter(
+                network=network,
+                model__name=model_name,
+                ip_address__isnull=False,
+            ).exclude(ip_address__in=completed).order_by('ip_address')[:model_count]
+
+            for new_camera in new_cameras:
+                print(new_camera.ip_address)
+
 
 
         # print(subprocess)
