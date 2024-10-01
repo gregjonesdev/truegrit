@@ -3,7 +3,7 @@ import ipaddress
 import requests
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
-from truegrit.models import Camera, Network
+from truegrit.models import Camera, Network, CameraModel
 camera_ip = '10.10.0.2'
 username = 'root'
 password = 'h3bc4m3r4'
@@ -12,6 +12,8 @@ new_subnet = ipaddress.ip_network('10.19.54.0/24')
 
 GREEN = '\033[92m'
 RESET = '\033[0m'
+
+ignore_host_numbers = (1,2)
 
 handy_url = "http://10.10.0.2/axis-cgi/param.cgi?action=list"
 
@@ -50,10 +52,11 @@ class Command(BaseCommand):
         #works
         #http://10.10.0.2/axis-cgi/param.cgi?action=listdefinitions&group=root.Brand.ProdFullName&listformat=xmlschema
 
-    def listSingleValue(self):
-        pass
+    def get_attribute_string(self, value_name):
         # works
-        # http://10.10.0.2/axis-cgi/param.cgi?action=list&group=root.Brand.ProdFullName    
+        url = "http://10.10.0.37/axis-cgi/param.cgi?action=list&group={}".format(value_name)    
+        response = requests.get(url, auth=HTTPDigestAuth(username, password))
+        return response.content
         
     def updateIP(self):
         pass
@@ -73,6 +76,13 @@ class Command(BaseCommand):
 
         # Not working. Unnecessary?
         # self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Status", "Stopped")
+
+    def extract_value(self, input_string):
+        print(type(input_string))
+        parts = input_string.split('=') 
+        if len(parts) > 1:
+            value = parts[1] 
+            return value.split("\\")[0].strip().replace(":", "")
     
         
     def disableHTTPS(self, ip_address):
@@ -83,12 +93,20 @@ class Command(BaseCommand):
         self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
 
 
-    def scanSomething(self):
-        for ip in new_subnet.hosts():
-            if self.ping_ip(ip):
-                print(f"{ip} is reachable")
-            else:
-                print(f"{ip} is not reachable")   
+    def scan_cameras(self, camera_count):
+        cameras_found = []
+
+        for ip_address in subnet.hosts():
+            if self.is_online_camera(ip_address):
+                cameras_found.append(ip_address)
+                if len(cameras_found) == camera_count:
+                    return cameras_found
+                # print(f"{ip} is reachable")
+            # else:
+            #     print(f"{ip} is not reachable") 
+            # 
+    def is_online_camera(self, ip_address):
+        return self.is_not_gateway(ip_address) and self.ping_ip(ip_address)    
 
     def setupCamera(self, camera):
         ip_address = camera.ip_address
@@ -96,34 +114,64 @@ class Command(BaseCommand):
         self.disableHTTPS(ip_address)
         self.updateUPnP(ip_address, camera.get_upnp_name())
         self.updateAuthMethod(ip_address)
-        print("Completed successfully")
 
 
     def generate_ip_address(self, gateway, host_number):
-        parts = gateway.split('.')
-        parts[-1] = str(host_number)
-        return '.'.join(parts)          
+        octets = self.get_octets(gateway)
+        octets[-1] = str(host_number)
+        return '.'.join(octets)          
     
-        
+    def is_not_gateway(self, ip_address):
+        octets = self.get_octets(ip_address)
+        last_octet = self.get_last_octet(octets)
+        print(int(last_octet))
+        return int(last_octet) not in ignore_host_numbers
+    
+    def get_last_octet(self, octets):
+        return octets[-1]
+
+    def get_octets(self, ip_address):
+        return str(ip_address).split('.')
+
+
     def handle(self, *args, **options):
-        gateway = "10.19.54.1"
+        gateway = "10.10.0.1"
         # cameras = Camera.objects.filter(network__gateway=gateway)
         # for camera in cameras:
         #     # print(camera.ip_address)
         #     if self.ping_ip(camera.ip_address):
         #         self.setupCamera(camera.ip_address)
 
-        host_numbers = [
-            14, 153, 157, 159, 162, 165
-        ]
-        for host_number in host_numbers:
+        # host_numbers = [
+        #     14, 153, 157, 159, 162, 168
+        # ]
+        # for host_number in host_numbers:
+        #     ip_address = self.generate_ip_address(gateway, host_number)
+        #     camera = Camera.objects.get(ip_address=ip_address)
+        #     self.setupCamera(camera)
+        # camera_count = 1
+        # cameras_found = self.scan_cameras(camera_count)
+        # print(cameras_found)
+        camera_host_numbers = (
+            37,
+        )
+        
+        for host_number in camera_host_numbers:
             ip_address = self.generate_ip_address(gateway, host_number)
-            camera = Camera.objects.get(ip_address=ip_address)
-            self.setupCamera(camera)
-
-        
-        
-       
+            if self.is_online_camera(ip_address):
+                mac_address_string = str(self.get_attribute_string('root.Network.eth0.MACAddress'))
+                print(mac_address_string)
+                mac_address = self.extract_value(mac_address_string)
+                model_number_string = str(self.get_attribute_string('root.Brand.ProdNbr'))
+                model_number = self.extract_value(model_number_string)
+                print(model_number)
+                camera_model = CameraModel.objects.get(
+                    manufacturer__name='Axis',
+                    name=model_number
+                )
+                print(camera_model)
+                # camera = Camera.objects.get(mac_address=mac_address)
+                # print(camera)
 
 
 
