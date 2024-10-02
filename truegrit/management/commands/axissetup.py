@@ -18,6 +18,13 @@ handy_url = "http://10.10.0.2/axis-cgi/param.cgi?action=list"
 
 class Command(BaseCommand):  
 
+    def is_valid_ipv4(self, address):
+        try:
+            ipaddress.IPv4Address(address)
+            return True 
+        except:
+            return False
+
     def ping_ip(self, ip):
         try:
             result = subprocess.run(
@@ -178,18 +185,22 @@ class Command(BaseCommand):
         host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n").replace(" ", "")
         host_addresses = []
         for host_number in host_address_input.split(","):
-            if "-" in host_number:
-                ip_range = host_number.split("-")
-                
-                ip_start = int(ip_range[0])
-                ip_end = int(ip_range[1]) +1
-                for each in range(ip_start, ip_end):
-                    ip_address = self.generate_ip_address(gateway_input, each)
-                    host_addresses.append(ip_address)
+            ip_range = host_number.split("-")
+            ip_start = int(ip_range[0])
+            if len(ip_range) > 1:
+                ip_end = int(ip_range[1]) + 1
             else:
-                ip_address = self.generate_ip_address(gateway_input, host_number)
-                host_addresses.append(ip_address)
-        print(host_addresses)        
+                ip_end = int(ip_start) + 1
+            for each in range(ip_start, ip_end):
+                ip_address = self.generate_ip_address(gateway_input, each)
+                if self.is_valid_ipv4(ip_address):
+                    host_addresses.append(ip_address)
+        print(host_addresses) 
+
+        # for address in self.get_host_addresses():
+        #     print(address)
+
+
         raise SystemExit(0)
         
 
