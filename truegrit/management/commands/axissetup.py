@@ -1,14 +1,13 @@
 import subprocess
 import ipaddress
 import requests
+
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
-from truegrit.models import Camera, Network, CameraModel
-camera_ip = '10.10.0.2'
+from truegrit.models import Camera, Network
+
 username = 'root'
 password = 'h3bc4m3r4'
-subnet = ipaddress.ip_network('10.10.0.0/24')
-new_subnet = ipaddress.ip_network('10.19.54.0/24')
 
 GREEN = '\033[92m'
 RESET = '\033[0m'
@@ -57,46 +56,6 @@ class Command(BaseCommand):
         url = "http://{}/axis-cgi/param.cgi?action=list&group={}".format(ip_address, value_name)    
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
         return response.content
-        
-    def update_device_ip(self, camera, device_ip):
-        print("Udate IP")
-        print(device_ip)
-        print(camera.get_upnp_name())
-        print(camera.network.gateway) # 10.20.54.1
-        print(device_ip) 
-        default_router = camera.network.gateway
-        print('change from {} to {} with gateway {}'.format(
-            device_ip,
-            camera.ip_address,
-            default_router
-        ))
-       
-        # self.updateProperty(device_ip, "root.Network.Routing.DefaultRouter", default_router)
-        # self.updateProperty(device_ip, "root.Network.eth0.Broadcast", "192.168.0.255")
-        # self.updateProperty(device_ip, "root.Network.eth0.IPAddress", camera.ip_address)
-        # self.updateProperty(device_ip, "root.Network.eth0.SubnetMask", "255.255.255.0")
-        # self.updateProperty(device_ip, "root.Network.Resolver.ObtainFromDHC", "no")
-        # self.updateProperty(device_ip, "root.Network.BootProto", "none")
-
-
-        # self.updateProperty(device_ip, "root.Network.DefaultRouter", default_router)
-        # self.updateProperty(device_ip, "root.Network.VolatileHostName.ObtainFromDHCP", "no")
-        # self.updateProperty(device_ip, "root.Network.IPAddress", camera.ip_address)
-        # root.Network.eth0.IPAddress: 10.20.54.53
-        # root.Network.IPAddress: 10.20.54.53
-       
-       
-        
-       
-        # root.Network.eth0.Broadcast: 192.168.0.255
-       
-       
-        # root.Network.eth0.SubnetMask: 255.255.255.0
-        # root.Network.BootProto: none
-        # root.Network.DefaultRouter: 10.20.54.1
-        # root.Network.Resolver.ObtainFromDHCP: no
-        # root.Network.Routing.DefaultRouter: 10.20.54.1
-        # root.Network.VolatileHostName.ObtainFromDHCP: no
 
     def save_mac_address(self, camera, mac_address):
         camera.mac_address = mac_address
@@ -143,19 +102,6 @@ class Command(BaseCommand):
                     discovered_models[model_number].append((mac_address, ip_address))    
         return discovered_models            
 
-
-    def scan_cameras(self, camera_count):
-        cameras_found = []
-
-        for ip_address in subnet.hosts():
-            if self.is_online_camera(ip_address):
-                cameras_found.append(ip_address)
-                if len(cameras_found) == camera_count:
-                    return cameras_found
-                # print(f"{ip} is reachable")
-            # else:
-            #     print(f"{ip} is not reachable") 
-            # 
     def is_online_camera(self, ip_address):
         # return self.is_not_gateway(ip_address) and self.ping_ip(ip_address)    
         return self.is_not_gateway(ip_address)
@@ -228,6 +174,22 @@ class Command(BaseCommand):
         # camera_count = 1
         # cameras_found = self.scan_cameras(camera_count)
         # print(cameras_found)
+        # gateway_input = input("Enter gateway address: \n")
+        host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n")
+        host_addresses = []
+        for address in host_address_input.split(","):
+            if "-" in address:
+                ip_range = address.split("-")
+                
+                ip_start = int(ip_range[0])
+                ip_end = int(ip_range[1]) +1
+                print(ip_start)
+                print(ip_end)
+                for each in range(ip_start, ip_end):
+                    print(each)
+            else:
+                print(address)
+        raise SystemExit(0)
         
 
         network_list = [
@@ -238,7 +200,7 @@ class Command(BaseCommand):
         ]
 
         discovered_models = self.get_discovered_models(network_list)
-        # print(discovered_models)
+        print(discovered_models)
         network = Network.objects.get(gateway=store_network)
 
         for model_name in discovered_models:
@@ -256,8 +218,8 @@ class Command(BaseCommand):
                 mac_address = discovered_models[model_name][index][0]
                 device_ip = discovered_models[model_name][index][1]
                 # print(mac_address)
-                self.save_mac_address(new_camera, mac_address)
-                self.setup_device(new_camera, device_ip)
+                # self.save_mac_address(new_camera, mac_address)
+                # self.setup_device(new_camera, device_ip)
                 print("{}\t{}\t{}\t{}".format(
                     new_camera.model.name,
                     new_camera.get_upnp_name(),
