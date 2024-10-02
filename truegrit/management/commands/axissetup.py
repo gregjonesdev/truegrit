@@ -175,7 +175,7 @@ class Command(BaseCommand):
         # cameras_found = self.scan_cameras(camera_count)
         # print(cameras_found)
         gateway_input = input("Enter gateway address: \n")
-        host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n")
+        host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n").replace(" ", "")
         host_addresses = []
         for host_number in host_address_input.split(","):
             if "-" in host_number:
