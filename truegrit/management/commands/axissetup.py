@@ -70,10 +70,10 @@ class Command(BaseCommand):
             'root.Network.eth0.MACAddress'))
         mac_address = self.extract_value(mac_address_string)
         text_string = "\tSetting {} to '{}'".format("MAC address", mac_address)
-        print(text_string, end=' ',flush=True)
+        # print(text_string, end=' ',flush=True)
         camera.mac_address = mac_address
         camera.save()
-        print(f"\r{text_string} {GREEN}Success{RESET}")
+        # print(f"\r{text_string} {GREEN}Success{RESET}")
     
     def updateAuthMethod(self, ip_address):
          # Turn off 802.1 authentication:
