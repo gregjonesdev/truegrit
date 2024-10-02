@@ -174,21 +174,22 @@ class Command(BaseCommand):
         # camera_count = 1
         # cameras_found = self.scan_cameras(camera_count)
         # print(cameras_found)
-        # gateway_input = input("Enter gateway address: \n")
+        gateway_input = input("Enter gateway address: \n")
         host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n")
         host_addresses = []
-        for address in host_address_input.split(","):
-            if "-" in address:
-                ip_range = address.split("-")
+        for host_number in host_address_input.split(","):
+            if "-" in host_number:
+                ip_range = host_number.split("-")
                 
                 ip_start = int(ip_range[0])
                 ip_end = int(ip_range[1]) +1
-                print(ip_start)
-                print(ip_end)
                 for each in range(ip_start, ip_end):
-                    print(each)
+                    ip_address = self.generate_ip_address(gateway_input, each)
+                    host_addresses.append(ip_address)
             else:
-                print(address)
+                ip_address = self.generate_ip_address(gateway_input, host_number)
+                host_addresses.append(ip_address)
+        print(host_addresses)        
         raise SystemExit(0)
         
 
