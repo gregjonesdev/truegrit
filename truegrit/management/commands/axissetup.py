@@ -68,9 +68,12 @@ class Command(BaseCommand):
         mac_address_string = str(self.get_attribute_string(
             camera.ip_address,
             'root.Network.eth0.MACAddress'))
-        print("saving mac address as: {}".format(mac_address_string))
-        camera.mac_address = self.extract_value(mac_address_string)
+        mac_address = self.extract_value(mac_address_string)
+        text_string = "\tSetting {} to '{}'".format("MAC address", mac_address)
+        print(text_string, end=' ',flush=True)
+        camera.mac_address = mac_address
         camera.save()
+        print(f"\r{text_string} {GREEN}Success{RESET}")
     
     def updateAuthMethod(self, ip_address):
          # Turn off 802.1 authentication:
@@ -144,8 +147,8 @@ class Command(BaseCommand):
     def get_octets(self, ip_address):
         return str(ip_address).split('.')
     
-    def get_host_addresses(self):
-        gateway_input = input("Enter gateway address: \n")
+    def get_host_addresses(self, gateway_input):
+        
         host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n").replace(" ", "")
         host_addresses = []
         for host_number in host_address_input.split(","):
@@ -164,6 +167,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        for ip_address in self.get_host_addresses():
+        gateway_input = input("Enter gateway address: \n")
+
+        for ip_address in self.get_host_addresses(gateway_input):
             camera = Camera.objects.get(ip_address=ip_address)
             self.setup_device(camera)
