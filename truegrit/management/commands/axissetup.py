@@ -140,6 +140,23 @@ class Command(BaseCommand):
 
     def get_octets(self, ip_address):
         return str(ip_address).split('.')
+    
+    def get_host_addresses(self):
+        gateway_input = input("Enter gateway address: \n")
+        host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n").replace(" ", "")
+        host_addresses = []
+        for host_number in host_address_input.split(","):
+            ip_range = host_number.split("-")
+            ip_start = int(ip_range[0])
+            if len(ip_range) > 1:
+                ip_end = int(ip_range[1]) + 1
+            else:
+                ip_end = int(ip_start) + 1
+            for each in range(ip_start, ip_end):
+                ip_address = self.generate_ip_address(gateway_input, each)
+                if self.is_valid_ipv4(ip_address):
+                    host_addresses.append(ip_address)
+        return host_addresses
 
 
     def handle(self, *args, **options):
@@ -181,24 +198,9 @@ class Command(BaseCommand):
         # camera_count = 1
         # cameras_found = self.scan_cameras(camera_count)
         # print(cameras_found)
-        gateway_input = input("Enter gateway address: \n")
-        host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n").replace(" ", "")
-        host_addresses = []
-        for host_number in host_address_input.split(","):
-            ip_range = host_number.split("-")
-            ip_start = int(ip_range[0])
-            if len(ip_range) > 1:
-                ip_end = int(ip_range[1]) + 1
-            else:
-                ip_end = int(ip_start) + 1
-            for each in range(ip_start, ip_end):
-                ip_address = self.generate_ip_address(gateway_input, each)
-                if self.is_valid_ipv4(ip_address):
-                    host_addresses.append(ip_address)
-        print(host_addresses) 
-
-        # for address in self.get_host_addresses():
-        #     print(address)
+   
+        for address in self.get_host_addresses():
+            print(address)
 
 
         raise SystemExit(0)
