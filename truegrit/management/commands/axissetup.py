@@ -84,7 +84,6 @@ class Command(BaseCommand):
         if len(parts) > 1:
             value = parts[1] 
             return value.split("\\")[0].strip().replace(":", "")
-    
         
     def disableHTTPS(self, ip_address):
         self.updateProperty(ip_address, "root.HTTPS.Enable", "no")
@@ -93,35 +92,7 @@ class Command(BaseCommand):
     def updateUPnP(self, ip_address, upnp_name):
         self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
 
-    # def get_discovered_models(self, network_list):
-    #     discovered_models = {}
-    #     for network in network_list:
-    #         camera_host_numbers = network["camera_host_numbers"]
-    #         current_host_number = camera_host_numbers[0]
-    #         gateway = network["number"]
-    #         while current_host_number <= camera_host_numbers[1]:
-    #             ip_address = self.generate_ip_address(gateway, current_host_number)
-    #             current_host_number += 1
-    #             if self.is_online_camera(ip_address):
-    #                 mac_address_string = str(self.get_attribute_string(
-    #                     ip_address,
-    #                     'root.Network.eth0.MACAddress'))
-    #                 mac_address = self.extract_value(mac_address_string)
-    #                 model_number_string = str(self.get_attribute_string(
-    #                     ip_address,
-    #                     'root.Brand.ProdNbr'))
-    #                 model_number = self.extract_value(model_number_string)
-    #                 if not model_number in discovered_models.keys():
-    #                     discovered_models[model_number] = []
-    #                 discovered_models[model_number].append((mac_address, ip_address))    
-    #     return discovered_models            
-
-    # def is_online_camera(self, ip_address):
-    #     # return self.is_not_gateway(ip_address) and self.ping_ip(ip_address)    
-    #     return self.is_not_gateway(ip_address)
-
-    def setup_device(self, camera):
-        
+    def setup_device(self, camera):     
         ip_address = camera.ip_address
         print("Setup camera: {}".format(ip_address))
         self.save_mac_address(camera)
@@ -134,15 +105,6 @@ class Command(BaseCommand):
         octets = self.get_octets(gateway)
         octets[-1] = str(host_number)
         return '.'.join(octets)          
-    
-    # def is_not_gateway(self, ip_address):
-    #     octets = self.get_octets(ip_address)
-    #     last_octet = self.get_last_octet(octets)
-    #     print(int(last_octet))
-    #     return int(last_octet) not in ignore_host_numbers
-    
-    # def get_last_octet(self, octets):
-    #     return octets[-1]
 
     def get_octets(self, ip_address):
         return str(ip_address).split('.')
