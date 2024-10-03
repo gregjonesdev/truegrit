@@ -38,16 +38,16 @@ class Command(BaseCommand):
             return False
         
     def updateProperty(self, ip_address, property, value):
-        text_string = "\tSetting '{}' to '{}'".format(property, value)
-        print(text_string, end=' ',flush=True)
+        text_string = "Set '{}' to '{}'".format(property, value)
         url = "http://{}/axis-cgi/param.cgi?action=update&{}={}".format(
             ip_address,
             property,
             value
         )
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
+        checkmark = '\u2713'
         if response.status_code == 200:
-            print(f"\r{text_string} {GREEN}Success{RESET}")
+            print(f"\t\t{GREEN}{checkmark}{RESET} {text_string}")
         else:
             print("Something went wrong...")
             print(response.__dict__)
@@ -184,5 +184,7 @@ class Command(BaseCommand):
             dhcp_addresses = self.get_ip_addresses(dhcp_gateway_input, "DHCP")
             if dhcp_addresses:
                 self.process_dhcp_addresses( gateway_input, dhcp_addresses)
+
+        print("\n")
 
      
