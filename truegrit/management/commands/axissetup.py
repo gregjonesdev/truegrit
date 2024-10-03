@@ -38,7 +38,7 @@ class Command(BaseCommand):
             return False
         
     def updateProperty(self, ip_address, property, value):
-        text_string = "Set '{}' to '{}'".format(property, value)
+        text_string = "Set '{}' to '{}'".format(property.replace("root.",""), value)
         url = "http://{}/axis-cgi/param.cgi?action=update&{}={}".format(
             ip_address,
             property,
@@ -175,7 +175,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         os.system("clear")
-        
+
         gateway_input = input("Enter gateway address: \n")
         static_addresses = self.get_ip_addresses(gateway_input, "Static")
         if static_addresses:
