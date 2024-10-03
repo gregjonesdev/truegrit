@@ -173,7 +173,19 @@ class Command(BaseCommand):
         print(print_string.format(camera.model.name, camera.ip_address, camera.mac_address, camera.name))
 
     def handle(self, *args, **options):
-
+        # macs = [
+        #     "B8A44FA9699E",
+        #     "B8A44FB97727",
+        #     "B8A44FA978CB",
+        #     "B8A44FB5D6D2",
+        #     "B8A44FB5D558"
+        # ]
+        # for camera in Camera.objects.filter(mac_address__in=macs):
+        #     camera.ip_address = None 
+        #     camera.save()
+        #     print("{}\t{}\t{}\t{}".format(camera.name, camera.model.name, camera.mac_address, camera.ip_address))
+        # for camera in Camera.objects.filter(ip_address="10.19.54.81"):
+        #     print("{}\t{}\t{}\t{}".format(camera.name, camera.model.name, camera.mac_address, camera.ip_address))
         gateway_input = input("Enter gateway address: \n")
         static_addresses = self.get_ip_addresses(gateway_input)
         if static_addresses:
