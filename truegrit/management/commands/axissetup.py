@@ -4,6 +4,7 @@ import requests
 
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
+from django.core.exceptions import ObjectDoesNotExist
 from truegrit.models import Camera
 
 username = 'root'
@@ -63,12 +64,15 @@ class Command(BaseCommand):
         url = "http://{}/axis-cgi/param.cgi?action=list&group={}".format(ip_address, value_name)    
         response = requests.get(url, auth=HTTPDigestAuth(username, password))
         return response.content
-
-    def save_mac_address(self, camera):
+    
+    def get_macaddress_from_ip(self, ip_address):
         mac_address_string = str(self.get_attribute_string(
-            camera.ip_address,
+            ip_address,
             'root.Network.eth0.MACAddress'))
-        mac_address = self.extract_value(mac_address_string)
+        return self.extract_value(mac_address_string)
+
+    def save_mac_address(self, camera, mac_address):
+        
         text_string = "\tSetting {} to '{}'".format("MAC address", mac_address)
         # print(text_string, end=' ',flush=True)
         camera.mac_address = mac_address
@@ -147,7 +151,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        # gateway_input = input("Enter gateway address: \n")
+        gateway_input = input("Enter gateway address: \n")
 
         # for ip_address in self.get_host_addresses(gateway_input):
         #     camera = Camera.objects.get(ip_address=ip_address)
@@ -156,18 +160,44 @@ class Command(BaseCommand):
         # dhcp addresses 
         
         dhcp_gateway_input = input("\nEnter DHCP gateway address: \n")   
-
+      
         for ip_address in self.get_host_addresses(dhcp_gateway_input):
-            print(ip_address)
-            mac_address_string = str(self.get_attribute_string(
-                ip_address,
-                'root.Network.eth0.MACAddress'))
-            mac_address = self.extract_value(mac_address_string)
-            model_number_string = str(self.get_attribute_string(
+            # print(ip_address)
+            # mac_address_string = str(self.get_attribute_string(
+            #     ip_address,
+            #     'root.Network.eth0.MACAddress'))
+            mac_address = self.get_macaddress_from_ip(ip_address)
+            # print(mac_address)
+           
+            try:
+                camera = Camera.objects.get(
+                    mac_address=mac_address
+                )
+            except ObjectDoesNotExist:
+                model_number_string = str(self.get_attribute_string(
                 ip_address,
                 'root.Brand.ProdNbr'))
-            model_number = self.extract_value(model_number_string)
-            print("{}\t{}".format(model_number, mac_address))
+                model_number = self.extract_value(model_number_string)
+
+                camera = Camera.objects.filter(
+                    network__gateway=gateway_input,
+                    model__name=model_number,
+                    mac_address__isnull=True
+                ).first()
+                self.save_mac_address(camera, mac_address)
+            # print("{}\t{}".format(model_number, mac_address))
+            
+            # available_camera = Camera.objects.filter(
+            #     network__gateway=gateway_input,
+            #     model__name=model_number,
+            #     mac_address__isnull=True
+            # ).first()
+            # print("Use: {}".format(available_camera.name))
+            if len(camera.model.name) < 9: 
+                print_string = "{}\t\t{}\t{}\t{}"
+            else:
+                print_string = "{}\t{}\t{}\t{}"    
+            print(print_string.format(camera.model.name, ip_address, camera.mac_address, camera.name))
         # discovered_models = self.get_discovered_models(dhcp_gateway_input)
 
         # for model_name in discovered_models.keys():
