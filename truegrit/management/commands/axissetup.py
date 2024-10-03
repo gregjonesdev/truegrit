@@ -127,10 +127,54 @@ class Command(BaseCommand):
         return host_addresses
 
 
+    def get_discovered_models(self, ip_list):
+        discovered_models = {}
+        for ip_address in ip_list:
+            print(ip_address)
+            mac_address_string = str(self.get_attribute_string(
+                ip_address,
+                'root.Network.eth0.MACAddress'))
+            mac_address = self.extract_value(mac_address_string)
+            model_number_string = str(self.get_attribute_string(
+                ip_address,
+                'root.Brand.ProdNbr'))
+            model_number = self.extract_value(model_number_string)
+            if not model_number in discovered_models.keys():
+                discovered_models[model_number] = []
+            discovered_models[model_number].append((mac_address, ip_address))   
+        return discovered_models    
+
+
     def handle(self, *args, **options):
 
-        gateway_input = input("Enter gateway address: \n")
+        # gateway_input = input("Enter gateway address: \n")
 
-        for ip_address in self.get_host_addresses(gateway_input):
-            camera = Camera.objects.get(ip_address=ip_address)
-            self.setup_device(camera)
+        # for ip_address in self.get_host_addresses(gateway_input):
+        #     camera = Camera.objects.get(ip_address=ip_address)
+        #     self.setup_device(camera)
+
+        # dhcp addresses 
+        
+        dhcp_gateway_input = input("\nEnter DHCP gateway address: \n")   
+
+        for ip_address in self.get_host_addresses(dhcp_gateway_input):
+            print(ip_address)
+            mac_address_string = str(self.get_attribute_string(
+                ip_address,
+                'root.Network.eth0.MACAddress'))
+            mac_address = self.extract_value(mac_address_string)
+            model_number_string = str(self.get_attribute_string(
+                ip_address,
+                'root.Brand.ProdNbr'))
+            model_number = self.extract_value(model_number_string)
+            print("{}\t{}".format(model_number, mac_address))
+        # discovered_models = self.get_discovered_models(dhcp_gateway_input)
+
+        # for model_name in discovered_models.keys():
+            
+        #     for camera in Camera.objects.filter(
+        #         network__gateway=gateway_input,
+        #         ip_address__isnull=True,
+        #         model__name=model_name
+        #     )[len(discovered_models[model_name])]:
+        #         print(camera.name)
