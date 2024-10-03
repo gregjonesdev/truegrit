@@ -1,7 +1,7 @@
 import subprocess
 import ipaddress
 import requests
-
+import os
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
@@ -95,16 +95,8 @@ class Command(BaseCommand):
     def updateUPnP(self, ip_address, upnp_name):
         self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
 
-    def setup_device(self, camera):     
-        ip_address = camera.ip_address
-        print("Setup camera: {}".format(ip_address))
-        # mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
-        # self.save_mac_address(camera, mac_address)
-        self.disableHTTPS(ip_address)
-        self.updateUPnP(ip_address, camera.get_upnp_name())
-        self.updateAuthMethod(ip_address)
-
     def configure_device(self, ip_address, upnp_name):
+        print("\n\t{}\t{}".format(ip_address, upnp_name))
         self.disableHTTPS(ip_address)
         self.updateUPnP(ip_address, upnp_name)
         self.updateAuthMethod(ip_address)   
@@ -117,9 +109,9 @@ class Command(BaseCommand):
     def get_octets(self, ip_address):
         return str(ip_address).split('.')
     
-    def get_ip_addresses(self, gateway_input):
-        
-        host_address_input = input("\nEnter IP addresses assigned: (Ex: 43,45,47-50,88)\n").replace(" ", "")
+    def get_ip_addresses(self, gateway_input, type):
+        prompt_string = "\nEnter {} IP addresses assigned: (Ex: 43,45,47-50,88). Press Enter to skip.\n".format(type)
+        host_address_input = input(prompt_string).replace(" ", "")
         if host_address_input:
             host_addresses = []
             for host_number in host_address_input.split(","):
@@ -151,49 +143,46 @@ class Command(BaseCommand):
         
 
     def process_static_addresses(self, ip_addresses):
+        results = []
         for ip_address in ip_addresses:
-            camera = Camera.objects.get(ip_address=ip_address)    
+            camera = Camera.objects.get(ip_address=ip_address)
+            results.append(self.build_result_row(camera))   
             self.configure_device(ip_address, camera.get_upnp_name()) 
-            self.print_results(camera)      
+        self.print_status(results)
         
     def process_dhcp_addresses(self, gateway_input, ip_addresses):
+        results = []
         for ip_address in ip_addresses:
             mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
             model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
             camera = self.get_camera_from_macaddress(gateway_input, mac_address, model_number)
+            results.append(self.build_result_row(camera))
             self.configure_device(ip_address, camera.get_upnp_name())
-            self.print_results(camera)
+        self.print_status(results)
+
+    def build_result_row(self, camera):
+        ip_to_print = camera.ip_address if camera.ip_address else "[DHCP]"
+        return (camera.model.name, camera.mac_address, camera.name, ip_to_print)
             
 
-    def print_results(self, camera):
-        if len(camera.model.name) < 9: 
-            print_string = "{}\t\t{}\t{}\t{}"
-        else:
-            print_string = "{}\t{}\t{}\t{}"    
-        print(print_string.format(camera.model.name, camera.ip_address, camera.mac_address, camera.name))
+    def print_status(self, results):
+        print("\n")
+        for result in results:
+            print("{:<15} {:<15} {:<30} {:<10}".format(*result))
+        
+   
 
     def handle(self, *args, **options):
-        # macs = [
-        #     "B8A44FA9699E",
-        #     "B8A44FB97727",
-        #     "B8A44FA978CB",
-        #     "B8A44FB5D6D2",
-        #     "B8A44FB5D558"
-        # ]
-        # for camera in Camera.objects.filter(mac_address__in=macs):
-        #     camera.ip_address = None 
-        #     camera.save()
-        #     print("{}\t{}\t{}\t{}".format(camera.name, camera.model.name, camera.mac_address, camera.ip_address))
-        # for camera in Camera.objects.filter(ip_address="10.19.54.81"):
-        #     print("{}\t{}\t{}\t{}".format(camera.name, camera.model.name, camera.mac_address, camera.ip_address))
+        os.system("clear")
         gateway_input = input("Enter gateway address: \n")
-        static_addresses = self.get_ip_addresses(gateway_input)
+        static_addresses = self.get_ip_addresses(gateway_input, "Static")
         if static_addresses:
             self.process_static_addresses(static_addresses)
  
-        dhcp_gateway_input = input("\nEnter DHCP gateway address ('Enter' to quit): \n")   
-        dhcp_addresses = self.get_ip_addresses(dhcp_gateway_input)
-        if dhcp_addresses:
-            self.process_dhcp_addresses( gateway_input, dhcp_addresses)
+        dhcp_gateway_input = input("\nEnter DHCP gateway address. Press Enter to quit.\n")   
+        if dhcp_gateway_input:
+            dhcp_addresses = self.get_ip_addresses(dhcp_gateway_input, "DHCP")
+            if dhcp_addresses:
+                self.process_dhcp_addresses( gateway_input, dhcp_addresses)
 
      
