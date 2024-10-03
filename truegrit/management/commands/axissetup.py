@@ -188,11 +188,10 @@ class Command(BaseCommand):
         if static_addresses:
             self.process_static_addresses(static_addresses)
  
-        dhcp_gateway_input = input("\nEnter DHCP gateway address. Press Enter to quit.\n")   
-        if dhcp_gateway_input:
-            dhcp_addresses = self.get_ip_addresses(dhcp_gateway_input, "DHCP")
-            if dhcp_addresses:
-                self.process_dhcp_addresses( gateway_input, dhcp_addresses)
+      
+        dhcp_addresses = self.get_ip_addresses("10.10.0.1", "DHCP")
+        if dhcp_addresses:
+            self.process_dhcp_addresses( gateway_input, dhcp_addresses)
 
         print("\n")
 
