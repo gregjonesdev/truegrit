@@ -26,7 +26,7 @@ class Command(BaseCommand):
         except:
             return False
 
-    def ping_ip(self, ip):
+    def is_online(self, ip):
         try:
             result = subprocess.run(
                 ['ping', '-c', '1', str(ip)],
@@ -34,7 +34,6 @@ class Command(BaseCommand):
                 stderr=subprocess.PIPE) 
             return result.returncode == 0
         except Exception as e:
-            print(f"Error pinging {ip}: {e}")
             return False
         
     def updateProperty(self, ip_address, property, value):
@@ -96,7 +95,7 @@ class Command(BaseCommand):
         self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
 
     def configure_device(self, ip_address, upnp_name):
-        print("\n\t{}\t{}".format(ip_address, upnp_name))
+        print("\n\t{}: {}".format(ip_address, upnp_name))
         self.disableHTTPS(ip_address)
         self.updateUPnP(ip_address, upnp_name)
         self.updateAuthMethod(ip_address)   
@@ -154,11 +153,14 @@ class Command(BaseCommand):
     def process_dhcp_addresses(self, gateway_input, ip_addresses):
         results = []
         for ip_address in ip_addresses:
-            mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
-            model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
-            camera = self.get_camera_from_macaddress(gateway_input, mac_address, model_number)
-            results.append(self.build_result_row(camera))
-            self.configure_device(ip_address, camera.get_upnp_name())
+            if self.is_online(ip_address):
+                mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
+                model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
+                camera = self.get_camera_from_macaddress(gateway_input, mac_address, model_number)
+                results.append(self.build_result_row(camera))
+                self.configure_device(ip_address, camera.get_upnp_name())
+            else:
+                results.append(("offline", ip_address))    
         self.print_status(results)
 
     def build_result_row(self, camera):
@@ -169,7 +171,12 @@ class Command(BaseCommand):
     def print_status(self, results):
         print("\n")
         for result in results:
-            print("{:<15} {:<15} {:<30} {:<10}".format(*result))
+            if not result[0] == "offline":
+                print("{:<15} {:<15} {:<30} {:<10}".format(*result))
+        print("\n")
+        for result in results:
+            if result[0] == "offline":
+                print("Unable to connect to {}.".format(result[1]))        
         
    
 
