@@ -5,7 +5,7 @@ import os
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
-from truegrit.models import Camera
+from truegrit.models import Camera, Network
 
 username = 'root'
 password = 'h3bc4m3r4'
@@ -136,6 +136,7 @@ class Command(BaseCommand):
             camera = Camera.objects.filter(
                 network__gateway=gateway_input,
                 model__name=model_number,
+                ip_address__isnull=True,
                 mac_address__isnull=True
             ).first()
             self.save_mac_address(camera, mac_address)
@@ -174,6 +175,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         os.system("clear")
+        
         gateway_input = input("Enter gateway address: \n")
         static_addresses = self.get_ip_addresses(gateway_input, "Static")
         if static_addresses:
