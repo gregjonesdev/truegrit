@@ -52,19 +52,33 @@ class BusinessUnitListView(ListView):
 
 class BusinessUnitDetailView(DetailView):
     model = BusinessUnit
-    template_name = 'businessunit_detail.html'  # Specify your template name
+    template_name = 'businessunit_detail.html'
     context_object_name = 'business_unit'
 
     def get_object(self, queryset=None):
         uuid_ = self.kwargs.get('uuid')
-
-        # business_unit = BusinessUnit.objects.get(uuid=uuid_)
-        # print()
         return get_object_or_404(BusinessUnit, uuid=uuid_)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add another context variable
-        context['networks'] = Network.objects.filter(business_unit=context['business_unit'])
+        print(self.request.GET.get('sort'))
+        print("---")
+        # Retrieve the sort parameter and order direction from the GET request
+        sort_by = self.request.GET.get('sort', 'ip_address')  # Default to sorting by ip_address
+        # order = self.request.GET.get('order', 'asc')  # Default order is ascending
+      
+        # # Determine the sort order
+        # if order == 'asc':
+        #     sort_order = sort_by  # Sort in ascending order
+        # else:
+        #     sort_order = f'-{sort_by}'  # Sort in descending order
+        if "-" in sort_by:
+            order = "dsc"
+        else:
+            order = "asc"
+
+        context['sort_by'] = sort_by
+        context['order'] = order  # Store the current order in context
+        context['cameras'] = Camera.objects.filter(
+            network__business_unit=context['business_unit']).order_by(sort_by)
         return context
-        

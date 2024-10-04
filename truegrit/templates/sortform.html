@@ -1,0 +1,25 @@
+<form 
+    action="{% url 'business_unit_detail' business_unit.uuid %}" 
+    method="GET" 
+    style="display: inline;">
+
+    {% if order == "asc" %}
+    <input 
+    type="hidden" 
+    name="sort" 
+    value=-{{sort_by}}>   
+    {% else %}
+    <input 
+        type="hidden" 
+        name="sort" 
+        value={{sort_by}}>   
+    {% endif %}
+        
+    <button 
+        type="submit" 
+        class="btn btn-outline-default pull-right" 
+        style="display: inline-flex; align-items: center; justify-content: center; width: 25px; height: 25px;">
+        <span>&#9650;</span>
+    </button>
+</form>
+{{order}}

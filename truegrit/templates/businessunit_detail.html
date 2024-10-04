@@ -9,24 +9,21 @@
   
 
     <div style="width: 100%; overflow-y: scroll;">
-        {% for network in networks %}
             <table class="table table-hover table-sm">
                 <thead>
                     <tr>
                         <th>Site</th>
                         <th>Location</th>
-                        <th>Camera Name</th>
+                        <th>
+                            <span>Camera Name</span>
+                            {% include 'sortform.html' with sort_by='name' %}
+                        </th>
                         <th>Model to Be Replaced</th>
                         <th>New Model Number</th>
-                        <th style="padding: 0px; display: flex; justify-content: space-between">
-                            <a href="#" class="btn btn-outline-default btn-block full-width-btn">
-                                <span>IP</span>
-                                <div style="display: inline;">
-                                    <span style="margin: 0px;border: 1px solid red">&#9650</span>
-                                    <span style="border: 1px solid red">&#9660</span>
-                                </div>
-                               
-                            </a>
+                        <th style="padding: 0px; display: flex; justify-content: space-around;">
+                            <span>IP</span>
+                            {% include 'sortform.html' with sort_by='ip_address' order=order%}
+                            
                         </th>
                         <th>Subnet</th>
                         <th>Gateway</th>
@@ -43,38 +40,33 @@
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    {% for camera in network.camera_set.all %}
-                    <tr>
-                        <td>{{ business_unit.identifier }} - {{ business_unit.description }}</td>
-                        <td>{{ business_unit.market_area.name }}</td>
-                        <td>{{ camera.name }}</td>
-                        <td></td>
-                        <td>{{ camera.model.name }}</td>
-                        <td>{{ camera.ip_address }}</td>
-                        <td>{{ network.subnet }}</td>
-                        <td>{{ network.gateway }}</td>
-                        <td></td>
-                        <td></td>
-                        <td>{{ camera.mac_address }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                    {% for camera in cameras %}
+                        <tr>
+                            <td>{{ business_unit.identifier }} - {{ business_unit.description }}</td>
+                            <td>{{ business_unit.market_area.name }}</td>
+                            <td>{{ camera.name }}</td>
+                            <td></td>
+                            <td>{{ camera.model.name }}</td>
+                            <td>{{ camera.ip_address }}</td>
+                            <td>{{ network.subnet }}</td>
+                            <td>{{ network.gateway }}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ camera.mac_address }}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
 
 
 
-                    </tr>
-                {% endfor %}
+                        </tr>
+                    {% endfor %}
                 </tbody>
-                
             </table>
-
-        {% empty %}
-            <li>No networks associated with this Business Unit.</li>
-        {% endfor %}
         </div>
     <a href="{% url 'business_units' %}">Back to Business Units</a>
 {% endblock content %}
