@@ -191,7 +191,7 @@ class Command(BaseCommand):
       
         dhcp_addresses = self.get_ip_addresses("10.10.0.1", "DHCP")
         if dhcp_addresses:
-            self.process_dhcp_addresses( gateway_input, dhcp_addresses)
+            self.process_dhcp_addresses(gateway_input, dhcp_addresses)
 
         print("\n")
 

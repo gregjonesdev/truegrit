@@ -122,15 +122,21 @@ class Command(BaseCommand):
             )
             new_network.set_fields_to_base()
             new_network.save()
-            return new_network       
-             
+            return new_network     
+
+    def extract_mac_address(self, raw_mac_address):
+        if raw_mac_address:     
+            uppercase_string = raw_mac_address.upper()
+            start_index = uppercase_string.find("B8A")
+            if start_index != -1:
+                # Extract 12 characters starting from "b4a"
+                extracted = uppercase_string[start_index:]
+                return extracted
 
     def handle(self, *args, **options):
-        Camera.objects.all().delete()
-        Network.objects.all().delete()
-        BusinessUnit.objects.all().delete()
         # file_path = input("Enter file path of matrix: ")
-        file_path = "/Users/gregjones/Downloads/heb-matrix.xlsx"
+        # file_path = "/Users/gregjones/Downloads/heb-matrix.xlsx"
+        file_path = "/Users/gregjones/Downloads/hebmatrix2.xlsx"
         print(file_path)
         workbook = load_workbook(filename=file_path)
         project = self.create_project(106191, "HEB 2024 Camera Refresh")
@@ -157,6 +163,21 @@ class Command(BaseCommand):
                 if row[0]:                             
                     camera_name = row[2].strip()
                     camera_model = self.create_axiscameramodel(row[4].upper().strip()) # camera model
-                    print(row[5])
                     ip_address = row[5].strip() if row[5] else None
+                    raw_mac_address= row[10].strip() if row[10] else None
+                    if raw_mac_address and len(raw_mac_address) > 11:
+                        mac_address = self.extract_mac_address(raw_mac_address)
+                    else:
+                        mac_address = None  
+                    if mac_address and ip_address:    
+                        try:      
+                            camera = Camera.objects.get(
+                                ip_address=ip_address,
+                                network=network,
+                                mac_address__isnull=True
+                            )
+                            camera.mac_address=mac_address
+                            camera.save()
+                        except ObjectDoesNotExist:
+                            print("{}\t{}\t{}".format(camera_name, ip_address, gateway))  
                     self.create_camera(network, camera_model, ip_address, camera_name)

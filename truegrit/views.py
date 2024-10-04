@@ -39,6 +39,17 @@ class BusinessUnitListView(ListView):
     template_name = 'business_units.html'  
     context_object_name = 'units' 
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add another context variable
+        all_cameras = Camera.objects.all()
+        total_cameras = all_cameras.count()
+        completed_cameras = all_cameras.filter(mac_address__isnull=True).count()
+        print(total_cameras)
+        print(completed_cameras)
+        return context
+
+
 class BusinessUnitDetailView(DetailView):
     model = BusinessUnit
     template_name = 'businessunit_detail.html'  # Specify your template name
