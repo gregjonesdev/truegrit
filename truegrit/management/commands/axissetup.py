@@ -182,7 +182,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         os.system("clear")
-
         gateway_input = input("Enter gateway address: \n")
         static_addresses = self.get_ip_addresses(gateway_input, "Static")
         if static_addresses:
