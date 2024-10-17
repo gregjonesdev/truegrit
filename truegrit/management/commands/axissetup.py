@@ -1,6 +1,7 @@
 import subprocess
 import ipaddress
 import requests
+import re
 import os
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
@@ -49,7 +50,10 @@ class Command(BaseCommand):
             print(f"\t\t{GREEN}{checkmark}{RESET} {text_string}")
         else:
             print("Something went wrong...")
-            print(response.__dict__)
+            error_pattern = r'<p>(.*?)</p>'
+            string_response = str(response._content).replace("\\n", " ").replace("\\", "")
+            error_message = re.search(error_pattern, string_response)
+            print(error_message.group(1))
             raise SystemExit(0)
 
         
