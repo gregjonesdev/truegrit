@@ -109,7 +109,7 @@ class Command(BaseCommand):
         return str(ip_address).split('.')
     
     def get_ip_addresses(self, gateway_input, type):
-        prompt_string = "\nEnter {} IP addresses assigned: (Ex: 43,45,47-50,88). Press Enter to skip.\n".format(type)
+        prompt_string = "\nEnter {} IP addresses assigned: (Ex: 43,45,47-50,88).\n".format(type)
         host_address_input = input(prompt_string).replace(" ", "")
         if host_address_input:
             host_addresses = []
@@ -137,25 +137,10 @@ class Command(BaseCommand):
                 model__name=model_number,
                 ip_address__isnull=True,
                 mac_address__isnull=True
-            ).first()
+            ).order_by("name").first()
             self.save_mac_address(camera, mac_address)
-            return camera
-        
-    def get_camera_from_network(self, network, model_number):
-        return Camera.objects.filter(
-            network=network,
-            model__name=model_number,
-            ip_address__isnull=True,
-            mac_address__isnull=True,
-        ).first()    
-        
-    def get_camera_from_bu(self, bu_identifier, model_number):
-        return Camera.objects.filter(
-                network__business_unit__identifier=bu_identifier,
-                model__name=model_number,
-                ip_address__isnull=True,
-                mac_address__isnull=True
-            ).first()
+            return camera        
+  
     
     def get_network_from_gateway(self, gateway):
         return Network.objects.get(gateway=gateway)
@@ -172,50 +157,25 @@ class Command(BaseCommand):
             for ip_address in static_addresses:
                 camera = Camera.objects.get(ip_address=ip_address)
                 mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
+                default_router = self.get_attribute_from_ip(ip_address, 'root.Network.DefaultRouter')
+                gateway = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.SubnetMask')
                 self.save_mac_address(camera, mac_address)
-                results.append(self.build_result_row(camera))   
+               
+                results.append(self.build_result_row(camera, default_router, gateway))   
                 self.configure_device(ip_address, camera.get_upnp_name()) 
             self.print_status(results)
         
-    def process_gateway_dhcp_addresses(self, gateway_input, ip_addresses):
-        results = []
-        for ip_address in ip_addresses:
-            if self.is_online(ip_address):
-                mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
-                model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
-                camera = self.get_camera_from_macaddress(gateway_input, mac_address, model_number)
-                results.append(self.build_result_row(camera))
-                self.configure_device(ip_address, camera.get_upnp_name())
-            else:
-                results.append(("offline", ip_address))    
-        self.print_status(results)
 
-
-    def process_bu_dhcp_addresses(self, bu_identifier, ip_addresses):
-        results = []
-        for ip_address in ip_addresses:
-            if self.is_online(ip_address):
-                model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')                 
-                mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
-                camera = self.get_camera_from_bu(bu_identifier, model_number)
-                self.save_mac_address(camera, mac_address)
-                results.append(self.build_result_row(camera))
-                self.configure_device(ip_address, camera.get_upnp_name())
-            else:
-                results.append(("offline", ip_address))    
-        self.print_status(results)
-
-
-    def build_result_row(self, camera):
+    def build_result_row(self, camera, default_router, gateway):
         ip_to_print = camera.ip_address if camera.ip_address else "[DHCP]"
-        return (camera.model.name, camera.mac_address, camera.name, ip_to_print)
+        return (camera.model.name, camera.mac_address, camera.name, ip_to_print, default_router, gateway)
             
 
     def print_status(self, results):
         print("\n")
         for result in results:
             if not result[0] == "offline":
-                print("{:<15} {:<15} {:<30} {:<10}".format(*result))
+                print("{:<15} {:<15} {:<50} {:<10} {:<10} {:<10}".format(*result))
         print("\n")
         for result in results:
             if result[0] == "offline":
@@ -228,10 +188,9 @@ class Command(BaseCommand):
             if ip_protocol == "1":
                 bu_input = input("\nEnter Business Unit:\n")  
                 return self.get_network_from_bu(bu_input)
-               
             elif ip_protocol == "2":
                 gateway_input = input("Enter Default Gateway:\n")
-                network = self.get_network_from_gateway(gateway_input)
+                return self.get_network_from_gateway(gateway_input)
             else:  
                 print("Input not recognized. Please try again.\n") 
 
@@ -239,30 +198,30 @@ class Command(BaseCommand):
     def handle_dhcp(self):
         network = self.get_network_for_dhcp()
         results = []
-        for ip_address in self.get_ip_addresses("10.10.0.1", "DHCP"):
+        for ip_address in self.get_ip_addresses("10.10.1.1", "DHCP"):
             if self.is_online(ip_address):
                 model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
                 mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
+                default_router = self.get_attribute_from_ip(ip_address, 'root.Network.DefaultRouter')
+                gateway = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.SubnetMask')
                 camera = self.get_camera_from_macaddress(network, mac_address, model_number)
-                results.append(self.build_result_row(camera))
+                results.append(self.build_result_row(camera, default_router, gateway))
                 self.configure_device(ip_address, camera.get_upnp_name())
             else:
                 results.append(("offline", ip_address))    
-        self.print_status(results)
-
-
-    def process_ips(self, ip_type):
-        gateway_input = input("Enter gateway address: \n") 
-        if gateway_input:
-            self.process_gateway_input(gateway_input, type)    
-        else:
-            bu_input = input("Enter Business Unit identifier: \n")     
-            self.process_bu_input(bu_input, type)                    
+        self.print_status(results)                
              
     def handle(self, *args, **options):
         os.system("clear")
-       
- 
+        # for camera in Camera.objects.filter(network__gateway='172.20.68.1'):
+            
+        #     print(camera.created_at)
+        #     camera.delete()
+
+        # #     camera.ip_address = None
+        # #     camera.mac_address = None 
+        # #     camera.save()
+        # raise SystemExit(0)
       
         # dhcp_addresses = self.get_ip_addresses("10.10.0.1", "DHCP")
         # if dhcp_addresses:

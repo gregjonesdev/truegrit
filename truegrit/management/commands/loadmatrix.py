@@ -136,7 +136,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # file_path = input("Enter file path of matrix: ")
         # file_path = "/Users/gregjones/Downloads/heb-matrix.xlsx"
-        file_path = "/Users/gregjones/Downloads/hebmatrix2.xlsx"
+        file_path = "/Users/gregjones/Downloads/hebmatrix3.xlsx"
         print(file_path)
         workbook = load_workbook(filename=file_path)
         project = self.create_project(106191, "HEB 2024 Camera Refresh")

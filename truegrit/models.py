@@ -89,6 +89,21 @@ class BusinessUnit(CoreModel):
         null=True
     )
 
+    def get_next_uuid(self):
+        all_business_units = BusinessUnit.objects.all()
+        current_index = list(all_business_units).index(self)
+        return all_business_units[current_index + 1].uuid
+    
+    def get_previous_uuid(self):
+        all_business_units = BusinessUnit.objects.all()
+        current_index = list(all_business_units).index(self)
+        return all_business_units[current_index - 1].uuid
+    
+    def is_completed(self):
+        for camera in Camera.objects.filter(network__business_unit=self):
+            if camera.mac_address:
+                return True
+
 
 class Network(CoreModel):
 

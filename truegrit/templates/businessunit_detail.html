@@ -6,8 +6,10 @@
     <br/>
     <a href="{% url 'business_units' %}">Back to Business Units</a>
 
-  
-
+    <br/> <br/><br/>
+    <a href="{% url 'business_unit_detail' business_unit.get_previous_uuid %}">Previous</a>
+    <a href="{% url 'business_unit_detail' business_unit.get_next_uuid %}">Next</a>    
+    <br/>
     <div style="width: 100%; overflow-y: scroll;">
             <table class="table table-hover table-sm">
                 <thead>
