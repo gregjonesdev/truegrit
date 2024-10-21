@@ -159,14 +159,18 @@ class Command(BaseCommand):
         if static_addresses:   
             results = []
             for ip_address in static_addresses:
-                camera = Camera.objects.get(ip_address=ip_address)
-                mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
-                default_router = self.get_attribute_from_ip(ip_address, 'root.Network.DefaultRouter')
-                gateway = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.SubnetMask')
-                self.save_mac_address(camera, mac_address)
+                try:
+                    camera = Camera.objects.get(ip_address=ip_address)
+                except ObjectDoesNotExist:
+                    camera = None 
+                if camera:       
+                    mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
+                    default_router = self.get_attribute_from_ip(ip_address, 'root.Network.DefaultRouter')
+                    gateway = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.SubnetMask')
+                    self.save_mac_address(camera, mac_address)
                
-                results.append(self.build_result_row(camera, default_router, gateway))   
-                self.configure_device(ip_address, camera.get_upnp_name()) 
+                    results.append(self.build_result_row(camera, default_router, gateway))   
+                    self.configure_device(ip_address, camera.get_upnp_name()) 
             self.print_status(results)
         
 
