@@ -3,6 +3,7 @@ import ipaddress
 import requests
 import re
 import os
+import platform
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
@@ -217,10 +218,17 @@ class Command(BaseCommand):
                 self.configure_device(ip_address, camera.get_upnp_name())
             else:
                 results.append(("offline", ip_address))    
-        self.print_status(results)                
+        self.print_status(results) 
+
+    def clear_screen(self):
+        if platform.system() == "Windows":
+            os.system("cls")
+        else:
+            os.system("clear")
+                
              
     def handle(self, *args, **options):
-        os.system("clear")
+        self.clear_screen()   
         # for camera in Camera.objects.filter(network__gateway='172.20.68.1'):
             
         #     print(camera.created_at)
