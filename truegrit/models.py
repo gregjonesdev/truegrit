@@ -89,6 +89,8 @@ class BusinessUnit(CoreModel):
         null=True
     )
 
+    marked_complete = models.BooleanField(default=False)
+
     def get_next_uuid(self):
         all_business_units = BusinessUnit.objects.all()
         current_index = list(all_business_units).index(self)
@@ -100,9 +102,14 @@ class BusinessUnit(CoreModel):
         return all_business_units[current_index - 1].uuid
     
     def is_completed(self):
+        if self.marked_complete:
+            return True
         for camera in Camera.objects.filter(network__business_unit=self):
             if camera.mac_address:
                 return True
+
+    def camera_count(self):
+        return Camera.objects.filter(network__business_unit=self).count()             
 
 
 class Network(CoreModel):

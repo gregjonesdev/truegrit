@@ -184,7 +184,7 @@ class Command(BaseCommand):
         print("\n")
         for result in results:
             if not result[0] == "offline":
-                print("{:<15} {:<15} {:<50} {:<10} {:<10} {:<10}".format(*result))
+                print("{:<15} {:<15} {:<50} {:<10} | {:<10} | {:<10}".format(*result))
         print("\n")
         for result in results:
             if result[0] == "offline":
@@ -207,7 +207,7 @@ class Command(BaseCommand):
     def handle_dhcp(self):
         network = self.get_network_for_dhcp()
         results = []
-        for ip_address in self.get_ip_addresses("10.10.1.1", "DHCP"):
+        for ip_address in self.get_ip_addresses("10.10.0.1", "DHCP"):
             if self.is_online(ip_address):
                 model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
                 mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')

@@ -15,7 +15,7 @@
                     &#x2705;
                     {% endif %}
                 </td>
-                <td><a href="{% url 'business_unit_detail' unit.uuid %}">{{ unit.identifier }}-{{ unit.description }}</td>
+                <td><a href="{% url 'business_unit_detail' unit.uuid %}">{{ unit.identifier }}-{{ unit.description }}</a> ({{unit.camera_count}})</td>
                
             </tr>
         {% empty %}
@@ -24,6 +24,7 @@
             </tr>
         {% endfor %}
     </table>
-
+    <div style="height: 200px; width: 200px">{% include 'piechart.html' %}</div>
+    
 </body>
 </html>

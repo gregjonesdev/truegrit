@@ -42,11 +42,14 @@ class BusinessUnitListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Add another context variable
-        all_cameras = Camera.objects.all()
-        total_cameras = all_cameras.count()
-        completed_cameras = all_cameras.filter(mac_address__isnull=True).count()
-        print(total_cameras)
-        print(completed_cameras)
+        # all_cameras = Camera.objects.all()
+        # total_cameras = all_cameras.count()
+        # completed_cameras = all_cameras.filter(mac_address__isnull=True).count()
+        to_do = 0
+        for unit in BusinessUnit.objects.all():
+            if not unit.is_completed():
+                to_do += Camera.objects.filter(network__business_unit=unit).count()
+        print(to_do)
         return context
 
 
