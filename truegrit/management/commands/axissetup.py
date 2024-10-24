@@ -19,6 +19,19 @@ ignore_host_numbers = (1,2)
 
 handy_url = "http://10.10.0.2/axis-cgi/param.cgi?action=list"
 
+
+user_prompts = {
+    "protocol": {
+        "prompt": "Please select the type of IP addresses to process",
+        "choices": {
+            "1": "Static",
+            "2": "DHCP"
+        }
+    },
+}
+
+
+
 class Command(BaseCommand):  
 
     def is_valid_ipv4(self, address):
