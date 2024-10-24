@@ -224,14 +224,26 @@ class Command(BaseCommand):
         else:
             os.system("clear")
 
-    def prompt_user(self, prompt, acceptable_answers):
+    def prompt_user(self, prompt, choices):
 
+        anwers = {
+            "1": "Static",
+            "2": "DHCP"
+        }
+        formatted_prompt = self.format_prompt(prompt, choices)
         while True:
-            answer = input(prompt)
-            if answer in acceptable_answers:
+            
+            answer = input(formatted_prompt)
+            if answer in choices.keys():
                 return answer 
             else:
-                print("Input not recognized. Please try again.\n")            
+                print("Input not recognized. Please try again.\n") 
+
+    def format_prompt(self, prompt, choices):
+        formatted_prompt = "{}\n".format(prompt)
+        for key in choices.keys():
+            formatted_prompt += "\t[{}] {}\n".format(key, choices[key])
+        return "{}"                       
                 
              
     def handle(self, *args, **options):
