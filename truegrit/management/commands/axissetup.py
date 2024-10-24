@@ -207,17 +207,15 @@ class Command(BaseCommand):
     def handle_dhcp(self):
         network = self.get_network_for_dhcp()
         results = []
-        for ip_address in self.get_ip_addresses("10.10.0.1", "DHCP"):
-            if self.is_online(ip_address):
-                model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
-                mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
-                default_router = self.get_attribute_from_ip(ip_address, 'root.Network.DefaultRouter')
-                gateway = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.SubnetMask')
-                camera = self.get_camera_from_macaddress(network, mac_address, model_number)
-                results.append(self.build_result_row(camera, default_router, gateway))
-                self.configure_device(ip_address, camera.get_upnp_name())
-            else:
-                results.append(("offline", ip_address))    
+        for ip_address in self.get_ip_addresses("10.10.0.1", "DHCP"):   
+            model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
+            mac_address = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.MACAddress')
+            default_router = self.get_attribute_from_ip(ip_address, 'root.Network.DefaultRouter')
+            gateway = self.get_attribute_from_ip(ip_address, 'root.Network.eth0.SubnetMask')
+            camera = self.get_camera_from_macaddress(network, mac_address, model_number)
+            results.append(self.build_result_row(camera, default_router, gateway))
+            self.configure_device(ip_address, camera.get_upnp_name())
+     
         self.print_status(results) 
 
     def clear_screen(self):
