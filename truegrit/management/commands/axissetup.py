@@ -223,24 +223,19 @@ class Command(BaseCommand):
             os.system("cls")
         else:
             os.system("clear")
+
+    def prompt_user(self, prompt, acceptable_answers):
+
+        while True:
+            answer = input(prompt)
+            if answer in acceptable_answers:
+                return answer 
+            else:
+                print("Input not recognized. Please try again.\n")            
                 
              
     def handle(self, *args, **options):
-        self.clear_screen()   
-        # for camera in Camera.objects.filter(network__gateway='172.20.68.1'):
-            
-        #     print(camera.created_at)
-        #     camera.delete()
-
-        # #     camera.ip_address = None
-        # #     camera.mac_address = None 
-        # #     camera.save()
-        # raise SystemExit(0)
-      
-        # dhcp_addresses = self.get_ip_addresses("10.10.0.1", "DHCP")
-        # if dhcp_addresses:
-        #     bu_identifier = input("Enter Business Unit identifier: \n")
-        #     self.process_dhcp_addresses(bu_identifier, dhcp_addresses)
+        self.clear_screen()  
 
         while True:
             ip_protocol = input("Please select the type of IP addresses to process: \n\t[1] Static \n\t[2] DHCP\n")   
