@@ -176,6 +176,8 @@ class Command(BaseCommand):
                     is_dot1x_disabled = self.is_dot1x_disabled(ip_address)
                     
                     # Iterate through rows in Excel sheet to find the match in column F (6th column, 1-indexed)
+
+                    # if DHCP, search by network + camera name 
                     self.update_xls(
                         sheet, 
                         ip_address, 
