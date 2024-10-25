@@ -67,13 +67,17 @@ class Command(BaseCommand):
                 mac_address__isnull=True
             ).order_by("name").first()                 
 
-    def get_camera(self, ip_address):
+    def get_camera(self, ip_address, network):
 
         is_dhcp = self.is_dhcp(ip_address)
-        if is_dhcp:
-            camera = self.get_dhcp_camera(network, model_number)
+        if is_dhcp == "no":
+            return Camera.objects.get(
+                ip_address=ip_address,
+                network=network)     
         else:
-            camera = Camera.objects.get(ip_address=ip_address)
+            model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
+            return self.get_dhcp_camera(network, model_number)
+            
 
 
     def update_xls(self, sheet, ip_address, firmware_version, is_dot1x_disabled, mac_address):        
@@ -139,7 +143,9 @@ class Command(BaseCommand):
                 mac_address = row[0]
                 firmware_version = row[4]
                 
-                camera = self.get_camera(ip_address)
+                camera = self.get_camera(ip_address, network)
+                print(camera)
+                raise SystemExit(0)
                 self.save_mac_address(camera, mac_address)
                 self.configure_device(ip_address, camera.get_upnp_name()) 
                 is_dot1x_disabled = self.is_dot1x_disabled(ip_address)
