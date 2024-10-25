@@ -41,16 +41,6 @@ class Command(BaseCommand):
         except:
             return False
 
-    def is_online(self, ip):
-        try:
-            result = subprocess.run(
-                ['ping', '-c', '1', str(ip)],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE) 
-            return result.returncode == 0
-        except Exception as e:
-            return False
-        
     def updateProperty(self, ip_address, property, value):
         text_string = "Set '{}' to '{}'".format(property.replace("root.",""), value)
         url = "http://{}/axis-cgi/param.cgi?action=update&{}={}".format(
