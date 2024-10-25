@@ -56,32 +56,26 @@ class Command(BaseCommand):
             return value.split("\\")[0].strip().replace(":", "")    
 
     def is_dhcp(self, ip_address):
-        return self.get_attribute_from_ip(ip_address, 'root.Network.Resolver.ObtainFromDHCP')  
+        return self.get_attribute_from_ip(ip_address, 'root.Network.Resolver.ObtainFromDHCP') == "yes"  
 
 
     def get_firmware_version(self, ip_address):
-        return self.get_attribute_from_ip(ip_address, 'root.Properties.Firmware.Version') 
+        return self.get_attribute_from_ip(ip_address, 'root.Properties.Firmware.Version')                
 
-    def get_dhcp_camera(self, network, model_number):
-        return Camera.objects.filter(
-                network=network,
-                model__name=model_number,
-                ip_address__isnull=True,
-                mac_address__isnull=True
-            ).order_by("name").first()                 
-
-    def get_camera(self, ip_address, network):
-
-        is_dhcp = self.is_dhcp(ip_address)
-        if is_dhcp == "no":
+    def get_camera(self, is_dhcp, ip_address, network):
+        if is_dhcp:
+            model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
+            return self.get_dhcp_camera(network, model_number)  
+        else:
             return Camera.objects.get(
                 ip_address=ip_address,
-                network=network)     
-        else:
-            model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
-            return self.get_dhcp_camera(network, model_number)
-            
+                network=network)   
 
+    def get_xls_row(is_dhcp, ip_address, name):
+         if is_dhcp:
+            # get xls_row by name + network  
+        else:
+            # get xls_row by ip + network
 
     def update_xls(self, sheet, ip_address, firmware_version, is_dot1x_disabled, mac_address):        
         for excel_row in sheet.iter_rows(min_row=2, max_col=11, values_only=False):  # Adjust min_row if there's a header
@@ -169,7 +163,13 @@ class Command(BaseCommand):
                 mac_address = row[0]
                 firmware_version = row[4]
                 
-                camera = self.get_camera(ip_address, network)
+                is_dhcp = self.is_dhcp(ip_address)
+                  
+
+                xls_row = self.get_xls_row(is_dhcp, ip_address, name) 
+                camera = self.get_camera(is_dhcp, ip_address, network)   
+
+                camera = 
                 if camera:
                     self.save_mac_address(camera, mac_address)
                     self.configure_device(ip_address, camera.get_upnp_name()) 
@@ -177,7 +177,7 @@ class Command(BaseCommand):
                     
                     # Iterate through rows in Excel sheet to find the match in column F (6th column, 1-indexed)
 
-                    # if DHCP, search by network + camera name 
+                    # if DHCP, search by network + camera name. is_dhcp() to line 171?
                     self.update_xls(
                         sheet, 
                         ip_address, 
