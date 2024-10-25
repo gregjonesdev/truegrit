@@ -57,19 +57,66 @@ class Command(BaseCommand):
 
 
     def get_firmware_version(self, ip_address):
-        return self.get_attribute_from_ip(ip_address, 'root.Properties.Firmware.Version')          
+        return self.get_attribute_from_ip(ip_address, 'root.Properties.Firmware.Version') 
 
-    def process_ip(self, ip_address):
+    def get_dhcp_camera(self, network, model_number):
+        return Camera.objects.filter(
+                network=network,
+                model__name=model_number,
+                ip_address__isnull=True,
+                mac_address__isnull=True
+            ).order_by("name").first()                 
+
+    def get_camera(self, ip_address):
 
         is_dhcp = self.is_dhcp(ip_address)
-        print(is_dhcp)
-        raise SystemExit(0)
-        # Open the CSV file and process each row
+        if is_dhcp:
+            camera = self.get_dhcp_camera(network, model_number)
+        else:
+            camera = Camera.objects.get(ip_address=ip_address)
 
-        # ask if DHCP 
 
-        #otherwise process static
+    def update_xls(self, sheet, ip_address, firmware_version, is_dot1x_disabled, mac_address):        
+        for excel_row in sheet.iter_rows(min_row=2, max_col=11, values_only=False):  # Adjust min_row if there's a header
+            cell_f = excel_row[5]  # Column F is the 6th column in zero-based index
 
+            if cell_f.value == ip_address:  # Check if the value in F matches the extracted value
+                # Assign values to columns K and J (10th and 9th columns)
+                excel_row[10].value = row[0]  # Column K mac address
+                excel_row[8].value = row[4]   # Column I firmware
+                break  # Exit after finding the match
+        
+
+    def disableHTTPS(self, ip_address):
+        self.updateProperty(ip_address, "root.HTTPS.Enable", "no")
+        self.updateProperty(ip_address, "root.System.BoaGroupPolicy.admin", "http")
+        
+    def updateUPnP(self, ip_address, upnp_name):
+        self.updateProperty(ip_address, "root.Network.UPnP.FriendlyName", upnp_name)
+
+    def updateAuthMethod(self, ip_address):
+         # Turn off 802.1 authentication:
+        self.updateProperty(ip_address, "root.Network.Interface.I0.dot1x.Enabled", "no")    
+
+    def configure_device(self, ip_address, upnp_name):
+        print("\n\t{}: {}".format(ip_address, upnp_name))
+        self.disableHTTPS(ip_address)
+        self.updateUPnP(ip_address, upnp_name)
+        self.updateAuthMethod(ip_address)   
+
+    def is_dot1x_disabled(self, ip_address):
+        # 
+        is_dot1x_enabled = self.get_attribute_from_ip(ip_address, 'root.Network.Interface.I0.dot1x.Enabled')
+        if is_dot1x_enabled == "no":
+            return "Yes"
+        elif is_dot1x_enabled == "yes":
+            return ""              
+
+    def save_mac_address(self, camera, mac_address):
+        camera.mac_address = mac_address 
+        camera.save()
+
+        
 
     def handle(self, *args, **options):
         self.clear_screen() 
@@ -88,17 +135,22 @@ class Command(BaseCommand):
 
             for row in csv_reader:
                 # Extract substring from row[2] before the ":"
-                search_value = row[2].split(":")[0]
-                self.process_ip(search_value)
+                ip_address = row[2].split(":")[0]
+                mac_address = row[0]
+                firmware_version = row[4]
+                
+                camera = self.get_camera(ip_address)
+                self.save_mac_address(camera, mac_address)
+                self.configure_device(ip_address, camera.get_upnp_name()) 
+                is_dot1x_disabled = self.is_dot1x_disabled(ip_address)
+                  
                 # Iterate through rows in Excel sheet to find the match in column F (6th column, 1-indexed)
-                for excel_row in sheet.iter_rows(min_row=2, max_col=11, values_only=False):  # Adjust min_row if there's a header
-                    cell_f = excel_row[5]  # Column F is the 6th column in zero-based index
-
-                    if cell_f.value == search_value:  # Check if the value in F matches the extracted value
-                        # Assign values to columns K and J (10th and 9th columns)
-                        excel_row[10].value = row[0]  # Column K
-                        excel_row[8].value = row[4]   # Column I
-                        break  # Exit after finding the match
+                self.update_xls(
+                    sheet, 
+                    ip_address, 
+                    firmware_version, 
+                    is_dot1x_disabled, 
+                    mac_address)
 
         # Save the modified workbook
         wb.save(excel_file_path)
