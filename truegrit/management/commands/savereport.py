@@ -2,7 +2,7 @@ import os
 import csv
 import platform
 import requests
-
+import subprocess
 from openpyxl import load_workbook
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
@@ -22,6 +22,11 @@ excel_file_path = r"C:\Users\gregoryjones\OneDrive - Preferred Technologies, LLC
 
 # List to store tuples
 class Command(BaseCommand):  
+
+    def can_ping(self, ip_address):
+        response = subprocess.run(["ping", ip_address], capture_output=True, text=True)
+        # Check the output
+        return "Reply from" in response.stdout
 
     def clear_screen(self):
         # move this to common file
@@ -64,17 +69,22 @@ class Command(BaseCommand):
 
     def get_camera(self, is_dhcp, ip_address, network):
         if is_dhcp:
+            print("is dhcp")
             model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
             return self.get_dhcp_camera(network, model_number)  
         else:
+            print(ip_address)
+            print(network.__dict__)
             return Camera.objects.get(
                 ip_address=ip_address,
                 network=network)   
 
     def get_xls_row(is_dhcp, ip_address, name):
-         if is_dhcp:
+        if is_dhcp:
+            pass
             # get xls_row by name + network  
         else:
+            pass
             # get xls_row by ip + network
 
     def update_xls(self, sheet, ip_address, firmware_version, is_dot1x_disabled, mac_address):        
@@ -156,34 +166,37 @@ class Command(BaseCommand):
 
             #skip first row
             next(csv_reader)
-
             for row in csv_reader:
                 # Extract substring from row[2] before the ":"
                 ip_address = row[2].split(":")[0]
                 mac_address = row[0]
                 firmware_version = row[4]
                 
-                is_dhcp = self.is_dhcp(ip_address)
-                  
+               
 
-                xls_row = self.get_xls_row(is_dhcp, ip_address, name) 
-                camera = self.get_camera(is_dhcp, ip_address, network)   
+                # xls_row = self.get_xls_row(is_dhcp, ip_address, name) 
+                if self.can_ping(ip_address):
+                    is_dhcp = self.is_dhcp(ip_address)
+                    camera = self.get_camera(is_dhcp, ip_address, network)   
 
-                camera = 
-                if camera:
-                    self.save_mac_address(camera, mac_address)
-                    self.configure_device(ip_address, camera.get_upnp_name()) 
-                    is_dot1x_disabled = self.is_dot1x_disabled(ip_address)
-                    
-                    # Iterate through rows in Excel sheet to find the match in column F (6th column, 1-indexed)
+                    if camera:
+                        self.save_mac_address(camera, mac_address)
+                        self.configure_device(ip_address, camera.get_upnp_name()) 
+                        is_dot1x_disabled = self.is_dot1x_disabled(ip_address)
+                        
+                        # Iterate through rows in Excel sheet to find the match in column F (6th column, 1-indexed)
 
-                    # if DHCP, search by network + camera name. is_dhcp() to line 171?
-                    self.update_xls(
-                        sheet, 
-                        ip_address, 
-                        firmware_version, 
-                        is_dot1x_disabled, 
-                        mac_address)
+                        # if DHCP, search by network + camera name. is_dhcp() to line 171?
+                        self.update_xls(
+                            sheet, 
+                            ip_address, 
+                            firmware_version, 
+                            is_dot1x_disabled, 
+                            mac_address)
+                else:
+                    print("\nUnable to ping {}".format(ip_address))
+                    print("Please ensure new report has been created and network settings are updated.\n")
+                    raise SystemExit(0)
 
         # Save the modified workbook
         wb.save(excel_file_path)
