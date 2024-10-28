@@ -73,8 +73,6 @@ class Command(BaseCommand):
             model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
             return self.get_dhcp_camera(network, model_number)  
         else:
-            print(ip_address)
-            print(network.__dict__)
             return Camera.objects.get(
                 ip_address=ip_address,
                 network=network)   
@@ -148,6 +146,7 @@ class Command(BaseCommand):
             raise SystemExit(0)    
 
     def handle(self, *args, **options):
+        ping_verify = False
         self.clear_screen() 
         bu_identifier = input("Enter business unit ID: \n")             
         network = self.get_network_from_bu(bu_identifier)
@@ -175,7 +174,8 @@ class Command(BaseCommand):
                
 
                 # xls_row = self.get_xls_row(is_dhcp, ip_address, name) 
-                if self.can_ping(ip_address):
+                if ping_verify or self.can_ping(ip_address):
+                    ping_verify = True
                     is_dhcp = self.is_dhcp(ip_address)
                     camera = self.get_camera(is_dhcp, ip_address, network)   
 
