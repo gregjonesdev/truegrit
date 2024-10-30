@@ -4,6 +4,7 @@ import platform
 import requests
 import subprocess
 from openpyxl import load_workbook
+from ipaddress import ip_address
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
 
@@ -22,6 +23,67 @@ excel_file_path = r"C:\Users\gregoryjones\OneDrive - Preferred Technologies, LLC
 
 # List to store tuples
 class Command(BaseCommand):  
+
+    def ip_ranges(self, ip_list):
+        # Sort IPs numerically
+        ip_list = sorted(ip_list, key=lambda ip: int(ip_address(ip)))
+        
+        ranges = ""
+        start = ip_list[0]
+        end = start
+
+        for i in range(1, len(ip_list)):
+            current_ip = ip_list[i]
+            previous_ip = ip_list[i - 1]
+            
+            # Check if the current IP is consecutive with the previous IP
+            if int(ip_address(current_ip)) == int(ip_address(previous_ip)) + 1:
+                end = current_ip  # Update the end of the current range
+            else:
+                # Append range to the string without initial comma
+                if ranges:  # Add a comma only if ranges is not empty
+                    ranges += ","
+                    
+                if start == end:
+                    ranges += f"{start}"
+                else:
+                    formatted_end = end.split(".")[-1]
+                    ranges += f"{start}-{formatted_end}"
+                    
+                # Start a new range
+                start = current_ip
+                end = current_ip
+
+        # Append the final range
+        if ranges:
+            ranges += ","
+        if start == end:
+            ranges += f"{start}"
+        else:
+            formatted_end = end.split(".")[-1]
+            ranges += f"{start}-{formatted_end}"
+
+        return ranges
+
+    def print_unassigned_ip_addresses(self, bu_identifier):
+        unassigned_cameras = {}
+
+        for camera in Camera.objects.filter(
+            network__business_unit__identifier=bu_identifier,
+            mac_address__isnull=True):
+            if not camera.model.name in unassigned_cameras.keys():
+                unassigned_cameras[camera.model.name] = []
+            
+            unassigned_cameras[camera.model.name].append(camera.ip_address)
+
+        print("\nAvailable IP addresses:\n")
+
+        for each in unassigned_cameras.keys():
+            ip_ranges = self.ip_ranges(unassigned_cameras[each])
+            print(f"{each}:")
+            print(f"\t{ip_ranges}\n")
+
+        input("Press enter to continue")
 
     def can_ping(self, ip_address):
         response = subprocess.run(["ping", ip_address], capture_output=True, text=True)
@@ -145,7 +207,7 @@ class Command(BaseCommand):
             print(error_message.group(1))
             raise SystemExit(0)   
 
-    def load_activeworksheet(self):
+    def load_activeworkbook(self):
         # Load the workbook and select the specific sheet
         try:
             wb = load_workbook(excel_file_path)
@@ -153,20 +215,20 @@ class Command(BaseCommand):
             short_file_name = excel_file_path.split("\\")[-1]
             print("\nPermission Error: Please close {} and try again.\n".format(short_file_name))
             raise SystemExit(0)
-        return wb[bu_identifier]
+        return wb
 
     def handle(self, *args, **options):
         ping_verify = False
         self.clear_screen() 
         bu_identifier = input("Enter business unit ID: \n")             
-        network = self.get_network_from_bu(bu_identifier)
+        
        
-        
-
-        
+        self.print_unassigned_ip_addresses(bu_identifier)
+        network = self.get_network_from_bu(bu_identifier)
+        wb = self.load_activeworkbook()
         with open(csv_file_path, mode='r', newline='', encoding='utf-8') as csvfile:
             csv_reader = csv.reader(csvfile)
-            sheet = self.load_activeworksheet()
+            sheet = wb[bu_identifier]
             #skip first row
             next(csv_reader)
             for row in csv_reader:
