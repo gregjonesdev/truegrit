@@ -27,12 +27,12 @@ class Command(BaseCommand):
     def ip_ranges(self, ip_list):
         # Sort IPs numerically
         ip_list = sorted(ip_list, key=lambda ip: int(ip_address(ip)))
-        
         ranges = ""
         start = ip_list[0]
         end = start
 
         for i in range(1, len(ip_list)):
+            
             current_ip = ip_list[i]
             previous_ip = ip_list[i - 1]
             
@@ -67,23 +67,32 @@ class Command(BaseCommand):
 
     def print_unassigned_ip_addresses(self, bu_identifier):
         unassigned_cameras = {}
-
+        dhcp_count = {}
         for camera in Camera.objects.filter(
             network__business_unit__identifier=bu_identifier,
             mac_address__isnull=True):
             if not camera.model.name in unassigned_cameras.keys():
                 unassigned_cameras[camera.model.name] = []
-            
-            unassigned_cameras[camera.model.name].append(camera.ip_address)
+                dhcp_count[camera.model.name] = 0
+            if camera.ip_address:
+                unassigned_cameras[camera.model.name].append(camera.ip_address)
+            else:
+                dhcp_count[camera.model.name] += 1    
 
         print("\nAvailable IP addresses:\n")
 
         for each in unassigned_cameras.keys():
             ip_ranges = self.ip_ranges(unassigned_cameras[each])
-            print(f"{each}:")
+            print(f"{each}:\n")
+            if dhcp_count[each] > 0: 
+                print(f"\tDHCP: {dhcp_count[each]} Camera(s)")
+            print(f"\tStatic: {len(unassigned_cameras[each])} Camera(s)\n")
             print(f"\t{ip_ranges}\n")
-
-        input("Press enter to continue")
+            
+        print("\nNext steps:")   
+        print("1. Unbox cameras and connect to switch.")
+        print("2. Update firmware and assign IP addresses when required.")
+        input("3. Generate device report and press <Enter> to continue.")
 
     def can_ping(self, ip_address):
         response = subprocess.run(["ping", ip_address], capture_output=True, text=True)
