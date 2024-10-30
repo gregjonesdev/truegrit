@@ -67,10 +67,15 @@ class Command(BaseCommand):
             
             unassigned_cameras[camera.model.name].append(camera.ip_address)
         
-        print(unassigned_cameras) 
+        # print(unassigned_cameras) 
 
-        print(unassigned_cameras['M4216-V'])      
+        # print(unassigned_cameras['M4216-V'])      
 
-        print(self.ip_ranges(unassigned_cameras['M4216-V'])) 
+        # print() 
+        print("\n")
+        for each in unassigned_cameras.keys():
+            ip_ranges = self.ip_ranges(unassigned_cameras[each])
+            print(f"{each}:")
+            print(f"\t{ip_ranges}\n")
 
                                                                                     
