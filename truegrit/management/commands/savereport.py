@@ -143,13 +143,9 @@ class Command(BaseCommand):
             string_response = str(response._content).replace("\\n", " ").replace("\\", "")
             error_message = re.search(error_pattern, string_response)
             print(error_message.group(1))
-            raise SystemExit(0)    
+            raise SystemExit(0)   
 
-    def handle(self, *args, **options):
-        ping_verify = False
-        self.clear_screen() 
-        bu_identifier = input("Enter business unit ID: \n")             
-        network = self.get_network_from_bu(bu_identifier)
+    def load_activeworksheet(self):
         # Load the workbook and select the specific sheet
         try:
             wb = load_workbook(excel_file_path)
@@ -157,12 +153,20 @@ class Command(BaseCommand):
             short_file_name = excel_file_path.split("\\")[-1]
             print("\nPermission Error: Please close {} and try again.\n".format(short_file_name))
             raise SystemExit(0)
-        sheet = wb[bu_identifier]
+        return wb[bu_identifier]
+
+    def handle(self, *args, **options):
+        ping_verify = False
+        self.clear_screen() 
+        bu_identifier = input("Enter business unit ID: \n")             
+        network = self.get_network_from_bu(bu_identifier)
+       
+        
 
         
         with open(csv_file_path, mode='r', newline='', encoding='utf-8') as csvfile:
             csv_reader = csv.reader(csvfile)
-
+            sheet = self.load_activeworksheet()
             #skip first row
             next(csv_reader)
             for row in csv_reader:
