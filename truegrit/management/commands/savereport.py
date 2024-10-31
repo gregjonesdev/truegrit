@@ -295,4 +295,4 @@ class Command(BaseCommand):
 
         # Save the modified workbook
         wb.save(excel_file_path)
-        print("\nExcel file updated successfully.")
+        print("\nExcel file updated successfully.\n")
