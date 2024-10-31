@@ -160,25 +160,28 @@ class Command(BaseCommand):
                 return Camera.objects.get(
                     ip_address=ip_address,
                     network=network)   
+        
 
-    def get_xls_row(is_dhcp, ip_address, name):
+    def get_row_by_camera(self, sheet, camera_name, model_number):
+        for excel_row in sheet.iter_rows(min_row=2, max_col=11, values_only=False):
+            if excel_row[2].value == camera_name and excel_row[4].value == model_number:
+                return excel_row
+
+    def get_row_by_ip(self, sheet, ip_address):
+        for excel_row in sheet.iter_rows(min_row=2, max_col=11, values_only=False):
+             if excel_row[5].value == ip_address:
+                return excel_row
+
+    def update_xls(self, sheet, ip_address, is_dhcp, camera_name, model_name, firmware_version, is_dot1x_disabled, mac_address):        
         if is_dhcp:
-            pass
-            # get xls_row by name + network  
+            excel_row = self.get_row_by_camera(sheet, camera_name, model_name)
         else:
-            pass
-            # get xls_row by ip + network
+            excel_row = self.get_row_by_ip(sheet, ip_address)
 
-    def update_xls(self, sheet, ip_address, firmware_version, is_dot1x_disabled, mac_address):        
-        for excel_row in sheet.iter_rows(min_row=2, max_col=11, values_only=False):  # Adjust min_row if there's a header
-            cell_f = excel_row[5]  # Column F is the 6th column in zero-based index
-
-            if cell_f.value == ip_address:  # Check if the value in F matches the extracted value
-                # Assign values to columns K and J (10th and 9th columns)    
-                excel_row[8].value = firmware_version   # Column I firmware
-                excel_row[9].value = is_dot1x_disabled
-                excel_row[10].value = mac_address  # Column K mac address
-                break  # Exit after finding the match
+        excel_row[8].value = firmware_version   # Column I firmware
+        excel_row[9].value = is_dot1x_disabled
+        excel_row[10].value = mac_address  # Column K mac address
+    
         
 
     def disableHTTPS(self, ip_address):
@@ -278,7 +281,10 @@ class Command(BaseCommand):
                         # if DHCP, search by network + camera name. is_dhcp() to line 171?
                         self.update_xls(
                             sheet, 
-                            ip_address, 
+                            ip_address,
+                            is_dhcp,
+                            camera.name,
+                            camera.model.name, 
                             firmware_version, 
                             is_dot1x_disabled, 
                             mac_address)
