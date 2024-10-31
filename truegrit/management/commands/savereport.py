@@ -5,6 +5,8 @@ import requests
 import subprocess
 from openpyxl import load_workbook
 from ipaddress import ip_address
+from django.core.exceptions import ObjectDoesNotExist
+
 from requests.auth import HTTPDigestAuth
 from django.core.management.base import BaseCommand
 
@@ -91,8 +93,9 @@ class Command(BaseCommand):
             
         print("\nNext steps:")   
         print("1. Unbox cameras and connect to switch.")
+        print("2. Add cameras into Axis Device Manager.")
         print("2. Update firmware and assign IP addresses when required.")
-        input("3. Generate device report and press <Enter> to continue.")
+        input("3. Generate device report and press <Enter> to continue.\n\n")
 
     def can_ping(self, ip_address):
         response = subprocess.run(["ping", ip_address], capture_output=True, text=True)
@@ -136,17 +139,27 @@ class Command(BaseCommand):
 
 
     def get_firmware_version(self, ip_address):
-        return self.get_attribute_from_ip(ip_address, 'root.Properties.Firmware.Version')                
+        return self.get_attribute_from_ip(ip_address, 'root.Properties.Firmware.Version') 
 
-    def get_camera(self, is_dhcp, ip_address, network):
-        if is_dhcp:
-            print("is dhcp")
-            model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
-            return self.get_dhcp_camera(network, model_number)  
-        else:
-            return Camera.objects.get(
-                ip_address=ip_address,
-                network=network)   
+    def get_dhcp_camera(self, network, model_number):
+        return Camera.objects.filter(
+            network=network,
+            model__name=model_number,
+            mac_address__isnull=True,
+            ip_address__isnull=True
+        ).first()                  
+
+    def get_camera(self, mac_address, is_dhcp, ip_address, network):
+        try:
+            return Camera.objects.get(mac_address=mac_address)
+        except ObjectDoesNotExist:    
+            if is_dhcp:
+                model_number = self.get_attribute_from_ip(ip_address, 'root.Brand.ProdNbr')
+                return self.get_dhcp_camera(network, model_number)  
+            else:
+                return Camera.objects.get(
+                    ip_address=ip_address,
+                    network=network)   
 
     def get_xls_row(is_dhcp, ip_address, name):
         if is_dhcp:
@@ -252,7 +265,8 @@ class Command(BaseCommand):
                 if ping_verify or self.can_ping(ip_address):
                     ping_verify = True
                     is_dhcp = self.is_dhcp(ip_address)
-                    camera = self.get_camera(is_dhcp, ip_address, network)   
+
+                    camera = self.get_camera(mac_address, is_dhcp, ip_address, network)   
 
                     if camera:
                         self.save_mac_address(camera, mac_address)
