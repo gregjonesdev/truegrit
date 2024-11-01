@@ -97,6 +97,7 @@ class Command(BaseCommand):
         print("2. Add cameras into Axis Device Manager.")
         print("2. Update firmware and assign IP addresses when required.")
         input("3. Generate device report and press <Enter> to continue.\n\n")
+        print("Preparing to update cameras...\n")
 
     def can_ping(self, ip_address):
         response = subprocess.run(["ping", ip_address], capture_output=True, text=True)
