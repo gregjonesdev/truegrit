@@ -69,7 +69,7 @@ class BusinessUnitDetailView(DetailView):
         # Retrieve the sort parameter and order direction from the GET request
         sort_by = self.request.GET.get('sort', 'ip_address')  # Default to sorting by ip_address
         # order = self.request.GET.get('order', 'asc')  # Default order is ascending
-      
+        print(sort_by)
         # # Determine the sort order
         # if order == 'asc':
         #     sort_order = sort_by  # Sort in ascending order

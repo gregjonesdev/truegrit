@@ -3,29 +3,45 @@
     method="GET" 
     style="display: inline;">
 
+
+
+
     {% if order == "asc" %}
     <input 
     type="hidden" 
     name="sort" 
-    value=-{{sort_by}}>   
+    value=-{{form_value}}>   
     {% else %}
     <input 
         type="hidden" 
         name="sort" 
-        value={{sort_by}}>   
+        value={{form_value}}>   
     {% endif %}
-        
-    <button 
-        type="submit" 
-        class="btn btn-outline-default pull-right" 
-        style="display: inline-flex; align-items: center; justify-content: center; width: 25px; height: 25px;">
-        &#x1F783; 
-    </button>
-    <button 
-        type="submit" 
-        class="btn btn-outline-default pull-right" 
-        style="display: inline-flex; align-items: center; justify-content: center; width: 25px; height: 25px;">
-        &#x1F781; 
-    </button>
+        <button 
+            type="submit" 
+            class="btn btn-outline-default btn-custom disabled" 
+            style="display: block; height: 100%; padding: 0px; outline: none"
+            >
+           
+            <div style="display: flex; flex-direction: column; align-items: center; line-height: 30%; justify-content: space-around">
+                {% if sort_by == label %}
+                    {% if order == "asc" %}
+                        <span>&#x1F781;</span>
+                        <span style="color: gray">&#x1F783;</span>
+                    {% else %}
+                        <span style="color: gray">&#x1F781;</span>
+                        <span>&#x1F783;</span>
+                    {% endif %}
+                {% else %} 
+                    <span style="color: gray">&#x1F781;</span>
+                    <span style="color: gray">&#x1F783;</span>
+                   
+                {% endif %}
+                
+            </div> 
+        </button>
+  
+    
 </form>
-{{order}}
+
+
