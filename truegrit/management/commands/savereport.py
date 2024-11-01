@@ -22,6 +22,7 @@ RESET = '\033[0m'
 # Define file paths
 csv_file_path = r"C:\Users\gregoryjones\OneDrive - Preferred Technologies, LLC\Documents\My Data Sources\Devices.csv"
 excel_file_path = r"C:\Users\gregoryjones\OneDrive - Preferred Technologies, LLC\Book3.xlsx"
+main_file = r"\\files\Public Documents\PROJECTS-(3) CURRENT\HEB, PJT106191, HEB, FY24 CAMERA REFRESH\PROGRAMMING\106191HEB CAM REFRESH PROGRAMMING MATRIX 9-3-2024 V5 (version 1).xlsb.xlsx"
 
 # List to store tuples
 class Command(BaseCommand):  
@@ -235,12 +236,11 @@ class Command(BaseCommand):
     def load_activeworkbook(self):
         # Load the workbook and select the specific sheet
         try:
-            wb = load_workbook(excel_file_path)
+            return load_workbook(excel_file_path)
         except PermissionError:
             short_file_name = excel_file_path.split("\\")[-1]
             print("\nPermission Error: Please close {} and try again.\n".format(short_file_name))
             raise SystemExit(0)
-        return wb
 
     def handle(self, *args, **options):
         ping_verify = False
@@ -290,8 +290,8 @@ class Command(BaseCommand):
                             mac_address)
                 else:
                     print("\nUnable to ping {}".format(ip_address))
-                    print("Please ensure new report has been created and network settings are updated.\n")
-                    raise SystemExit(0)
+                    # print("Please ensure new report has been created and network settings are updated.\n")
+                    # raise SystemExit(0)
 
         # Save the modified workbook
         wb.save(excel_file_path)
