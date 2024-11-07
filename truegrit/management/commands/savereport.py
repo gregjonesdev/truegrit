@@ -236,12 +236,12 @@ class Command(BaseCommand):
 
     def load_activeworkbook(self):
         # Load the workbook and select the specific sheet
-        try:
-            return load_workbook(excel_file_path)
-        except PermissionError:
-            short_file_name = excel_file_path.split("\\")[-1]
-            print("\nPermission Error: Please close {} and try again.\n".format(short_file_name))
-            raise SystemExit(0)
+        while True:
+            try:
+                return load_workbook(excel_file_path)
+            except PermissionError:
+                short_file_name = excel_file_path.split("\\")[-1]
+                input("\nPermission Error: Please close {} and hit <Enter> to continue.\n".format(short_file_name))
 
     def handle(self, *args, **options):
         ping_verify = False
