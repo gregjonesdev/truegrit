@@ -16,6 +16,14 @@ from truegrit.models import (
     VideoQualityResolution,
 )    
 
+class Timekeeper(View):
+
+    template_name = 'timekeeper.html'
+    context = {}
+
+    def get(self, request, *args, **kwargs):
+        self.context["greeting"] = "hello"
+        return render(request, self.template_name, self.context)
 
 class FrontPage(View):
 
