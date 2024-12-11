@@ -5,7 +5,7 @@
     <div id="clock"></div>
     <form>
       <div class="row" style="width: 100%; margin:auto">
-        <div class="form-group col-12 col-sm-3">
+        <div class="form-group col-12 col-sm-1">
           <label for="startTimeEntry" style="display: none">Start Time</label>
           <input type="time" class="form-control" id="startTimeEntry">
         </div>
@@ -49,16 +49,37 @@
       <div class="row" style="width: 100%; margin:auto">
         
       </div>
-      
-      
-      <div id="description-field" class="form-group" style="border: 1px solid green">
-          <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">
-      </div>
     </form>
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-    </svg>
+      
+      
+
+      <h5>PJT10304: Example Description</h5>
+      
+        <div class="row form-group">
+          <div class="col-12 col-sm-6">
+            <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">
+          </div>
+          <div class="col-12 col-sm-3">
+            <button id="" type="button" class="btn btn-outline-primary" >Save</button>
+          </div>
+         
+        </div>
+      
+      
+      <ul>
+        <li>Subtask 3 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+          <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+        </svg></li>
+        <li>Subtask 2</li>
+        <li>Subtask 1</li>
+      </ul>
+      
+
+      <button id="" type="button" class="btn btn-outline-primary" >Finish</button>
+      
+ 
+   
 </div>
 <script>
     const CSRF_TOKEN = '{{ csrf_token }}';
@@ -66,7 +87,7 @@
       const now = new Date();
       
       // Format the time as HH:MM
-      const hours = String(now.getHours()).padStart(2, '0');
+      const hours = now.getHours();
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const currentTime = `${hours}:${minutes}`;
 
