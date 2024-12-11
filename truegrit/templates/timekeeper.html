@@ -12,26 +12,34 @@
       </div>
 
       <div class="row" style="width: 100%; margin:auto">
-        <div id="numberdropdown" class="form-group col-12 col-sm-3">
-          <label for="numberdropdownentry" style="display: none">Project Number</label>
-          <select class="form-control" id="numberdropdownselect">
-            <option value="" selected disabled>Select Recent Project</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-          </select>
-          
-        </div>
         <div id="numberentry" class="form-group col-12 col-sm-5">
           <input type="text" class="form-control" id="projectnumber" placeholder="Project Number/Description">
         </div>
+
+        <div class="card" style="width: 18rem;">
+          
+          <div class="card-body">
+            <p class="card-title"><small>Recent Projects</small></p>
+            {% for project in recent_projects %}
+            <button 
+              type="button" 
+              class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
+              style="font-size: .7em;">
+              PJT{{ project.number }}
+            </button>
+            <br/>
+            {% endfor %}
+         
+          </div>
+        </div>
+      
        
        
         
       </div>
 
       <div class="row" style="width: 100%; margin:auto">
+    
         <div id="numberentry" class="form-group col-12 col-sm-1">
           <button id="create-button" type="button" class="btn btn-outline-primary" >Create </button>
         </div>

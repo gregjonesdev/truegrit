@@ -29,7 +29,11 @@ class Timekeeper(View):
     context = {}
 
     def get(self, request, *args, **kwargs):
-        self.context["greeting"] = "hello"
+        recent_projects = []
+        for entry in TimeEntry.objects.all().order_by('-created_at')[:5]:
+            recent_projects.append(entry.project)
+        print(recent_projects)
+        self.context["recent_projects"] = recent_projects
         return render(request, self.template_name, self.context)
 
 class FrontPage(View):
@@ -131,13 +135,15 @@ def create_time_entry(request):
             project = new_project
         print("new project: {}".format(project))
         # Create and save the new TimeEntry instance
-        new_entry = TimeEntry.objects.create(
+        new_entry = TimeEntry(
             start_time=start_time,
             project=project,
             project_description=project_description
         )
+        new_entry.set_fields_to_base()
+        new_entry.save()
 
         # Return success response
-        return JsonResponse({"message": "Time entry created successfully", "id": new_entry.id})
+        return JsonResponse({"message": "Time entry created successfully", "id": new_entry.uuid})
 
     return JsonResponse({"error": "Invalid request method"}, status=405)    

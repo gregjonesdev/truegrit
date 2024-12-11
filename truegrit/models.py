@@ -235,8 +235,8 @@ class Project(CoreModel):
         related_name='status',
         on_delete=models.CASCADE,
         )
-
-class TimeEntry(models.Model):
+    
+class TimeEntry(CoreModel):
     start_time = models.DateTimeField()
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     end_time = models.DateTimeField(null=True)
@@ -247,4 +247,4 @@ class TimeEntry(models.Model):
     project_description = models.CharField(null=True, max_length=255)
 
     def __str__(self):
-        return f"Project {self.project_number} - {self.task_description}"    
+        return f"Project {self.project_number} - {self.task_description}"     
