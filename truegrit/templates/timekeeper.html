@@ -12,11 +12,6 @@
       </div>
 
       <div class="row" style="width: 100%; margin:auto">
-        <div id="numberentry" class="form-group col-12 col-sm-5">
-          <input type="text" class="form-control" id="projectnumber" placeholder="Project Number/Description">
-        </div>
-       
-       
         <div id="numberdropdown" class="form-group col-12 col-sm-3">
           <label for="numberdropdownentry" style="display: none">Project Number</label>
           <select class="form-control" id="numberdropdownselect">
@@ -28,11 +23,17 @@
           </select>
           
         </div>
+        <div id="numberentry" class="form-group col-12 col-sm-5">
+          <input type="text" class="form-control" id="projectnumber" placeholder="Project Number/Description">
+        </div>
+       
+       
+        
       </div>
 
       <div class="row" style="width: 100%; margin:auto">
         <div id="numberentry" class="form-group col-12 col-sm-1">
-          <button id="start-button" type="button" class="btn btn-outline-primary" >Create </button>
+          <button id="create-button" type="button" class="btn btn-outline-primary" >Create </button>
         </div>
        
       </div>
@@ -52,7 +53,7 @@
     </svg>
 </div>
 <script>
-   
+    const CSRF_TOKEN = '{{ csrf_token }}';
     function updateTime() {
       const now = new Date();
       
@@ -68,6 +69,60 @@
    
     window.onload = updateTime()
     setInterval(updateTime, 1000);
+
+    function convertTimeToDateTime(timeString) {
+      // Get the current date
+      const currentDate = new Date();
+      
+      // Extract the current year, month, and day
+      const year = currentDate.getFullYear();
+      const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed, so add 1
+      const day = String(currentDate.getDate()).padStart(2, '0');
+
+      // The time part (e.g., "15:32")
+      const timeParts = timeString.split(':');
+      const hour = timeParts[0];
+      const minute = timeParts[1];
+
+      // Combine current date with the given time
+      const dateTimeString = `${year}-${month}-${day} ${hour}:${minute}`;
+
+      return dateTimeString;
+    }
+
+
+    document.getElementById('create-button').addEventListener('click', function() {
+            const startTime = document.getElementById('startTimeEntry').value;
+            const projectNumber = document.getElementById('projectnumber').value;
+            const taskDescription = "";
+
+            const data = {
+                start_time: convertTimeToDateTime(startTime),
+                project_number: projectNumber,
+                task_description: taskDescription
+            };
+
+            fetch('/create-time-entry/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': CSRF_TOKEN,  // Include CSRF token if CSRF protection is enabled
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);  // Show success message
+                } else if (data.error) {
+                    alert('Error: ' + data.error);  // Show error message
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred.');
+            });
+        });
 
 </script>
 

@@ -1,11 +1,18 @@
+import json
+
 from django.views.generic import View, ListView, DetailView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from truegrit.models import (
     BusinessUnit,
     Camera,
+    TimeEntry,
+    Project,
     ServerRole, 
     CameraModel,
     InstallationStatus,
@@ -93,3 +100,44 @@ class BusinessUnitDetailView(DetailView):
         context['cameras'] = Camera.objects.filter(
             network__business_unit=context['business_unit']).order_by(sort_by)
         return context
+    
+def create_time_entry(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            start_time = data.get('start_time')
+            raw_project_number = data.get('project_number')
+            project_description = data.get('task_description')
+
+          
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        
+        project_number_string = ''.join([char for char in raw_project_number if char.isdigit()])
+        project_number = int(project_number_string)
+        
+        try:
+            project = Project.objects.get(
+                number=project_number
+            ) 
+        except ObjectDoesNotExist:
+            print("create new project")
+            new_project = Project(
+                number = project_number,
+                status = ProjectStatus.objects.get(name="current")
+            )
+            new_project.set_fields_to_base()
+            new_project.save()
+            project = new_project
+        print("new project: {}".format(project))
+        # Create and save the new TimeEntry instance
+        new_entry = TimeEntry.objects.create(
+            start_time=start_time,
+            project=project,
+            project_description=project_description
+        )
+
+        # Return success response
+        return JsonResponse({"message": "Time entry created successfully", "id": new_entry.id})
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)    
