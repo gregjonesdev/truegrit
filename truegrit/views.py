@@ -30,8 +30,9 @@ class Timekeeper(View):
 
     def get(self, request, *args, **kwargs):
         recent_projects = []
-        for entry in TimeEntry.objects.all().order_by('-created_at')[:5]:
-            recent_projects.append(entry.project)
+        for entry in TimeEntry.objects.all().order_by('-created_at'):
+            if len(recent_projects) < 5 and not entry.project in recent_projects:
+                recent_projects.append(entry.project)
         print(recent_projects)
         self.context["recent_projects"] = recent_projects
         return render(request, self.template_name, self.context)
@@ -144,6 +145,11 @@ def create_time_entry(request):
         new_entry.save()
 
         # Return success response
-        return JsonResponse({"message": "Time entry created successfully", "projectNumber": new_entry.project.number})
+        return JsonResponse({
+            "message": "Time entry created successfully", 
+            "projectNumber": new_entry.project.number,
+            "startTime": new_entry.start_time.split(" ")[-1],
+            "projectDescription": new_entry.project.description
+            })
 
     return JsonResponse({"error": "Invalid request method"}, status=405)    
