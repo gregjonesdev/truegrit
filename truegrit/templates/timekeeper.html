@@ -1,24 +1,91 @@
 {% extends '_base.html' %}
 
 {% block content %}
+  <div class="row" style="width: 100%; margin:50px auto; border: 1px solid green">
+    <div class="col-12 col-sm-1" style="border: 1px solid blue">
+      <input type="time" class="form-control" id="startTimeEntry">
+    </div>
+    <div class="col-12 col-sm-6" style="border: 1px solid grey">
+      <div class="row">
+        <div class="col-12 col-sm-4" style="padding: 0px 5px">
+          <input type="text" class="form-control" id="projectNumberInput" placeholder="Project Number">
+        </div>
+        <div class="col-12 col-sm-6" style="padding: 0px 5px">
+          <input type="text" class="form-control" id="projectDescriptionInput" placeholder="Description">
+
+        </div>
+        <div class="col-12 col-sm-1" style="padding: 0px 5px">
+          <button id="create-button" type="button" class="btn btn-outline-primary input-field">Create</button>
+        </div>
+      </div>
+      <div id="taskEntryRow" class="row" style="margin-top: 10px; border: 1px solid grey; display: none">
+        <div class="col-12 col-sm-10" style="padding: 0px 5px">
+          <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">
+        </div>
+        <div class="col-12 col-sm-1" style="padding: 0px 5px">
+          <button id="taskSaveButton" type="button" class="btn btn-outline-primary input-field">Save</button>
+        </div>
+
+      </div>
+      <div id="taskListRow" class="row" style="margin-top: 10px; border: 1px solid grey; display: none">
+
+      </div>    
+      
+    </div>
+    <div class="col-12 col-sm-3" style="border: 1px solid blue">
+      <div class="card input-field">
+          
+        <div class="card-body">
+          <p class="card-title"><small>Recent Projects</small></p>
+          {% for project in recent_projects %}
+          <div style="display: flex; justify-content: space-between;">
+            <button 
+              type="button" 
+              class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
+              value="{{ project.number }}"
+              data-description="{{ project.description }}"
+              style="font-size: .7em;">
+              {% if project.number and project.description %}
+              PJT{{ project.number }}: {{ project.description }}
+              {% elif project.number %}
+              PJT{{ project.number }}
+              {% elif project.description %}
+              {{ project.description }}
+              {% endif %}
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-outline-danger btn-sm removeRecentButton" 
+              data-bs-toggle="tooltip" 
+              data-bs-placement="right" 
+              title="Remove from list"
+              style="font-size: 8px; margin: 2p; display: none"
+              disabled>
+              &#10005;
+            </button>
+          </div>
+          {% endfor %}
+       
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
     
     <form>
       <div class="row" style="width: 100%; margin:50px auto">
         <div class="col-sm-9">
           <div class="row">
             <div class="col-sm-2">
-              <div class="input-field">
-                <label for="startTimeEntry" style="display: none">Start Time</label>
-                <input type="time" class="form-control" id="startTimeEntry">
-              </div>
+              
               <div class="value-field" style="display:none">
                 Start Time: <span id="startTime"></span>
               </div>
             </div>
             <div class="col-sm-2">
-              <div class="input-field">
-                <input type="text" class="form-control" id="projectNumberInput" placeholder="Project Number">
-              </div>
+              
               <div class="value-field" style="display:none">
                 <span id="projectNumber"></span>
               </div> 
@@ -36,60 +103,10 @@
             </div>
             
           </div>
-          <div class="row" style="margin-top: 10px">
-              <div class="col-sm-2"></div>
-              <div class="col-sm-6" style="border: 1px solid red">
-                <div class="row form-group">  
-                  <div class="col-10">
-                    <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">        
-                  </div>    
-                  <div class="col-2">
-                    <button id="" type="button" class="btn btn-outline-primary" >Save</button>  
-                  </div>         
-                   
-                             
-                </div>
-
-              </div>
-          </div>
 
         </div>
         <div class="col-sm-3">
-          <div class="card input-field">
           
-            <div class="card-body">
-              <p class="card-title"><small>Recent Projects</small></p>
-              {% for project in recent_projects %}
-              <div style="display: flex; justify-content: space-between;">
-                <button 
-                  type="button" 
-                  class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
-                  value="{{ project.number }}"
-                  data-description="{{ project.description }}"
-                  style="font-size: .7em;">
-                  {% if project.number and project.description %}
-                  PJT{{ project.number }}: {{ project.description }}
-                  {% elif project.number %}
-                  PJT{{ project.number }}
-                  {% elif project.description %}
-                  {{ project.description }}
-                  {% endif %}
-                </button>
-                <button 
-                  type="button" 
-                  class="btn btn-outline-danger btn-sm removeRecentButton" 
-                  data-bs-toggle="tooltip" 
-                  data-bs-placement="right" 
-                  title="Remove from list"
-                  style="font-size: 8px; margin: 2p; display: none"
-                  disabled>
-                  &#10005;
-                </button>
-              </div>
-              {% endfor %}
-           
-            </div>
-          </div>
         </div>
 
       </div>
@@ -110,20 +127,6 @@
         
       </div>
     </form>
-      
-      
-
-      <h5>PJT10304: Example Description</h5>
-      
-        <div class="row form-group">
-          <div class="col-12 col-sm-6">
-            <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">
-          </div>
-          <div class="col-12 col-sm-3">
-            <button id="" type="button" class="btn btn-outline-primary" >Save</button>
-          </div>
-         
-        </div>
       
       
       <ul>
@@ -154,11 +157,8 @@
       document.getElementById('startTimeEntry').value = currentTime;
     }
 
-    function toggleFieldDisplay(className, display) {
-      const inputFields = document.getElementsByClassName(className)
-      for (let i=0; i<inputFields.length; i++) {
-        inputFields[i].style.display = display
-      }
+    function setDisableField(elementId, bool) {
+      document.getElementById(elementId).disabled = bool
     }
     
    
@@ -212,6 +212,11 @@
       document.getElementById(id).style.display = display
     }
 
+    document.getElementById('taskSaveButton').addEventListener('click', function(e) {
+      const timeEntryUuid = e.target.getAttribute('data-timeentryuuid')
+      alert(timeEntryUuid)
+    })
+
 
     document.getElementById('create-button').addEventListener('click', function() {
             const startTime = document.getElementById('startTimeEntry').value;
@@ -237,15 +242,12 @@
             .then(data => {
                 if (data.message) {
                     if (data.projectNumber) {
-                      document.getElementById("projectNumber").innerText = "PJT" + data.projectNumber
-                    }
-                      
-                    if (data.projectDescription){
-                      document.getElementById("projectDescription").innerText = data.projectDescription
-                    }       
-                    document.getElementById('startTime').innerText = data.startTime
-                    toggleFieldDisplay("input-field", "none")
-                    toggleFieldDisplay("value-field", "")
+                      setDisableField("projectNumberInput", true)
+                    }     
+                    document.getElementById("taskSaveButton").setAttribute('data-timeentryuuid', data.timeEntryUuid)
+                    document.getElementById("create-button").style.display= "none"  
+                    document.getElementById("taskEntryRow").style.display = "";   
+                    document.getElementById("taskListRow").style.display = "";      
                 } else if (data.error) {
                     alert('Error: ' + data.error);  // Show error message
                 }

@@ -159,7 +159,8 @@ def create_time_entry(request):
             "message": "Time entry created successfully", 
             "projectNumber": new_entry.project.number,
             "startTime": new_entry.start_time.split(" ")[-1],
-            "projectDescription": new_entry.project.description
+            "projectDescription": new_entry.project.description,
+            "timeEntryUuid": new_entry.uuid
             })
 
     return JsonResponse({"error": "Invalid request method"}, status=405)    
