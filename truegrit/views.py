@@ -118,38 +118,38 @@ def create_time_entry(request):
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
         
-        project_number_string = ''.join([char for char in raw_project_number if char.isdigit()])
-        project_number = int(project_number_string)
-        
-        try:
-            if project_number:
+        if raw_project_number:
+            project_number_string = ''.join([char for char in raw_project_number if char.isdigit()])
+            project_number = int(project_number_string)
+            try:
                 project = Project.objects.get(
                     number=project_number
                 ) 
-                if project_description:
-                    project.description = project_description
-                    project.save()
-            else:
-               project = Project.objects.get(
-                    decription=project_description
-                )           
-        except ObjectDoesNotExist:
-            print("create new project")
+            except ObjectDoesNotExist:
+                new_project = Project(
+                    number = project_number,
+                    status = ProjectStatus.objects.get(name="current")
+                )
+                new_project.set_fields_to_base()
+                new_project.save()
+                project = new_project    
+            project.description = project_description
+            project.save()
+        else:    
             new_project = Project(
-                number = project_number,
                 description = project_description,
                 status = ProjectStatus.objects.get(name="current")
             )
             new_project.set_fields_to_base()
             new_project.save()
-            project = new_project
+            project = new_project    
+
         
         print(project.__dict__)
         # Create and save the new TimeEntry instance
         new_entry = TimeEntry(
             start_time=start_time,
             project=project,
-            project_description=project_description
         )
         new_entry.set_fields_to_base()
         new_entry.save()

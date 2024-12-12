@@ -225,7 +225,7 @@ class UserSettings(CoreModel):
 
 class Project(CoreModel):
 
-    number = models.IntegerField()
+    number = models.IntegerField(null=True)
     description = models.CharField(
         max_length=255,
         null=True
@@ -238,13 +238,17 @@ class Project(CoreModel):
     
 class TimeEntry(CoreModel):
     start_time = models.DateTimeField()
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     end_time = models.DateTimeField(null=True)
     project = models.ForeignKey(
         Project, 
         on_delete=models.CASCADE, 
-        null=True)
-    project_description = models.CharField(null=True, max_length=255)
+        null=True) 
+    
 
-    def __str__(self):
-        return f"Project {self.project_number} - {self.task_description}"     
+class SubTask(CoreModel):
+    time_entry = models.ForeignKey(
+        TimeEntry, 
+        on_delete=models.CASCADE)
+    description = models.CharField(
+        max_length=255
+    )

@@ -1,11 +1,11 @@
 {% extends '_base.html' %}
 
 {% block content %}
-  <div class="row" style="width: 100%; margin:50px auto; border: 1px solid green">
-    <div class="col-12 col-sm-1" style="border: 1px solid blue">
+  <div class="row" style="width: 100%; margin:50px auto;">
+    <div class="col-12 col-sm-1">
       <input type="time" class="form-control" id="startTimeEntry">
     </div>
-    <div class="col-12 col-sm-6" style="border: 1px solid grey">
+    <div class="col-12 col-sm-6">
       <div class="row">
         <div class="col-12 col-sm-4" style="padding: 0px 5px">
           <input type="text" class="form-control" id="projectNumberInput" placeholder="Project Number">
@@ -15,10 +15,11 @@
 
         </div>
         <div class="col-12 col-sm-1" style="padding: 0px 5px">
-          <button id="create-button" type="button" class="btn btn-outline-primary input-field">Create</button>
+          <button id="create-button" type="button" class="btn btn-outline-primary input-field" style="width:70px">Create</button>
+          <button id="finish-button" type="button" class="btn btn-primary input-field" style="display:none; width:70px">Finish</button>
         </div>
       </div>
-      <div id="taskEntryRow" class="row" style="margin-top: 10px; border: 1px solid grey; display: none">
+      <div id="taskEntryRow" class="row" style="margin-top: 10px; display: none">
         <div class="col-12 col-sm-10" style="padding: 0px 5px">
           <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">
         </div>
@@ -27,13 +28,13 @@
         </div>
 
       </div>
-      <div id="taskListRow" class="row" style="margin-top: 10px; border: 1px solid grey; display: none">
+      <div id="taskListRow" class="row" style="margin-top: 10px; display: none">
 
       </div>    
       
     </div>
-    <div class="col-12 col-sm-3" style="border: 1px solid blue">
-      <div class="card input-field">
+    <div class="col-12 col-sm-3">
+      <div id="recentProjectCard" class="card input-field">
           
         <div class="card-body">
           <p class="card-title"><small>Recent Projects</small></p>
@@ -73,60 +74,6 @@
 
 
 
-    
-    <form>
-      <div class="row" style="width: 100%; margin:50px auto">
-        <div class="col-sm-9">
-          <div class="row">
-            <div class="col-sm-2">
-              
-              <div class="value-field" style="display:none">
-                Start Time: <span id="startTime"></span>
-              </div>
-            </div>
-            <div class="col-sm-2">
-              
-              <div class="value-field" style="display:none">
-                <span id="projectNumber"></span>
-              </div> 
-            </div>
-            <div class="col-sm-4">
-              <div class="input-field">
-                <input type="text" class="form-control" id="projectDescriptionInput" placeholder="Description">
-              </div>
-              <div class="value-field" style="display:none">
-                <span id="projectDescription"></span>
-              </div>
-            </div>
-            <div class="col-sm-4">
-              <button id="create-button" type="button" class="btn btn-outline-primary input-field">Create</button>
-            </div>
-            
-          </div>
-
-        </div>
-        <div class="col-sm-3">
-          
-        </div>
-
-      </div>
-
-
-
-    
-
-      <div class="row" style="width: 100%; margin:auto">
-    
-        <div id="" class="form-group col-12 col-sm-1">
-          <button id="create-button" type="button" class="btn btn-outline-primary" >Create </button>
-        </div>
-       
-      </div>
-
-      <div class="row" style="width: 100%; margin:auto">
-        
-      </div>
-    </form>
       
       
       <ul>
@@ -217,6 +164,12 @@
       alert(timeEntryUuid)
     })
 
+    function disableRecentButtons() {
+      recentButtons = document.getElementsByClassName("recentProjectButton")
+      for (let i=0; i<recentButtons.length; i++) {
+        recentButtons[i].disabled=true
+      }
+    }
 
     document.getElementById('create-button').addEventListener('click', function() {
             const startTime = document.getElementById('startTimeEntry').value;
@@ -245,9 +198,11 @@
                       setDisableField("projectNumberInput", true)
                     }     
                     document.getElementById("taskSaveButton").setAttribute('data-timeentryuuid', data.timeEntryUuid)
-                    document.getElementById("create-button").style.display= "none"  
+                    disableRecentButtons()
+                    document.getElementById("create-button").style.display="none" 
                     document.getElementById("taskEntryRow").style.display = "";   
-                    document.getElementById("taskListRow").style.display = "";      
+                    document.getElementById("taskListRow").style.display = "";  
+                    document.getElementById('finish-button').style.display = "";    
                 } else if (data.error) {
                     alert('Error: ' + data.error);  // Show error message
                 }
