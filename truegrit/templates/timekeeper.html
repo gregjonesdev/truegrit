@@ -1,16 +1,9 @@
 {% extends '_base.html' %}
 
 {% block content %}
-  <div id="alertMessage" class="alert alert-warning d-flex align-items-center" role="alert" style="display: none !important;">
-    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-    <div>
-      Please enter a valid project number
-    </div>
-  </div>
-  <div style="width: 95%; margin: 50px auto">
     
     <form>
-      <div class="row" style="width: 100%; margin:auto">
+      <div class="row" style="width: 100%; margin:50px auto">
         <div class="col-sm-9">
           <div class="row">
             <div class="col-sm-2">
@@ -28,7 +21,7 @@
               </div>
               <div class="value-field" style="display:none">
                 <span id="projectNumber"></span>
-              </div>
+              </div> 
             </div>
             <div class="col-sm-4">
               <div class="input-field">
@@ -42,6 +35,22 @@
               <button id="create-button" type="button" class="btn btn-outline-primary input-field">Create</button>
             </div>
             
+          </div>
+          <div class="row" style="margin-top: 10px">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-6" style="border: 1px solid red">
+                <div class="row form-group">  
+                  <div class="col-10">
+                    <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">        
+                  </div>    
+                  <div class="col-2">
+                    <button id="" type="button" class="btn btn-outline-primary" >Save</button>  
+                  </div>         
+                   
+                             
+                </div>
+
+              </div>
           </div>
 
         </div>
@@ -58,9 +67,12 @@
                   value="{{ project.number }}"
                   data-description="{{ project.description }}"
                   style="font-size: .7em;">
+                  {% if project.number and project.description %}
+                  PJT{{ project.number }}: {{ project.description }}
+                  {% elif project.number %}
                   PJT{{ project.number }}
-                  {% if project.description %}
-                  : {{ project.description }}
+                  {% elif project.description %}
+                  {{ project.description }}
                   {% endif %}
                 </button>
                 <button 
@@ -205,46 +217,44 @@
             const startTime = document.getElementById('startTimeEntry').value;
             const projectNumber = document.getElementById('projectNumberInput').value;
             const projectDescription = document.getElementById('projectDescriptionInput').value;
-            if (isSixDigitNumber(projectNumber.substring(3))) {
-              const taskDescription = "";
-              const data = {
-                  start_time: convertTimeToDateTime(startTime),
-                  project_number: projectNumber,
-                  project_description: projectDescription
-              };
+           
+            const taskDescription = "";
+            const data = {
+                start_time: convertTimeToDateTime(startTime),
+                project_number: projectNumber,
+                project_description: projectDescription
+            };
 
-              fetch('/create-time-entry/', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'X-CSRFToken': CSRF_TOKEN,  // Include CSRF token if CSRF protection is enabled
-                  },
-                  body: JSON.stringify(data),
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.message) {
-                      if (data.projectNumber) {
-                        document.getElementById("projectNumber").innerText = "PJT" + data.projectNumber
-                      }
-                        
-                      if (data.projectDescription){
-                        document.getElementById("projectDescription").innerText = data.projectDescription
-                      }       
-                      document.getElementById('startTime').innerText = data.startTime
-                      toggleFieldDisplay("input-field", "none")
-                      toggleFieldDisplay("value-field", "")
-                  } else if (data.error) {
-                      alert('Error: ' + data.error);  // Show error message
-                  }
-              })
-              .catch(error => {
-                  console.error('Error:', error);
-                  alert('An error occurred.');
-              });
-            } else {
-              toggleElementDisplay("alertMessage", "")
-            }
+            fetch('/create-time-entry/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': CSRF_TOKEN,  // Include CSRF token if CSRF protection is enabled
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    if (data.projectNumber) {
+                      document.getElementById("projectNumber").innerText = "PJT" + data.projectNumber
+                    }
+                      
+                    if (data.projectDescription){
+                      document.getElementById("projectDescription").innerText = data.projectDescription
+                    }       
+                    document.getElementById('startTime').innerText = data.startTime
+                    toggleFieldDisplay("input-field", "none")
+                    toggleFieldDisplay("value-field", "")
+                } else if (data.error) {
+                    alert('Error: ' + data.error);  // Show error message
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred.');
+            });
+           
             
         });
 
