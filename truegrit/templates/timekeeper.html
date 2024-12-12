@@ -1,46 +1,75 @@
 {% extends '_base.html' %}
 
 {% block content %}
-<div style="width: 95%; margin: 50px auto">
-    <div id="clock"></div>
+  <div style="width: 95%; margin: 50px auto">
+    
     <form>
       <div class="row" style="width: 100%; margin:auto">
-        <div class="form-group col-12 col-sm-1">
-          <label for="startTimeEntry" style="display: none">Start Time</label>
-          <input type="time" class="form-control" id="startTimeEntry">
-        </div>
-      </div>
+        <div class="col-sm-6">
+          <div class="row">
+            <div class="col-sm-2">
+              <div class="input-field">
+                <label for="startTimeEntry" style="display: none">Start Time</label>
+                <input type="time" class="form-control" id="startTimeEntry">
+              </div>
+              <div class="value-field" style="display:none">
+                5:15
+              </div>
+              
+            </div>
+            <div class="col-sm-10 input-field">
+              <input type="text" class="form-control" id="projectnumber" placeholder="Project Number/Description">
+            </div>
+            <div class="value-field" style="display:none">
+              PJT3003003: Lorem Ipsum Observum Factum
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 input-field" style="display: flex; justify-content: flex-end;">
+              <button id="create-button" type="button" class="btn btn-outline-primary">Create</button>
+            </div>
+          </div>
 
-      <div class="row" style="width: 100%; margin:auto">
-        <div id="numberentry" class="form-group col-12 col-sm-5">
-          <input type="text" class="form-control" id="projectnumber" placeholder="Project Number/Description">
         </div>
-
-        <div class="card" style="width: 18rem;">
+        <div class="col-sm-3">
+          <div class="card">
           
-          <div class="card-body">
-            <p class="card-title"><small>Recent Projects</small></p>
-            {% for project in recent_projects %}
-            <button 
-              type="button" 
-              class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
-              style="font-size: .7em;">
-              PJT{{ project.number }}
-            </button>
-            <br/>
-            {% endfor %}
-         
+            <div class="card-body">
+              <p class="card-title"><small>Recent Projects</small></p>
+              {% for project in recent_projects %}
+              <div style="display: flex; justify-content: space-between;">
+                <button 
+                  type="button" 
+                  class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
+                  style="font-size: .7em;">
+                  PJT{{ project.number }}
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-outline-danger btn-sm removeRecentButton" 
+                  data-bs-toggle="tooltip" 
+                  data-bs-placement="right" 
+                  title="Remove from list"
+                  style="font-size: 8px; margin: 2px"
+                  disabled>
+                  &#10005;
+                </button>
+              </div>
+              {% endfor %}
+           
+            </div>
           </div>
         </div>
-      
-       
-       
-        
+
       </div>
+
+
+
+    
 
       <div class="row" style="width: 100%; margin:auto">
     
-        <div id="numberentry" class="form-group col-12 col-sm-1">
+        <div id="" class="form-group col-12 col-sm-1">
           <button id="create-button" type="button" class="btn btn-outline-primary" >Create </button>
         </div>
        
@@ -87,12 +116,18 @@
       const now = new Date();
       
       // Format the time as HH:MM
-      const hours = now.getHours();
+      const hours = String(now.getHours()).padStart(2, '0');     
       const minutes = String(now.getMinutes()).padStart(2, '0');
-      const currentTime = `${hours}:${minutes}`;
-
+      currentTime = `${hours}:${minutes}`;
        // Set the value of the input field
       document.getElementById('startTimeEntry').value = currentTime;
+    }
+
+    function hideInputFields() {
+      const inputFields = document.getElementsByClassName('input-field')
+      for (let i=0; i<inputFields.length; i++) {
+        inputFields[i].style.display = "none"
+      }
     }
     
    
@@ -143,6 +178,7 @@
             .then(data => {
                 if (data.message) {
                     alert(data.message);  // Show success message
+                    hideInputFields()
                 } else if (data.error) {
                     alert('Error: ' + data.error);  // Show error message
                 }
