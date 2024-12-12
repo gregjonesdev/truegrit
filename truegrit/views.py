@@ -144,6 +144,6 @@ def create_time_entry(request):
         new_entry.save()
 
         # Return success response
-        return JsonResponse({"message": "Time entry created successfully", "id": new_entry.uuid})
+        return JsonResponse({"message": "Time entry created successfully", "projectNumber": new_entry.project.number})
 
     return JsonResponse({"error": "Invalid request method"}, status=405)    

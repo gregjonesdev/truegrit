@@ -1,6 +1,12 @@
 {% extends '_base.html' %}
 
 {% block content %}
+  <div id="alertMessage" class="alert alert-warning d-flex align-items-center" role="alert" style="display: none !important;">
+    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Warning:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+    <div>
+      Please enter a valid project number
+    </div>
+  </div>
   <div style="width: 95%; margin: 50px auto">
     
     <form>
@@ -13,20 +19,20 @@
                 <input type="time" class="form-control" id="startTimeEntry">
               </div>
               <div class="value-field" style="display:none">
-                5:15
+                Start Time: 5:15
               </div>
               
             </div>
             <div class="col-sm-10 input-field">
               <input type="text" class="form-control" id="projectnumber" placeholder="Project Number/Description">
             </div>
-            <div class="value-field" style="display:none">
-              PJT3003003: Lorem Ipsum Observum Factum
+            <div class="col-sm-10 value-field" style="display:none">
+              <span id="projectNumber"></span>
             </div>
           </div>
           <div class="row">
-            <div class="col-12 input-field" style="display: flex; justify-content: flex-end;">
-              <button id="create-button" type="button" class="btn btn-outline-primary">Create</button>
+            <div class="col-12" style="display: flex; justify-content: flex-end;">
+              <button id="create-button" type="button" class="btn btn-outline-primary input-field">Create</button>
             </div>
           </div>
 
@@ -41,6 +47,7 @@
                 <button 
                   type="button" 
                   class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
+                  value="{{ project.number }}"
                   style="font-size: .7em;">
                   PJT{{ project.number }}
                 </button>
@@ -123,10 +130,10 @@
       document.getElementById('startTimeEntry').value = currentTime;
     }
 
-    function hideInputFields() {
-      const inputFields = document.getElementsByClassName('input-field')
+    function toggleFieldDisplay(className, display) {
+      const inputFields = document.getElementsByClassName(className)
       for (let i=0; i<inputFields.length; i++) {
-        inputFields[i].style.display = "none"
+        inputFields[i].style.display = display
       }
     }
     
@@ -154,39 +161,69 @@
       return dateTimeString;
     }
 
+    recentProjectButtons = document.getElementsByClassName("recentProjectButton")
+
+    for (let i=0; i<recentProjectButtons.length; i++) {
+      recentProjectButtons[i].addEventListener("click", populateProjectNumber)
+    }
+
+    function populateProjectNumber(e){
+      document.getElementById('projectnumber').value = "PJT" + e.target.value
+    }
+
+    document.getElementById('projectnumber').addEventListener("change", hideAlert)
+
+    function hideAlert() {
+      toggleElementDisplay("alertMessage", "none !important")
+    }
+
+    function isSixDigitNumber(projectNumber) {
+      // Check if projectNumber is a string that represents exactly 6 digits
+      return /^\d{6}$/.test(projectNumber);
+    }
+
+    function toggleElementDisplay(id, display) {
+      document.getElementById(id).style.display = display
+    }
+
 
     document.getElementById('create-button').addEventListener('click', function() {
             const startTime = document.getElementById('startTimeEntry').value;
             const projectNumber = document.getElementById('projectnumber').value;
-            const taskDescription = "";
+            if (isSixDigitNumber(projectNumber.substring(3))) {
+              const taskDescription = "";
+              const data = {
+                  start_time: convertTimeToDateTime(startTime),
+                  project_number: projectNumber,
+                  task_description: taskDescription
+              };
 
-            const data = {
-                start_time: convertTimeToDateTime(startTime),
-                project_number: projectNumber,
-                task_description: taskDescription
-            };
-
-            fetch('/create-time-entry/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': CSRF_TOKEN,  // Include CSRF token if CSRF protection is enabled
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message);  // Show success message
-                    hideInputFields()
-                } else if (data.error) {
-                    alert('Error: ' + data.error);  // Show error message
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred.');
-            });
+              fetch('/create-time-entry/', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRFToken': CSRF_TOKEN,  // Include CSRF token if CSRF protection is enabled
+                  },
+                  body: JSON.stringify(data),
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.message) {
+                      document.getElementById("projectNumber").innerText = "PJT" + data.projectNumber
+                      toggleFieldDisplay("input-field", "none")
+                      toggleFieldDisplay("value-field", "")
+                  } else if (data.error) {
+                      alert('Error: ' + data.error);  // Show error message
+                  }
+              })
+              .catch(error => {
+                  console.error('Error:', error);
+                  alert('An error occurred.');
+              });
+            } else {
+              toggleElementDisplay("alertMessage", "")
+            }
+            
         });
 
 </script>
