@@ -24,7 +24,7 @@
             </div>
             <div class="col-sm-2">
               <div class="input-field">
-                <input type="text" class="form-control" id="projectnumber" placeholder="Project Number">
+                <input type="text" class="form-control" id="projectNumberInput" placeholder="Project Number">
               </div>
               <div class="value-field" style="display:none">
                 <span id="projectNumber"></span>
@@ -32,7 +32,10 @@
             </div>
             <div class="col-sm-4">
               <div class="input-field">
-                <input type="text" class="form-control" id="projectDescription" placeholder="Description">
+                <input type="text" class="form-control" id="projectDescriptionInput" placeholder="Description">
+              </div>
+              <div class="value-field" style="display:none">
+                <span id="projectDescription"></span>
               </div>
             </div>
             <div class="col-sm-4">
@@ -43,7 +46,7 @@
 
         </div>
         <div class="col-sm-3">
-          <div class="card">
+          <div class="card input-field">
           
             <div class="card-body">
               <p class="card-title"><small>Recent Projects</small></p>
@@ -53,8 +56,12 @@
                   type="button" 
                   class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
                   value="{{ project.number }}"
+                  data-description="{{ project.description }}"
                   style="font-size: .7em;">
                   PJT{{ project.number }}
+                  {% if project.description %}
+                  : {{ project.description }}
+                  {% endif %}
                 </button>
                 <button 
                   type="button" 
@@ -62,7 +69,7 @@
                   data-bs-toggle="tooltip" 
                   data-bs-placement="right" 
                   title="Remove from list"
-                  style="font-size: 8px; margin: 2px"
+                  style="font-size: 8px; margin: 2p; display: none"
                   disabled>
                   &#10005;
                 </button>
@@ -169,14 +176,16 @@
     recentProjectButtons = document.getElementsByClassName("recentProjectButton")
 
     for (let i=0; i<recentProjectButtons.length; i++) {
-      recentProjectButtons[i].addEventListener("click", populateProjectNumber)
+      recentProjectButtons[i].addEventListener("click", populateProjectData)
     }
 
-    function populateProjectNumber(e){
-      document.getElementById('projectnumber').value = "PJT" + e.target.value
+    function populateProjectData(e){
+      descriptionInput = document.getElementById('projectDescriptionInput')
+      document.getElementById('projectNumberInput').value = "PJT" + e.target.value
+      descriptionInput.value = e.target.getAttribute("data-description")
     }
 
-    document.getElementById('projectnumber').addEventListener("change", hideAlert)
+    document.getElementById('projectNumberInput').addEventListener("change", hideAlert)
 
     function hideAlert() {
       toggleElementDisplay("alertMessage", "none !important")
@@ -194,13 +203,14 @@
 
     document.getElementById('create-button').addEventListener('click', function() {
             const startTime = document.getElementById('startTimeEntry').value;
-            const projectNumber = document.getElementById('projectnumber').value;
+            const projectNumber = document.getElementById('projectNumberInput').value;
+            const projectDescription = document.getElementById('projectDescriptionInput').value;
             if (isSixDigitNumber(projectNumber.substring(3))) {
               const taskDescription = "";
               const data = {
                   start_time: convertTimeToDateTime(startTime),
                   project_number: projectNumber,
-                  task_description: taskDescription
+                  project_description: projectDescription
               };
 
               fetch('/create-time-entry/', {
@@ -214,8 +224,13 @@
               .then(response => response.json())
               .then(data => {
                   if (data.message) {
-
-                      document.getElementById("projectNumber").innerText = "PJT" + data.projectNumber
+                      if (data.projectNumber) {
+                        document.getElementById("projectNumber").innerText = "PJT" + data.projectNumber
+                      }
+                        
+                      if (data.projectDescription){
+                        document.getElementById("projectDescription").innerText = data.projectDescription
+                      }       
                       document.getElementById('startTime').innerText = data.startTime
                       toggleFieldDisplay("input-field", "none")
                       toggleFieldDisplay("value-field", "")

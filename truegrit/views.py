@@ -112,7 +112,7 @@ def create_time_entry(request):
             data = json.loads(request.body)
             start_time = data.get('start_time')
             raw_project_number = data.get('project_number')
-            project_description = data.get('task_description')
+            project_description = data.get('project_description')
 
           
         except Exception as e:
@@ -122,19 +122,29 @@ def create_time_entry(request):
         project_number = int(project_number_string)
         
         try:
-            project = Project.objects.get(
-                number=project_number
-            ) 
+            if project_number:
+                project = Project.objects.get(
+                    number=project_number
+                ) 
+                if project_description:
+                    project.description = project_description
+                    project.save()
+            else:
+               project = Project.objects.get(
+                    decription=project_description
+                )           
         except ObjectDoesNotExist:
             print("create new project")
             new_project = Project(
                 number = project_number,
+                description = project_description,
                 status = ProjectStatus.objects.get(name="current")
             )
             new_project.set_fields_to_base()
             new_project.save()
             project = new_project
-        print("new project: {}".format(project))
+        
+        print(project.__dict__)
         # Create and save the new TimeEntry instance
         new_entry = TimeEntry(
             start_time=start_time,
