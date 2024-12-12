@@ -1,21 +1,48 @@
 {% extends '_base.html' %}
 
 {% block content %}
-  <div class="row" style="width: 100%; margin:50px auto;">
-    <div class="col-12 col-sm-1">
-      <input type="time" class="form-control" id="startTimeEntry">
+
+<!-- Modal Structure -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title">Select Time</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        This is a simple modal example.
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
     </div>
-    <div class="col-12 col-sm-6">
+  </div>
+</div>
+
+  <div class="row" style="width: 100%; margin:50px auto;">
+    <div class="col-12 col-sm-8">
       <div class="row">
         <div class="col-12 col-sm-4" style="padding: 0px 5px">
           <input type="text" class="form-control" id="projectNumberInput" placeholder="Project Number">
         </div>
-        <div class="col-12 col-sm-6" style="padding: 0px 5px">
+        <div class="col-12 col-sm-5" style="padding: 0px 5px">
           <input type="text" class="form-control" id="projectDescriptionInput" placeholder="Description">
 
         </div>
-        <div class="col-12 col-sm-1" style="padding: 0px 5px">
-          <button id="create-button" type="button" class="btn btn-outline-primary input-field" style="width:70px">Create</button>
+        <div class="col-12 col-sm-3" style="padding: 0px 5px">
+         
+            <button id="create-button" type="button" class="btn btn-outline-primary input-field" >Start Now</button>
+            <button id="" type="button" class="btn btn-outline-primary input-field" data-toggle="modal" data-target="#myModal">Select Time</button>
+              
+          
           <button id="finish-button" type="button" class="btn btn-primary input-field" style="display:none; width:70px">Finish</button>
         </div>
       </div>
@@ -91,26 +118,42 @@
  
    
 </div>
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
     const CSRF_TOKEN = '{{ csrf_token }}';
-    function updateTime() {
-      const now = new Date();
-      
-      // Format the time as HH:MM
-      const hours = String(now.getHours()).padStart(2, '0');     
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      currentTime = `${hours}:${minutes}`;
-       // Set the value of the input field
-      document.getElementById('startTimeEntry').value = currentTime;
-    }
-
+  
     function setDisableField(elementId, bool) {
       document.getElementById(elementId).disabled = bool
     }
     
+    
    
-    window.onload = updateTime()
-    setInterval(updateTime, 1000);
+    function hideAlert () {
+     aler("hola")
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      document.getElementById('projectNumberInput').addEventListener("focus", hideAlert)
+
+    });
 
     function convertTimeToDateTime(timeString) {
       // Get the current date
@@ -144,10 +187,9 @@
       descriptionInput.value = e.target.getAttribute("data-description")
     }
 
-    document.getElementById('projectNumberInput').addEventListener("change", hideAlert)
-
+   
     function hideAlert() {
-      toggleElementDisplay("alertMessage", "none !important")
+      
     }
 
     function isSixDigitNumber(projectNumber) {
@@ -172,48 +214,48 @@
     }
 
     document.getElementById('create-button').addEventListener('click', function() {
-            const startTime = document.getElementById('startTimeEntry').value;
-            const projectNumber = document.getElementById('projectNumberInput').value;
-            const projectDescription = document.getElementById('projectDescriptionInput').value;
-           
-            const taskDescription = "";
-            const data = {
-                start_time: convertTimeToDateTime(startTime),
-                project_number: projectNumber,
-                project_description: projectDescription
-            };
+        const startTime = "04:00";
+        const projectNumber = document.getElementById('projectNumberInput').value;
+        const projectDescription = document.getElementById('projectDescriptionInput').value;
+        
+        const taskDescription = "";
+        const data = {
+            start_time: convertTimeToDateTime(startTime),
+            project_number: projectNumber,
+            project_description: projectDescription
+        };
 
-            fetch('/create-time-entry/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': CSRF_TOKEN,  // Include CSRF token if CSRF protection is enabled
-                },
-                body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    if (data.projectNumber) {
-                      setDisableField("projectNumberInput", true)
-                    }     
-                    document.getElementById("taskSaveButton").setAttribute('data-timeentryuuid', data.timeEntryUuid)
-                    disableRecentButtons()
-                    document.getElementById("create-button").style.display="none" 
-                    document.getElementById("taskEntryRow").style.display = "";   
-                    document.getElementById("taskListRow").style.display = "";  
-                    document.getElementById('finish-button').style.display = "";    
-                } else if (data.error) {
-                    alert('Error: ' + data.error);  // Show error message
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred.');
-            });
-           
-            
+        fetch('/create-time-entry/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN,  // Include CSRF token if CSRF protection is enabled
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                if (data.projectNumber) {
+                  setDisableField("projectNumberInput", true)
+                }     
+                document.getElementById("taskSaveButton").setAttribute('data-timeentryuuid', data.timeEntryUuid)
+                disableRecentButtons()
+                document.getElementById("create-button").style.display="none" 
+                document.getElementById("taskEntryRow").style.display = "";   
+                document.getElementById("taskListRow").style.display = "";  
+                document.getElementById('finish-button').style.display = "";    
+            } else if (data.error) {
+                alert('Error: ' + data.error);  // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred.');
         });
+        
+        
+    });
 
 </script>
 
