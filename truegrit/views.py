@@ -28,7 +28,7 @@ class Timekeeper(View):
     template_name = 'timekeeper.html'
     context = {}
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs): 
         recent_projects = []
         for entry in TimeEntry.objects.all().order_by('-created_at'):
             if len(recent_projects) < 5 and not entry.project in recent_projects:
@@ -136,13 +136,18 @@ def create_time_entry(request):
             project.description = project_description
             project.save()
         else:    
-            new_project = Project(
-                description = project_description,
-                status = ProjectStatus.objects.get(name="current")
-            )
-            new_project.set_fields_to_base()
-            new_project.save()
-            project = new_project    
+            try:
+                project = Project.objects.get(
+                    description=project_description
+                ) 
+            except ObjectDoesNotExist:
+                new_project = Project(
+                    description = project_description,
+                    status = ProjectStatus.objects.get(name="current")
+                )
+                new_project.set_fields_to_base()
+                new_project.save()
+                project = new_project    
 
         
         print(project.__dict__)
