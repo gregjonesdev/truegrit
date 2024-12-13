@@ -223,6 +223,7 @@
             if (data.message) {
                 if (data.projectNumber) {
                   setDisableField("projectNumberInput", true)
+                  document.getElementById("projectNumberInput").value = "PJT" + data.projectNumber
                 }     
                 document.getElementById("taskSaveButton").setAttribute('data-timeentryuuid', data.timeEntryUuid)
                 disableRecentButtons()
