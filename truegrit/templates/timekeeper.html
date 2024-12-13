@@ -14,11 +14,11 @@
         </div>
         <div class="col-12 col-sm-2" style="padding: 0px 5px">
             <label for="exampleInputEmail1">Start Time</label>
-            <input class="form-control" type="time" name="timeEntry">    
+            <input id="startTimeEntry" class="form-control" type="time" name="startTimeEntry">    
         </div>
         <div id="finishTimeDiv" class="col-12 col-sm-2" style="padding: 0px 5px; display: none">
           <label for="exampleInputEmail1">Finish Time</label>
-          <input class="form-control" type="time" name="timeEntry">    
+          <input id="finishTimeEntry" class="form-control" type="time" name="finishTimeEntry">    
         </div>
         <div class="col-12 col-sm-3" style="padding: 25px 5px 0px 5px">
           <button id="create-button" type="button" class="btn btn-outline-primary input-field" style="width:70px" disabled>Start</button>
@@ -98,10 +98,40 @@
 </div>
 
 <script>
+
+    const updateTime = {
+      "startTimeEntry": true,
+      "finishTimeEntry": true
+    }
+
     const CSRF_TOKEN = '{{ csrf_token }}';
   
     function setDisableField(elementId, bool) {
       document.getElementById(elementId).disabled = bool
+    }
+
+    function updateTimeField(fieldname) {
+        if (updateTime[fieldname]) {
+            const currentTime = new Date();
+            const hours = String(currentTime.getHours()).padStart(2, '0');  // Add leading 0 if necessary
+            const minutes = String(currentTime.getMinutes()).padStart(2, '0');  // Add leading 0 if necessary
+            const formattedTime = `${hours}:${minutes}`;
+            
+            document.getElementById(fieldname).value = formattedTime;
+        }
+    }
+
+    // You can call the function to update the field when needed
+    updateStartTime();
+    setInterval(updateStartTime, 1000);
+    setInterval(updateFinishTime, 1000);
+
+    function updateStartTime() {
+      updateTimeField("startTimeEntry")
+    }
+
+    function updateFinishTime() {
+      updateTimeField("finishTimeEntry")
     }
 
     function convertTimeToDateTime(timeString) {
@@ -183,7 +213,7 @@
     }
 
     document.getElementById('create-button').addEventListener('click', function() {
-        const startTime = "04:00";
+        const startTime = document.getElementById('startTimeEntry').value
         const projectNumber = document.getElementById('projectNumberInput').value;
         const projectDescription = document.getElementById('projectDescriptionInput').value;
         
@@ -209,13 +239,18 @@
                   setDisableField("projectNumberInput", true)
                   document.getElementById("projectNumberInput").value = "PJT" + data.projectNumber
                 }     
+                const startTimeEntry = document.getElementById("startTimeEntry")
                 document.getElementById("taskSaveButton").setAttribute('data-timeentryuuid', data.timeEntryUuid)
+                startTimeEntry.value = data.startTime
+                startTimeEntry.disabled = true
+                updateTime['startTimeEntry'] = false
                 disableRecentButtons()
                 document.getElementById("create-button").style.display="none" 
                 document.getElementById("taskEntryRow").style.display = "";   
                 document.getElementById("taskListRow").style.display = "";  
                 document.getElementById('finish-button').style.display = ""; 
                 document.getElementById("finishTimeDiv").style.display = "";
+                
             } else if (data.error) {
                 alert('Error: ' + data.error);  // Show error message
             }
