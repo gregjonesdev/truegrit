@@ -16,9 +16,9 @@
             <label for="exampleInputEmail1">Start Time</label>
             <input class="form-control" type="time" name="timeEntry">    
         </div>
-        <div class="col-12 col-sm-2" style="padding: 0px 5px">
+        <div id="finishTimeDiv" class="col-12 col-sm-2" style="padding: 0px 5px; display: none">
           <label for="exampleInputEmail1">Finish Time</label>
-          <input class="form-control" type="time" name="timeEntry" disabled>    
+          <input class="form-control" type="time" name="timeEntry">    
         </div>
         <div class="col-12 col-sm-3" style="padding: 25px 5px 0px 5px">
           <button id="create-button" type="button" class="btn btn-outline-primary input-field" style="width:70px" disabled>Start</button>
@@ -214,7 +214,8 @@
                 document.getElementById("create-button").style.display="none" 
                 document.getElementById("taskEntryRow").style.display = "";   
                 document.getElementById("taskListRow").style.display = "";  
-                document.getElementById('finish-button').style.display = "";    
+                document.getElementById('finish-button').style.display = ""; 
+                document.getElementById("finishTimeDiv").style.display = "";
             } else if (data.error) {
                 alert('Error: ' + data.error);  // Show error message
             }
