@@ -40,8 +40,8 @@
     <div class="col-12 col-sm-3">
       <div id="recentProjectCard" class="card input-field">
           
-        <div class="card-body">
-          <p class="card-title"><small>Recent Projects</small></p>
+        <div class="card-body" style="background-color: #eaeaea;">
+          <p class="card-title" style="color: #666; text-align: center; border-bottom: 1px solid #666"><small>Recent Projects</small></p>
           {% for project in recent_projects %}
           <div style="display: flex; justify-content: space-between;">
             <button 
@@ -49,7 +49,7 @@
               class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
               value="{{ project.number }}"
               data-description="{{ project.description }}"
-              style="font-size: .7em;">
+              style="font-size: .7em; min-width: 70px">
               {% if project.number and project.description %}
               PJT{{ project.number }}: {{ project.description }}
               {% elif project.number %}
