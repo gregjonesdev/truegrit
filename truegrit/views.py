@@ -168,4 +168,19 @@ def create_time_entry(request):
             "timeEntryUuid": new_entry.uuid
             })
 
-    return JsonResponse({"error": "Invalid request method"}, status=405)    
+    return JsonResponse({"error": "Invalid request method"}, status=405)  
+
+def save_task(request):
+    if request.method == 'POST':
+        print("hiyeah")
+        try:
+            data = json.loads(request.body)  
+            print("data:")
+            print(data.get("timeentry_uuid"))
+            print(data.get("task_description"))
+            return JsonResponse({
+                "message": "Time entry created successfully", 
+                "taskDescription": "Written task"
+            })
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)        
