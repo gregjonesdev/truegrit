@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from truegrit.models import (
     BusinessUnit,
     Camera,
+    SubTask,
     TimeEntry,
     Project,
     ServerRole, 
@@ -176,11 +177,22 @@ def save_task(request):
         try:
             data = json.loads(request.body)  
             print("data:")
-            print(data.get("timeentry_uuid"))
-            print(data.get("task_description"))
+            print(data)
+
+            timeEntry = TimeEntry.objects.get(uuid=data.get("timeEntryUuid"))
+            task_description = data.get("task_description")
+            new_task = SubTask(
+                time_entry=timeEntry,
+                description=task_description
+            )
+            new_task.set_fields_to_base()
+            new_task.save()
+            print("------")
+            for task in SubTask.objects.filter(time_entry=timeEntry):
+                print(task.description)
             return JsonResponse({
                 "message": "Time entry created successfully", 
-                "taskDescription": "Written task"
+                "taskDescription": task_description
             })
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)        

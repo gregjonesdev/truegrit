@@ -43,9 +43,9 @@
               class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
               value="{{ project.number }}"
               data-description="{{ project.description }}"
-              style="font-size: .7em; min-width: 70px">
+              style="font-size: .65em; min-width: 70px">
               {% if project.number and project.description %}
-              PJT{{ project.number }}: {{ project.description }}
+              PJT{{ project.number }}: {{ project.description|truncatechars:25 }}
               {% elif project.number %}
               PJT{{ project.number }}
               {% elif project.description %}
@@ -73,7 +73,7 @@
 
           <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">
           <div id="completedTasks" style="margin-top: 10px;">
-            <ul>
+            <ul id="taskList">
               <li>Subtask 3 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                 <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                 <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
@@ -184,11 +184,6 @@
       document.getElementById(id).style.display = display
     }
 
-    document.getElementById('taskSaveButton').addEventListener('click', function(e) {
-      const timeEntryUuid = e.target.getAttribute('data-timeentryuuid')
-      alert(timeEntryUuid)
-    })
-
     function disableRecentButtons() {
       recentButtons = document.getElementsByClassName("recentProjectButton")
       for (let i=0; i<recentButtons.length; i++) {
@@ -196,13 +191,17 @@
       }
     }
 
+    function buildListItem(description) {
+      const li = document.createElement("li");
+      li.innerText = description;
+      return li;
+    }
+
     document.getElementById('taskSaveButton').addEventListener("click", function (e) {
-      console.log(document.getElementById("startTimeEntry").value)
-      console.log(document.getElementById("finishTimeEntry").value)
 
       const data = {
-            dataentry_uuid: e.target.getAttribute("data-entryuuid"),
-            task_description: document.getElementById("taskdescription").value
+          timeEntryUuid: e.target.getAttribute('data-timeentryuuid'),
+          task_description: document.getElementById("taskdescription").value
         };
         fetch('/save-task/', {
             method: 'POST',
@@ -215,7 +214,9 @@
         .then(response => response.json())
         .then(data => {
             if (data.message) {
-               console.log(data)
+              li = buildListItem(data.taskDescription)
+              tasklist = document.getElementById('taskList')
+              tasklist.insertBefore(li, tasklist.firstChild);
                 
             } else if (data.error) {
                 alert('Error: ' + data.error);  // Show error message
