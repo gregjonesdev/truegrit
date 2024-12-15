@@ -29,7 +29,7 @@
           
         </div>
       </div>
-      <div id="taskEntryRow" class="row" style="margin-top: 10px;">
+      <div class="row" style="margin-top: 10px;">
         <div class="col-12 col-sm-2" style="padding: 0px 5px">
           {% if recent_projects|length %}
       <div id="recentProjectCard" class="card input-field">
@@ -71,9 +71,9 @@
         </div>
         <div class="col-12 col-sm-5" style="padding: 0px 5px">
 
-          <input type="text" class="form-control" id="taskdescription" placeholder="Task Description">
+          <input type="text" class="form-control taskField" id="taskdescription" placeholder="Task Description" style="display:none">
           <div id="completedTasks" style="margin-top: 10px;">
-            <ul id="taskList">
+            <ul id="taskList" class="taskField" style="display:none">
               <li>Subtask 3 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                 <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                 <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
@@ -84,13 +84,10 @@
           </div>
         </div>
         <div class="col-12 col-sm-1" style="padding: 0px 5px">
-          <button id="taskSaveButton" type="button" class="btn btn-outline-primary input-field">Save</button>
+          <button id="taskSaveButton" type="button" class="btn btn-outline-primary input-field taskField" style="display:none">Save</button>
         </div>
 
-      </div>
-      <div id="taskListRow" class="row" style="margin-top: 10px; display: none">
-
-      </div>    
+      </div> 
       
     </div>
   </div> 
@@ -131,6 +128,13 @@
 
     function updateFinishTime() {
       updateTimeField("finishTimeEntry")
+    }
+
+    function displayTaskItems() {
+      taskFields = document.getElementsByClassName("taskField")
+      for (let i=0; i<taskFields.length; i++) {
+        taskFields[i].style.display = ""
+      }
     }
 
     function convertTimeToDateTime(timeString) {
@@ -198,10 +202,10 @@
     }
 
     document.getElementById('taskSaveButton').addEventListener("click", function (e) {
-
+      taskDescriptionInput = document.getElementById("taskdescription")
       const data = {
           timeEntryUuid: e.target.getAttribute('data-timeentryuuid'),
-          task_description: document.getElementById("taskdescription").value
+          task_description: taskDescriptionInput.value
         };
         fetch('/save-task/', {
             method: 'POST',
@@ -214,6 +218,7 @@
         .then(response => response.json())
         .then(data => {
             if (data.message) {
+              taskDescriptionInput.value = ""
               li = buildListItem(data.taskDescription)
               tasklist = document.getElementById('taskList')
               tasklist.insertBefore(li, tasklist.firstChild);
@@ -281,11 +286,10 @@
                 document.getElementById('projectDescriptionInput').disabled = true;
                 document.getElementById("finish-button").setAttribute("data-entryuuid", data.timeEntryUuid)
                 document.getElementById("create-button").style.display="none" 
-                document.getElementById("taskEntryRow").style.display = "";   
-                document.getElementById("taskListRow").style.display = "";  
                 document.getElementById('finish-button').style.display = ""; 
                 document.getElementById('edit-button').style.display = ""; 
                 document.getElementById("finishTimeDiv").style.display = "";
+                displayTaskItems()
                 
             } else if (data.error) {
                 alert('Error: ' + data.error);  // Show error message
