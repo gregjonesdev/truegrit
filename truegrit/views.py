@@ -1,5 +1,6 @@
 import json
 
+from datetime import date
 from django.views.generic import View, ListView, DetailView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -34,7 +35,6 @@ class Timekeeper(View):
         for entry in TimeEntry.objects.all().order_by('-created_at'):
             if len(recent_projects) < 5 and not entry.project in recent_projects:
                 recent_projects.append(entry.project)
-        print(recent_projects)
         self.context["recent_projects"] = recent_projects
         return render(request, self.template_name, self.context)
 
@@ -63,7 +63,9 @@ class Daily(View):
 
     def get(self, request, *args, **kwargs):
         # date.today()
-        self.context["timeEntries"] = TimeEntry.objects.filter(start_time__date="2024-12-14")
+        self.context["today"] = date.today()
+        print(Project.objects.filter(timeentry__start_time__date="2024-12-15").count())
+        self.context["projects"] = Project.objects.filter(timeentry__start_time__date="2024-12-15").distinct()
         return render(request, self.template_name, self.context)
             
     
@@ -139,6 +141,7 @@ def create_time_entry(request):
                     number=project_number
                 ) 
             except ObjectDoesNotExist:
+                print("Create new 143")
                 new_project = Project(
                     number = project_number,
                     status = ProjectStatus.objects.get(name="current")
@@ -154,6 +157,7 @@ def create_time_entry(request):
                     description=project_description
                 ) 
             except ObjectDoesNotExist:
+                print("create new 159")
                 new_project = Project(
                     description = project_description,
                     status = ProjectStatus.objects.get(name="current")
