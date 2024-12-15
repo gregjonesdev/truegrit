@@ -192,6 +192,7 @@ def save_task(request):
                 print(task.description)
             return JsonResponse({
                 "message": "Time entry created successfully", 
+                "timeCreated": new_task.created_at,
                 "taskDescription": task_description
             })
         except Exception as e:

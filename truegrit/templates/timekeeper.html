@@ -74,12 +74,11 @@
           <input type="text" class="form-control taskField" id="taskdescription" placeholder="Task Description" style="display:none">
           <div id="completedTasks" style="margin-top: 10px;">
             <ul id="taskList" class="taskField" style="display:none">
-              <li>Subtask 3 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+              <li style="display:none">Subtask 3 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                 <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                 <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
               </svg></li>
-              <li>Subtask 2</li>
-              <li>Subtask 1</li>
+            
             </ul> 
           </div>
         </div>
@@ -101,6 +100,12 @@
     }
 
     const CSRF_TOKEN = '{{ csrf_token }}';
+
+    document.getElementById("startTimeEntry").addEventListener("change", function(e) {
+      if (e.target.value) {
+        updateTime["startTimeEntry"] = false
+      }
+    })
   
     function setDisableField(elementId, bool) {
       document.getElementById(elementId).disabled = bool
@@ -195,9 +200,18 @@
       }
     }
 
-    function buildListItem(description) {
+    function formatDate(isoDate) {
+      const date = new Date(isoDate);
+      // Extract hours and minutes in local time
+      const hours = date.getHours().toString().padStart(2, '0');  // Ensures 2-digit format
+      const minutes = date.getMinutes().toString().padStart(2, '0');  // Ensures 2-digit format
+
+      return `${hours}:${minutes}`;
+    }
+
+    function buildListItem(description, timeCreated) {
       const li = document.createElement("li");
-      li.innerText = description;
+      li.innerText = "(" + formatDate(timeCreated) + ") " + description;
       return li;
     }
 
@@ -219,7 +233,7 @@
         .then(data => {
             if (data.message) {
               taskDescriptionInput.value = ""
-              li = buildListItem(data.taskDescription)
+              li = buildListItem(data.taskDescription, data.timeCreated)
               tasklist = document.getElementById('taskList')
               tasklist.insertBefore(li, tasklist.firstChild);
                 
