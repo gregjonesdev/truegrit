@@ -1,6 +1,21 @@
 {% extends '_base.html' %}
 
 {% block content %}
+<row>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">TimeKeeper</a>
+      </div>
+      <ul class="nav navbar-nav" style=" width: 80%;  display: flex; flex-flow: row nowrap">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="{% url 'dailytime' %}">Daily</a></li>
+        <li><a href="#">Weekly</a></li>
+      </ul>
+    </div>
+  </nav>
+</row>
+
 
   <div class="row" style="width: 100%; margin:50px auto;">
     <div class="col-12">

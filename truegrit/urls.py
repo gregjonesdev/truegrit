@@ -2,6 +2,7 @@ from django.urls import re_path, path
 
 from truegrit.views import (
     create_time_entry,
+    Daily,
     save_task,
     FrontPage,
     Timekeeper,
@@ -29,7 +30,11 @@ urlpatterns = [
     path(
         'save-task/', 
          save_task, 
-         name='save_task'),             
+         name='save_task'),
+    path(
+        'daily/', 
+         Daily.as_view(), 
+         name='dailytime'),                   
     path(
         'timekeeper/', 
         Timekeeper.as_view(), 

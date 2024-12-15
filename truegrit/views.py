@@ -54,6 +54,18 @@ class FrontPage(View):
         # self.context["project_status"] = ProjectStatus.objects.all()
         # self.context["resolutions"] = VideoQualityResolution.objects.all()
         return render(request, self.template_name, self.context)
+
+
+class Daily(View):
+
+    template_name = 'dailytime.html'
+    context = {}
+
+    def get(self, request, *args, **kwargs):
+        # date.today()
+        self.context["timeEntries"] = TimeEntry.objects.filter(start_time__date="2024-12-14")
+        return render(request, self.template_name, self.context)
+            
     
 class BusinessUnitListView(ListView):
     model = BusinessUnit
@@ -151,7 +163,6 @@ def create_time_entry(request):
                 project = new_project    
 
         
-        print(project.__dict__)
         # Create and save the new TimeEntry instance
         new_entry = TimeEntry(
             start_time=start_time,
