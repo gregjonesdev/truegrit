@@ -45,7 +45,7 @@
               data-description="{{ project.description }}"
               style="font-size: .65em; min-width: 70px">
               {% if project.number and project.description %}
-              PJT{{ project.number }}: {{ project.description|truncatechars:25 }}
+              {{ project.get_title }}
               {% elif project.number %}
               PJT{{ project.number }}
               {% elif project.description %}
@@ -126,6 +126,7 @@
             const formattedTime = `${hours}:${minutes}`;
             
             document.getElementById(fieldname).value = formattedTime;
+            updateTime[fieldname] = false;
         }
     }
 

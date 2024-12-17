@@ -235,6 +235,11 @@ class Project(CoreModel):
         related_name='status',
         on_delete=models.CASCADE,
         )
+
+    def get_title(self):
+        return "PJT{}: {}".format(
+            self.number,
+            self.description[:25])
     
 class TimeEntry(CoreModel):
     start_time = models.DateTimeField()

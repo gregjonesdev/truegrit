@@ -4,6 +4,7 @@ from truegrit.views import (
     complete_time_entry,
     create_time_entry,
     Daily,
+    Weekly,
     save_task,
     FrontPage,
     Timekeeper,
@@ -39,7 +40,11 @@ urlpatterns = [
     path(
         'daily/', 
          Daily.as_view(), 
-         name='dailytime'),                   
+         name='dailytime'),  
+    path(
+        'weekly/', 
+         Weekly.as_view(), 
+         name='weekly'),                      
     path(
         'timekeeper/', 
         Timekeeper.as_view(), 

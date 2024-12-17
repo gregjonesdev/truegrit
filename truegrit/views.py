@@ -30,7 +30,11 @@ class Timekeeper(View):
     template_name = 'timekeeper.html'
     context = {}
 
-    def get(self, request, *args, **kwargs):   
+    def get(self, request, *args, **kwargs):  
+        # project = Project.objects.get(number="100000") 
+        # for each in TimeEntry.objects.filter(project=project):
+        #     each.delete()
+        # project.delete()    
         recent_projects = []
         for entry in TimeEntry.objects.all().order_by('-created_at'):
             if len(recent_projects) < 5 and not entry.project in recent_projects:
@@ -64,9 +68,27 @@ class Daily(View):
     def get(self, request, *args, **kwargs):
         # date.today()
         target_date = date.today()
-        self.context["today"] = target_date
-        self.context["projects"] = Project.objects.filter(timeentry__start_time__date=target_date).distinct()
+        self.context["target_date"] = target_date
+        projects = []
+        for project in Project.objects.all():
+            time_entries = project.timeentry_set.filter(start_time__date=target_date)
+            if len(time_entries) > 0:
+                projects.append({
+                    "project": project,
+                    "time_entries": time_entries
+                })
+        self.context["projects"] = projects  
         return render(request, self.template_name, self.context)
+
+class Weekly(View):
+
+    template_name = 'weeklytime.html'
+    context = {}
+
+    def get(self, request, *args, **kwargs):
+        
+        self.context["name"] = "weekly"  
+        return render(request, self.template_name, self.context)        
             
     
 class BusinessUnitListView(ListView):

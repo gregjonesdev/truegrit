@@ -2,19 +2,21 @@
 
 {% block timekeeper_content %}
 
-{% for entry in projects %}
+{% for each in projects %}
+    <div class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">{{ each.project.get_title }}</h5>
 
-    <p>{{ entry.description }}</p>
-    {% for each in entry.timeentry_set.all %}
-    {% if each.start_time|date:"Y-m-d" == today|date:"Y-m-d" %}
-        <p>{{each.start_time|time:"H:i" }} - {{each.end_time|time:"H:i" }}</p>
-        <ul>
-        {% for entry in each.subtask_set.all %}
-            <li>{{ entry.description }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}        
-    {% endfor %}
+        <p class="card-text">
+            <ul>
+                {% for entry in each.time_entries %}
+                <li>({{ entry.start_time }}) {{ entry.description }}</li>
+                {% endfor %}
+            </ul>
+        </p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+    </div>    
 {% endfor %}
 
 {% endblock timekeeper_content %}
