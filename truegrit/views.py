@@ -30,7 +30,7 @@ class Timekeeper(View):
     template_name = 'timekeeper.html'
     context = {}
 
-    def get(self, request, *args, **kwargs): 
+    def get(self, request, *args, **kwargs):   
         recent_projects = []
         for entry in TimeEntry.objects.all().order_by('-created_at'):
             if len(recent_projects) < 5 and not entry.project in recent_projects:
@@ -211,4 +211,24 @@ def save_task(request):
                 "taskDescription": task_description
             })
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)        
+            return JsonResponse({"error": str(e)}, status=400)       
+
+
+def complete_time_entry(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            complete_time = data.get('finish_time') 
+            timeEntryUuid = data.get('timeEntryUuid') 
+
+            timeEntry = TimeEntry.objects.get(uuid=timeEntryUuid)
+            print(timeEntry)
+            timeEntry.end_time = complete_time
+            timeEntry.save()
+            print(timeEntry)
+            return JsonResponse({
+                "message": "Time entry completed successfully", 
+            })
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)

@@ -98,7 +98,7 @@
           </div>
         </div>
         <div class="col-12 col-sm-1" style="padding: 0px 5px">
-          <button id="taskSaveButton" type="button" class="btn btn-outline-primary input-field taskField" style="display:none">Save</button>
+          <button id="taskSaveButton" type="button" class="btn btn-primary input-fieldinput-field taskField" style="display:none">Save</button>
         </div>
 
       </div> 
@@ -121,7 +121,14 @@
         updateTime["startTimeEntry"] = false
       }
     })
-  
+
+
+    document.getElementById("finishTimeEntry").addEventListener("change", function(e) {
+      if (e.target.value) {
+        updateTime["finishTimeEntry"] = false
+      }
+    })
+
     function setDisableField(elementId, bool) {
       document.getElementById(elementId).disabled = bool
     }
@@ -204,14 +211,17 @@
       return /^\d{6}$/.test(projectNumber);
     }
 
-    function toggleElementDisplay(id, display) {
-      document.getElementById(id).style.display = display
-    }
-
     function disableRecentButtons() {
       recentButtons = document.getElementsByClassName("recentProjectButton")
       for (let i=0; i<recentButtons.length; i++) {
         recentButtons[i].disabled=true
+      }
+    }
+
+    function enableRecentButtons() {
+      recentButtons = document.getElementsByClassName("recentProjectButton")
+      for (let i=0; i<recentButtons.length; i++) {
+        recentButtons[i].disabled=false
       }
     }
 
@@ -277,6 +287,48 @@
       createButton.disabled = (numberEntryDigits.length < 6) && (descriptionEntry.length < 3)
       
       
+    }
+
+    document.getElementById('finish-button').addEventListener('click', function() {
+      const timeEntryUuid = document.getElementById("taskSaveButton").getAttribute('data-timeentryuuid')
+      const finishTime = document.getElementById('finishTimeEntry').value
+      const data = {
+            finish_time: convertTimeToDateTime(finishTime),
+            timeEntryUuid
+        };
+
+        fetch('/complete-time-entry/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': CSRF_TOKEN,  // Include CSRF token if CSRF protection is enabled
+            },
+            body: JSON.stringify(data),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            alert(data.message)
+            resetForm()
+          }
+          
+        })
+    })
+
+    function resetForm() {
+      document.getElementById('projectNumberInput').value = ""
+      document.getElementById('projectNumberInput').disabled = false
+      document.getElementById('projectDescriptionInput').value = ""
+      document.getElementById('projectDescriptionInput').disabled = false
+      document.getElementById('taskList').innerHTML = ""
+      document.getElementById('create-button').style.display = ""; 
+      document.getElementById('finish-button').style.display = "none"; 
+      document.getElementById('edit-button').style.display = "none"; 
+      document.getElementById("finishTimeDiv").style.display = "none";
+      document.getElementById('startTimeEntry').disabled = false;
+      updateTime["startTimeEntry"] = true;
+      enableRecentButtons()
+      checkDisable()
     }
 
     document.getElementById('create-button').addEventListener('click', function() {
