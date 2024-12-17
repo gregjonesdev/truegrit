@@ -1,21 +1,6 @@
-{% extends '_base.html' %}
+{% extends '_timekeeperbase.html' %}
 
-{% block content %}
-<row>
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#">TimeKeeper</a>
-      </div>
-      <ul class="nav navbar-nav" style=" width: 80%;  display: flex; flex-flow: row nowrap">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="{% url 'dailytime' %}">Daily</a></li>
-        <li><a href="#">Weekly</a></li>
-      </ul>
-    </div>
-  </nav>
-</row>
-
+{% block timekeeper_content %}
 
   <div class="row" style="width: 100%; margin:50px auto;">
     <div class="col-12">
@@ -218,6 +203,8 @@
       }
     }
 
+    
+
     function enableRecentButtons() {
       recentButtons = document.getElementsByClassName("recentProjectButton")
       for (let i=0; i<recentButtons.length; i++) {
@@ -285,8 +272,7 @@
       createButton = document.getElementById("create-button")
       numberEntryDigits = numberEntry.match(/\d/g) || ""
       createButton.disabled = (numberEntryDigits.length < 6) && (descriptionEntry.length < 3)
-      
-      
+       
     }
 
     document.getElementById('finish-button').addEventListener('click', function() {
@@ -384,6 +370,33 @@
         
     });
 
+
+
+
+    function showElementById(id) {
+      toggleElementDisplay(id, '')
+    }
+
+    function hideElementById(id) {
+      toggleElementDisplay(id, 'none')
+    }
+
+    function enableElementById(id) {
+      toggleElementDisabled(id, false)
+    }
+
+    function disableElementById(id) {
+      toggleElementDisabled(id, true)
+    }
+
+    function toggleElementDisplay(id, display) {
+      document.getElementById(id).style.display = display;
+    }
+
+    function toggleElementDisabled(id, setToState) {
+      document.getElementById(id).disabled = setToState;
+    }
+
 </script>
 
-{% endblock content %}
+{% endblock timekeeper_content %}

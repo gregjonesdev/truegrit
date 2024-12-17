@@ -1,8 +1,13 @@
+{% extends '_timekeeperbase.html' %}
+
+{% block timekeeper_content %}
+
 {% for entry in projects %}
+
     <p>{{ entry.description }}</p>
     {% for each in entry.timeentry_set.all %}
     {% if each.start_time|date:"Y-m-d" == today|date:"Y-m-d" %}
-        <p>{{each.start_time|time:"H:i" }}</p>
+        <p>{{each.start_time|time:"H:i" }} - {{each.end_time|time:"H:i" }}</p>
         <ul>
         {% for entry in each.subtask_set.all %}
             <li>{{ entry.description }}</li>
@@ -11,3 +16,5 @@
     {% endif %}        
     {% endfor %}
 {% endfor %}
+
+{% endblock timekeeper_content %}

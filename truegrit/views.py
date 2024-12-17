@@ -63,9 +63,9 @@ class Daily(View):
 
     def get(self, request, *args, **kwargs):
         # date.today()
-        self.context["today"] = date.today()
-        print(Project.objects.filter(timeentry__start_time__date="2024-12-15").count())
-        self.context["projects"] = Project.objects.filter(timeentry__start_time__date="2024-12-15").distinct()
+        target_date = date.today()
+        self.context["today"] = target_date
+        self.context["projects"] = Project.objects.filter(timeentry__start_time__date=target_date).distinct()
         return render(request, self.template_name, self.context)
             
     
