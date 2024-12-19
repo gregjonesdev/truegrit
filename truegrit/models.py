@@ -237,6 +237,13 @@ class Project(CoreModel):
         )
 
     def get_title(self):
+        if self.number and self.description:
+            return "PJT{}: {}".format(self.number, self.description)
+        elif self.number:
+            return "PJT{}".format(self.number)
+        elif self.description:
+            return self.description    
+
         return "PJT{}: {}".format(
             self.number,
             self.description[:25])
