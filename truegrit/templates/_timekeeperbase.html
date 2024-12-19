@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<div class="row">
+<div class="row" style="padding-left: 5px">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">&#x1F55C; TimeKeeper</a>
@@ -26,8 +26,12 @@
     </nav>
 </div>
 
-{% block timekeeper_content %}
+<div style="padding: 5px">
+  {% block timekeeper_content %}
 
-{% endblock timekeeper_content %}
+  {% endblock timekeeper_content %}
+</div>
+
+
 
 {% endblock content%}

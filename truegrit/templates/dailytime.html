@@ -2,8 +2,9 @@
 
 {% block timekeeper_content %}
 
-{% for each in projects %}
-    <div class="card" style="width: 18rem;">
+<div style="display: flex; flex-direction: row;">
+    {% for each in projects %}
+    <div class="card" style="width: 18rem; margin:5px">
     <div class="card-body">
         <h5 class="card-title">{{ each.project.get_title }}</h5>
 
@@ -31,5 +32,7 @@
     </div>
     </div>    
 {% endfor %}
+</div>
+
 
 {% endblock timekeeper_content %}
