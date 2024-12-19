@@ -249,7 +249,6 @@ class Project(CoreModel):
             self.description[:25])
 
     def get_daily_hours(self, target_date):
-        print("get_daily_hours")
         hours = 0
         for entry in self.timeentry_set.filter(start_time__date=target_date):
             hours += entry.get_duration()

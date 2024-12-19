@@ -92,53 +92,26 @@ class Weekly(View):
         days_since_monday = target_date.weekday()
         # Subtract the days since Monday from today to get the date of this week's Monday
         monday_date = target_date - timedelta(days=days_since_monday)
-        
-
         projects = []
+        daily_totals = [0, 0, 0, 0, 0, 0, 0]
         for project in Project.objects.all():
             day_offset = 0
             hours = []
             while day_offset < 7:
-                hours.append(project.get_daily_hours(
-                    monday_date + timedelta(days=day_offset)))
+                daily_hours = project.get_daily_hours(monday_date + timedelta(days=day_offset))
+                hours.append(daily_hours)
+                daily_totals[day_offset] += daily_hours
                 
                 day_offset += 1
-            print(hours)    
             total_hours = sum(hours)
             if total_hours > 0:
                 projects.append({
                     "project": project,
                     "hours": hours,
                     "total_hours": total_hours
-                })
-        #     daily_entries = {
-        #         "mon": project.get_daily_hours(monday_date),
-        #         "tue": "",
-        #         "wed": "",
-        #         "thu": project.get_daily_hours(thursday_date),
-        #         "fri": "",
-        #         "sat": "",
-        #         "sun": "",
-        #         "tot": 0
-        #     }
-        #     time_entries = 0
-        #     total = 0
-            
-        #     for each in daily_entries.values():
-        #         print(each)
-        #         print(type(each))
-        #         if type(each) == int:
-        #             print("ok")
-        #             print(each)
-        #             daily_entries["tot"] += each
-        #             print(daily_entries["tot"])
-        #     if daily_entries["tot"] > 0:
-        #         projects.append({
-        #                 "project": project,
-        #                 "daily_entries": daily_entries
-        #             })
-        # print(daily_entries)            
-        
+                })      
+        self.context["daily_totals"] = daily_totals
+        self.context["weekly_total"] = sum(daily_totals)
         self.context["projects"] = projects 
         return render(request, self.template_name, self.context)        
             
