@@ -250,8 +250,10 @@ class Project(CoreModel):
 
     def get_daily_hours(self, target_date):
         print("get_daily_hours")
+        hours = 0
         for entry in self.timeentry_set.filter(start_time__date=target_date):
-            print(entry.start_time)
+            hours += entry.get_duration()
+        return hours    
             
     
 class TimeEntry(CoreModel):
@@ -269,7 +271,7 @@ class TimeEntry(CoreModel):
             hours = time_difference.total_seconds() / 3600
             # Round to the nearest 0.25 hour
             return round(hours * 4) / 4
-        return ""    
+        return 0    
     
 
 class SubTask(CoreModel):

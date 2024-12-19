@@ -7,29 +7,37 @@
       <tr>
         <th scope="col">Project ID</th>
         <th scope="col">Project name</th>
-        <th scope="col">Mon</th>
-        <th scope="col">Tue</th>
-        <th scope="col">Wed</th>
-        <th scope="col">Thu</th>
-        <th scope="col">Fri</th>
-        <th scope="col">Sat</th>
-        <th scope="col">Sun</th>
-        <th scope="col">Total</th>
+        <th scope="col" style="text-align: center; width: 7%">Mon</th>
+        <th scope="col" style="text-align: center; width: 7%">Tue</th>
+        <th scope="col" style="text-align: center; width: 7%">Wed</th>
+        <th scope="col" style="text-align: center; width: 7%">Thu</th>
+        <th scope="col" style="text-align: center; width: 7%">Fri</th>
+        <th scope="col" style="text-align: center; width: 7%">Sat</th>
+        <th scope="col" style="text-align: center; width: 7%">Sun</th>
+        <th scope="col" style="text-align: center; width: 7%">Total</th>
       </tr>
     </thead>
     <tbody>
         {% for project in projects %}
       <tr>
-        <th scope="row">PJT{{ project.project.number }}</th>
-        <td>{{ project.project.description }}</td>
-        <td>{{ }}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <th scope="row" style="vertical-align: middle">{% if project.project.number %}PJT{{ project.project.number }}{% endif %}</th>
+        <td style="vertical-align: middle">{{ project.project.description }}</td>
+        {% for hours in project.hours %}
+
+            <td style="text-align: center; padding: 0">
+                {% if hours > 0 %}
+                    <button class="btn btn-block btn-outline-secondary" style="width: 100%">
+                        {{ hours }}
+                    </button>                 
+                {% endif %}
+            </td>
+        {% endfor %}
+        <td style="text-align: center; padding: 0">
+            <button class="btn btn-block btn-outline-dark" style="width: 100%; border: none" disabled>
+                {{ project.total_hours }}
+            </button>     
+            
+        </td>
       </tr>
       {% endfor %}
     </tbody>
