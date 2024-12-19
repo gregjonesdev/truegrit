@@ -1,6 +1,6 @@
 import json
 
-from datetime import date
+from datetime import date, timedelta
 from django.views.generic import View, ListView, DetailView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -77,6 +77,7 @@ class Daily(View):
                     "project": project,
                     "time_entries": time_entries
                 })
+            project.get_daily_hours(target_date)
         self.context["projects"] = projects  
         return render(request, self.template_name, self.context)
 
@@ -86,8 +87,39 @@ class Weekly(View):
     context = {}
 
     def get(self, request, *args, **kwargs):
+        target_date = date.today()
+        # Calculate the number of days since Monday (0 = Monday, 1 = Tuesday, ..., 6 = Sunday)
+        days_since_monday = target_date.weekday()
+        # Subtract the days since Monday from today to get the date of this week's Monday
+        monday_date = target_date - timedelta(days=days_since_monday)
+        tuesday_date = monday_date + timedelta(days=1)
+        wednesday_date = monday_date + timedelta(days=2)
+        thursday_date = monday_date + timedelta(days=3)
+        friday_date = monday_date + timedelta(days=4)
+        saturday_date = monday_date + timedelta(days=5)
+        sunday_date = monday_date + timedelta(days=6)
+
+        projects = []
+        for project in Project.objects.all():
+            daily_entries = {
+                "mon": project.get_daily_hours(monday_date),
+                "tue": project.timeentry_set.filter(start_time__date=tuesday_date),
+                "wed": project.timeentry_set.filter(start_time__date=wednesday_date),
+                "thu": project.timeentry_set.filter(start_time__date=thursday_date),
+                "fri": project.timeentry_set.filter(start_time__date=friday_date),
+                "sat": project.timeentry_set.filter(start_time__date=saturday_date),
+                "sun": project.timeentry_set.filter(start_time__date=sunday_date),
+            }
+            time_entries = 0
+            for each in daily_entries.values():
+                time_entries += each.count()
+            if time_entries > 0:
+                projects.append({
+                    "project": project,
+                    "daily_entries": daily_entries
+                })
         
-        self.context["name"] = "weekly"  
+        self.context["projects"] = projects 
         return render(request, self.template_name, self.context)        
             
     

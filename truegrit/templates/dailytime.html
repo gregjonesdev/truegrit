@@ -7,13 +7,26 @@
     <div class="card-body">
         <h5 class="card-title">{{ each.project.get_title }}</h5>
 
-        <p class="card-text">
-            <ul>
-                {% for entry in each.time_entries %}
-                <li>({{ entry.start_time }}) {{ entry.description }}</li>
-                {% endfor %}
-            </ul>
-        </p>
+        <div class="card-text">
+            <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                    <th scope="col">Hours</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for entry in each.time_entries %}
+                        <tr>
+                            <td>{{ entry.start_time|date:"H:i"  }}</td>
+                            <td>{{ entry.end_time|date:"H:i" }}</td>
+                            <td>{{ entry.get_duration }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+            </div>
         <a href="#" class="btn btn-primary">Go somewhere</a>
     </div>
     </div>    

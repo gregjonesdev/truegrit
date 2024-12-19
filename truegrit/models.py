@@ -240,6 +240,12 @@ class Project(CoreModel):
         return "PJT{}: {}".format(
             self.number,
             self.description[:25])
+
+    def get_daily_hours(self, target_date):
+        print("get_daily_hours")
+        for entry in self.timeentry_set.filter(start_time__date=target_date):
+            print(entry.start_time)
+            
     
 class TimeEntry(CoreModel):
     start_time = models.DateTimeField()
@@ -248,6 +254,15 @@ class TimeEntry(CoreModel):
         Project, 
         on_delete=models.CASCADE, 
         null=True) 
+
+    def get_duration(self):
+        if self.end_time and self.start_time:
+            time_difference = self.end_time - self.start_time
+            # Convert difference to hours
+            hours = time_difference.total_seconds() / 3600
+            # Round to the nearest 0.25 hour
+            return round(hours * 4) / 4
+        return ""    
     
 
 class SubTask(CoreModel):
