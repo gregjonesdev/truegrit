@@ -133,7 +133,7 @@
     // You can call the function to update the field when needed
     updateStartTime();
     setInterval(updateStartTime, 1000);
-    setInterval(updateFinishTime, 1000);
+    
 
     function updateStartTime() {
       updateTimeField("startTimeEntry")
@@ -358,7 +358,7 @@
                 document.getElementById('edit-button').style.display = ""; 
                 document.getElementById("finishTimeDiv").style.display = "";
                 displayTaskItems()
-                
+                setInterval(updateFinishTime, 1000);
             } else if (data.error) {
                 alert('Error: ' + data.error);  // Show error message
             }

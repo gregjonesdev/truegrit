@@ -225,7 +225,10 @@ class UserSettings(CoreModel):
 
 class Project(CoreModel):
 
-    number = models.IntegerField(null=True)
+    number = models.CharField(
+        max_length=255,
+        null=True
+    )
     description = models.CharField(
         max_length=255,
         null=True
@@ -237,15 +240,15 @@ class Project(CoreModel):
         )
 
     def get_title(self):
-        if self.number and self.description:
-            return "PJT{}: {}".format(self.number, self.description)
-        elif self.number:
-            return "PJT{}".format(self.number)
+        if self.project_id and self.description:
+            return "PJT{}: {}".format(self.project_id, self.description)
+        elif self.project_id:
+            return "PJT{}".format(self.project_id)
         elif self.description:
             return self.description    
 
         return "PJT{}: {}".format(
-            self.number,
+            self.project_id,
             self.description[:25])
 
     def get_daily_hours(self, target_date):
