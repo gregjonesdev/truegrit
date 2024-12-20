@@ -240,15 +240,21 @@ class Project(CoreModel):
         )
 
     def get_title(self):
-        if self.project_id and self.description:
-            return "PJT{}: {}".format(self.project_id, self.description)
-        elif self.project_id:
-            return "PJT{}".format(self.project_id)
+        if self.number.isdigit():
+            prefixed_number = "PJT{}".format(self.number)
+        else:
+            prefixed_number = self.number    
+
+
+        if self.number and self.description:
+            return "{}: {}".format(prefixed_number, self.description)
+        elif self.number:
+            return "{}".format(prefixed_number)
         elif self.description:
             return self.description    
 
-        return "PJT{}: {}".format(
-            self.project_id,
+        return "{}: {}".format(
+            prefixed_number,
             self.description[:25])
 
     def get_daily_hours(self, target_date):

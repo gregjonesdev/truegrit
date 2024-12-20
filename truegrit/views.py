@@ -179,22 +179,19 @@ def create_time_entry(request):
         try:
             data = json.loads(request.body)
             start_time = data.get('start_time')
-            raw_project_number = data.get('project_number')
+            project_number = data.get('project_number')
             project_description = data.get('project_description')
 
           
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=400)
         
-        if raw_project_number:
-            project_number_string = ''.join([char for char in raw_project_number if char.isdigit()])
-            project_number = int(project_number_string)
+        if project_number:
             try:
                 project = Project.objects.get(
                     number=project_number
                 ) 
             except ObjectDoesNotExist:
-                print("Create new 143")
                 new_project = Project(
                     number = project_number,
                     status = ProjectStatus.objects.get(name="current")

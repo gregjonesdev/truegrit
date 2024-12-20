@@ -272,7 +272,7 @@
       numberEntry = document.getElementById("projectNumberInput").value
       createButton = document.getElementById("create-button")
       numberEntryDigits = numberEntry.match(/\d/g) || ""
-      createButton.disabled = (numberEntryDigits.length < 6) && (descriptionEntry.length < 3)
+      createButton.disabled = (numberEntry.length < 6) && (descriptionEntry.length < 3)
        
     }
 
