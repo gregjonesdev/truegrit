@@ -43,7 +43,7 @@
               class="btn btn-block btn-outline-secondary btn-sm recentProjectButton" 
               value="{{ project.number }}"
               data-description="{{ project.description }}"
-              style="font-size: .65em; min-width: 70px; text-align: left">
+              style="font-size: .8em; min-width: 70px; text-align: left; margin-bottom: 5px">
               {% if project.number and project.description %}
               {{ project.get_title }}
               {% elif project.number %}
@@ -176,11 +176,18 @@
       recentProjectButtons[i].addEventListener("click", populateProjectData)
     }
 
+    function isAllDigits(str) {
+      return /^\d+$/.test(str);
+    }
+
     function populateProjectData(e){
-      const projectNumber = e.target.value
+      let projectNumber = e.target.value
       const projectDescription = e.target.getAttribute("data-description")
       if (projectNumber != "None") {
-        document.getElementById('projectNumberInput').value = "PJT" + projectNumber
+        if (isAllDigits(projectNumber)) {
+          projectNumber = "PJT" + projectNumber
+        }
+        document.getElementById('projectNumberInput').value = projectNumber
       } else {
         document.getElementById('projectNumberInput').value = ""
       }
