@@ -1,47 +1,59 @@
 {% extends '_timekeeperbase.html' %}
 
 {% block timekeeper_content %}
-<div class="container mt-5">
-    <div class="dropdown dropdown-component">
-        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-            {{ target_date }}
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dateDropdown">
-            <!-- Dates will be populated here -->
-        </ul>
+<div class="row">
+<div class="col-2">
+    <div class="container mt-2" >
+        <div class="dropdown dropdown-component" style="text-align: center">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ target_date }}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dateDropdown">
+                <!-- Dates will be populated here -->
+            </ul>
+        </div>
     </div>
 </div>
-<div style="display: flex; flex-direction: row">
-    {% for each in projects %}
-    <div class="card" style="width: 18rem; margin:5px">
-    <div class="card-body">
-        <h5 class="card-title">{{ each.project.get_title }}</h5>
-
-        <div class="card-text">
-            <table class="table table-sm">
-                <thead>
-                  <tr>
-                    <th scope="col">Start</th>
-                    <th scope="col">End</th>
-                    <th scope="col">Hours</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for entry in each.time_entries %}
+<div class="col-9">
+    <div style="display: flex; flex-direction: row">
+        {% if projects|length > 0 %}
+            {% for each in projects %}
+            <div class="card" style="width: 18rem; margin:5px">
+            <div class="card-body">
+                <h5 class="card-title">{{ each.project.get_title }}</h5>
+        
+                <div class="card-text">
+                    <table class="table table-sm">
+                        <thead>
                         <tr>
-                            <td>{{ entry.start_time|date:"H:i"  }}</td>
-                            <td>{{ entry.end_time|date:"H:i" }}</td>
-                            <td>{{ entry.get_duration }}</td>
+                            <th scope="col">Start</th>
+                            <th scope="col">End</th>
+                            <th scope="col">Hours</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-              </table>
+                        </thead>
+                        <tbody>
+                            {% for entry in each.time_entries %}
+                                <tr>
+                                    <td>{{ entry.start_time|date:"H:i"  }}</td>
+                                    <td>{{ entry.end_time|date:"H:i" }}</td>
+                                    <td>{{ entry.get_duration }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
             </div>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>    
+        {% endfor %}
+        {% else %}
+        <div class="mt-2" style="padding-top: 6px;"><h5>No time entries today</h5></div>
+        {% endif %}
     </div>
-    </div>    
-{% endfor %}
 </div>
+</div>
+<div>
+
 <script>
     function formatDateForUrl(date) {
     var year = date.getFullYear();
