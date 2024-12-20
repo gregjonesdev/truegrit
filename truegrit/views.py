@@ -1,6 +1,6 @@
 import json
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.views.generic import View, ListView, DetailView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -67,8 +67,14 @@ class Daily(View):
 
     def get(self, request, *args, **kwargs):
         # date.today()
-        target_date = date.today()
-        self.context["target_date"] = target_date
+        target_date = request.GET.get('date', None)
+    
+        if target_date:
+            target_date = datetime.strptime(target_date, '%Y-%m-%d').date()
+        else:
+            target_date = datetime.today().date()
+        print(target_date)
+        self.context["target_date"] = target_date.strftime("%A, %m/%d")
         projects = []
         for project in Project.objects.all():
             time_entries = project.timeentry_set.filter(start_time__date=target_date)

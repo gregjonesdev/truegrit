@@ -1,8 +1,17 @@
 {% extends '_timekeeperbase.html' %}
 
 {% block timekeeper_content %}
-
-<div style="display: flex; flex-direction: row;">
+<div class="container mt-5">
+    <div class="dropdown dropdown-component">
+        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ target_date }}
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dateDropdown">
+            <!-- Dates will be populated here -->
+        </ul>
+    </div>
+</div>
+<div style="display: flex; flex-direction: row">
     {% for each in projects %}
     <div class="card" style="width: 18rem; margin:5px">
     <div class="card-body">
@@ -33,6 +42,61 @@
     </div>    
 {% endfor %}
 </div>
+<script>
+    function formatDateForUrl(date) {
+    var year = date.getFullYear();
+    var month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-indexed
+    var day = date.getDate().toString().padStart(2, '0'); // Pad the day with leading zero if needed
+    return `${year}-${month}-${day}`;
+}
 
+// Function to format the date into "Thursday, 12/18" for display
+function formatDateForDisplay(date) {
+    var options = { weekday: 'long', month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString('en-US', options); // This formats the date like "Thursday, 12/18"
+}
 
+function getLastFiveDays() {
+    let days = [];
+    let today = new Date();
+    
+    for (let i = 0; i < 6; i++) {
+        let date = new Date(today);
+        date.setDate(today.getDate() - i);
+        days.push(date);
+    }
+    return days;
+}
+
+// Access the container where you want to append the list items
+let dateDropdown = document.getElementById('dateDropdown');
+
+// Iterate over the lastFiveDays array
+lastFiveDays = getLastFiveDays()
+
+lastFiveDays.forEach(function(day) {
+    // Get the formatted date for the URL (YYYY-MM-DD)
+    let formattedDateForUrl = formatDateForUrl(day);
+    
+    // Get the formatted date for display (Thursday, 12/18)
+    let formattedDateForDisplay = formatDateForDisplay(day);
+    
+    // Create a new list item for each date
+    let listItem = document.createElement('li');
+    
+    // Insert the link with the dynamically generated date for URL and display
+    listItem.innerHTML = `<a class="dropdown-item" href="{% url 'dailytime' %}?date=${formattedDateForUrl}">${formattedDateForDisplay}</a>`;
+    
+    // Append the list item to the dropdown menu
+ 
+    if ((formattedDateForDisplay != "{{ target_date }}") && (dateDropdown.children.length < 5)) {
+        dateDropdown.appendChild(listItem);
+    }
+    
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
 {% endblock timekeeper_content %}
