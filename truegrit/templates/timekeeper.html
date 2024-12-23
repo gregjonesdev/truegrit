@@ -44,13 +44,9 @@
               value="{{ project.number }}"
               data-description="{{ project.description }}"
               style="font-size: .8em; min-width: 70px; text-align: left; margin-bottom: 5px">
-              {% if project.number and project.description %}
+
               {{ project.get_title }}
-              {% elif project.number %}
-              PJT{{ project.number }}
-              {% elif project.description %}
-              {{ project.description }}
-              {% endif %}
+             
             </button>
             <button 
               type="button" 
@@ -184,7 +180,7 @@
       let projectNumber = e.target.value
       const projectDescription = e.target.getAttribute("data-description")
       if (projectNumber != "None") {
-        if (isAllDigits(projectNumber)) {
+        if (isAllDigits(projectNumber.slice(0, 6))) {
           projectNumber = "PJT" + projectNumber
         }
         document.getElementById('projectNumberInput').value = projectNumber

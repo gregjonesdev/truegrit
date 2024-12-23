@@ -31,10 +31,6 @@ class Timekeeper(View):
     context = {}
 
     def get(self, request, *args, **kwargs):  
-        # project = Project.objects.get(number="100000") 
-        # for each in TimeEntry.objects.filter(project=project):
-        #     each.delete()
-        # project.delete()    
         recent_projects = []
         for entry in TimeEntry.objects.all().order_by('-created_at'):
             if len(recent_projects) < 5 and not entry.project in recent_projects:
