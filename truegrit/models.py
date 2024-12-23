@@ -239,26 +239,23 @@ class Project(CoreModel):
         on_delete=models.CASCADE,
         )
 
+    def get_prefixed_number(self):    
+        if self.number[:6].isdigit():
+            return "PJT{}".format(self.number)
+        else:
+            return self.number
+
     def get_title(self):
         if self.number:
-            # If the number exists and starts with digits, prefix it with "PJT"
-            if self.number[:6].isdigit():
-                prefixed_number = "PJT{}".format(self.number)
+            prefixed_number = self.get_prefixed_number()
+            if self.description:
+                return "{}: {}".format(prefixed_number, self.description[:20])
             else:
-                prefixed_number = self.number
+                return prefixed_number    
         else:
-            prefixed_number = ""
+            return self.description[:25]    
+            
 
-        # Now handle the combination of number and description
-        if self.number and self.description:
-            return "{}: {}".format(prefixed_number, self.description)
-        elif self.number:
-            return "{}".format(prefixed_number)
-        elif self.description:
-            return self.description[:25]  # Truncate description to 25 characters if needed
-
-        # If neither number nor description exists, return empty string or some default fallback
-        return ""
 
     def get_daily_hours(self, target_date):
         hours = 0

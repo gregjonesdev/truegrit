@@ -224,7 +224,7 @@ def create_time_entry(request):
         # Return success response
         return JsonResponse({
             "message": "Time entry created successfully", 
-            "projectNumber": new_entry.project.number,
+            "projectNumber": new_entry.project.get_prefixed_number(),
             "startTime": new_entry.start_time.split(" ")[-1],
             "projectDescription": new_entry.project.description,
             "timeEntryUuid": new_entry.uuid
