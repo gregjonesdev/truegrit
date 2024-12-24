@@ -1,0 +1,38 @@
+<div class="form-group">
+    <label for="time-entry-name">Name:</label>
+    <input type="text" class="form-control" id="time-entry-name" value="{{ time_entry.name }}">
+</div>
+<div class="form-group">
+    <label for="time-entry-description">Description:</label>
+    <textarea class="form-control" id="time-entry-description">{{ time_entry.description }}</textarea>
+</div>
+<!-- You can add more fields here -->
+
+<!-- Add Save/Update logic as per your requirement -->
+<button type="button" class="btn btn-primary" id="saveChanges">Save Changes</button>
+
+<script>
+    // You can add a save button handler to submit the changes to the server
+    $('#saveChanges').on('click', function() {
+        var name = $('#time-entry-name').val();
+        var description = $('#time-entry-description').val();
+
+        // You can now send these changes back to the server via an AJAX POST request to update the time entry
+        $.ajax({
+            url: '/edit-timeentry/{{ time_entry.id }}/',  // Same URL or another one to handle the update
+            type: 'POST',
+            data: {
+                name: name,
+                description: description,
+                csrfmiddlewaretoken: '{{ csrf_token }}'  // Include CSRF token for POST requests
+            },
+            success: function(response) {
+                alert('Time entry updated!');
+                $('#editTimeEntryModal').modal('hide');  // Hide the modal on success
+            },
+            error: function(xhr, status, error) {
+                alert('Error saving changes');
+            }
+        });
+    });
+</script>
