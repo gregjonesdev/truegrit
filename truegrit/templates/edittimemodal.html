@@ -1,16 +1,13 @@
 <div class="form-group">
-    <label for="time-entry-name">Name:</label>
-    <input type="text" class="form-control" id="time-entry-name" value="{{ time_entry.name }}">
+    <label for="time-entry-name">Start Time:</label>
+    <input type="time" class="form-control" id="time-entry-start" value="{% if time_entry.start_time %}{{ time_entry.start_time|date:'H:i' }}{% endif %}">
 </div>
 <div class="form-group">
-    <label for="time-entry-description">Description:</label>
-    <textarea class="form-control" id="time-entry-description">{{ time_entry.description }}</textarea>
+    <label for="time-entry-name">End Time:</label>
+    <input type="time" class="form-control" id="time-entry-end" value="{% if time_entry.end_time %}{{ time_entry.end_time|date:'H:i' }}{% endif %}">
 </div>
 <!-- You can add more fields here -->
-
-<!-- Add Save/Update logic as per your requirement -->
-<button type="button" class="btn btn-primary" id="saveChanges">Save Changes</button>
-
+{{ time_entry.project.name }}
 <script>
     // You can add a save button handler to submit the changes to the server
     $('#saveChanges').on('click', function() {

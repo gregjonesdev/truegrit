@@ -6,6 +6,7 @@ from truegrit.views import (
     Daily,
     Weekly,
     save_task,
+    edit_time_entry,
     FrontPage,
     Timekeeper,
     BusinessUnitListView,
@@ -40,7 +41,9 @@ urlpatterns = [
     path(
         'daily/', 
          Daily.as_view(), 
-         name='dailytime'),  
+         name='dailytime'), 
+    re_path(r'^edit-time-entry/(?P<id>[0-9a-f-]+)/$', edit_time_entry, name='edit_time_entry'),
+
     path(
         'weekly/', 
          Weekly.as_view(), 

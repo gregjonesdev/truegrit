@@ -113,7 +113,28 @@ editButtons = document.getElementsByClassName('editButton')
 
 for (let i=0; i<editButtons.length; i++) {
     editButtons[i].addEventListener("click", function (e){
-        alert(e.currentTarget.getAttribute("data-timeentry"))
+        id = e.currentTarget.getAttribute("data-timeentry")
+ 
+        $.ajax({
+            url: '/edit-time-entry/' + id + '/',  // Your Django edit-timeentry URL
+            type: 'GET',
+            data: {
+                id: id  // Passing the UUID as a GET parameter
+            },
+          
+            success: function(response) {
+                // Insert the modal content into the modal body
+                $('#modalBody').html(response);
+
+                // Show the modal
+                $('#editTimeEntryModal').modal('show');
+            },
+            error: function(xhr, status, error) {
+                alert('Error loading modal content');
+            }
+        });
+
+
     })
 }
 // Access the container where you want to append the list items

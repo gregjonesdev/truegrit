@@ -5,6 +5,8 @@ from django.views.generic import View, ListView, DetailView
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
+from uuid import UUID
+
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
@@ -169,6 +171,25 @@ class BusinessUnitDetailView(DetailView):
         context['cameras'] = Camera.objects.filter(
             network__business_unit=context['business_unit']).order_by(sort_by)
         return context
+
+def edit_time_entry(request, id):
+    try:
+        # Convert the 'id' from the URL to a UUID object
+        time_entry_uuid = UUID(id)
+    except ValueError:
+        # If the UUID is invalid, raise a 404 error
+        raise Http404("Invalid time entry ID.")
+
+    try:
+        # Fetch the TimeEntry object using the UUID
+        time_entry = TimeEntry.objects.get(uuid=time_entry_uuid)
+    except TimeEntry.DoesNotExist:
+        # If no object is found with that UUID, raise a 404 error
+        raise Http404("Time entry not found.")
+
+    # Render the modal content with the time entry object
+    return render(request, 'edittimemodal.html', {'time_entry': time_entry})
+
     
 def create_time_entry(request):
     if request.method == 'POST':
