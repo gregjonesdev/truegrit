@@ -346,7 +346,7 @@
             if (data.message) {
                 if (data.projectNumber) {
                   setDisableField("projectNumberInput", true)
-                  document.getElementById("projectNumberInput").value = "PJT" + data.projectNumber
+                  document.getElementById("projectNumberInput").value = data.projectNumber
                 }     
                 const startTimeEntry = document.getElementById("startTimeEntry")
                 document.getElementById("taskSaveButton").setAttribute('data-timeentryuuid', data.timeEntryUuid)

@@ -20,7 +20,7 @@
     <tbody>
         {% for project in projects %}
       <tr>
-        <th scope="row" style="vertical-align: middle">{% if project.project.number %}PJT{{ project.project.number }}{% endif %}</th>
+        <th scope="row" style="vertical-align: middle">{% if project.project.number %}{{ project.project.get_prefixed_number }}{% endif %}</th>
         <td style="vertical-align: middle">{{ project.project.description }}</td>
         {% for hours in project.hours %}
 
