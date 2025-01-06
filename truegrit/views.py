@@ -79,7 +79,8 @@ class Daily(View):
             if len(time_entries) > 0:
                 projects.append({
                     "project": project,
-                    "time_entries": time_entries
+                    "time_entries": time_entries,
+                    "daily_hours": project.get_daily_hours(target_date)
                 })
             project.get_daily_hours(target_date)
         self.context["projects"] = projects  

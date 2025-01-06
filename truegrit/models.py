@@ -240,7 +240,7 @@ class Project(CoreModel):
         )
 
     def get_prefixed_number(self):    
-        if self.number[:6].isdigit():
+        if self.number and self.number[:6].isdigit():
             return "PJT{}".format(self.number)
         else:
             return self.number
