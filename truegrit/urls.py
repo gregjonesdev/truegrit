@@ -9,6 +9,7 @@ from truegrit.views import (
     edit_time_entry,
     FrontPage,
     Timekeeper,
+    TimeEntryDetailView,
     BusinessUnitListView,
     BusinessUnitDetailView,
 )
@@ -26,6 +27,10 @@ urlpatterns = [
         'business-unit/<uuid:uuid>/', 
         BusinessUnitDetailView.as_view(), 
         name='business_unit_detail'),
+    path(
+        'timeentry/<uuid:uuid>/', 
+        TimeEntryDetailView.as_view(), 
+        name='timeentry'),   
     path(
         'create-time-entry/', 
          create_time_entry, 

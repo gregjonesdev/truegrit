@@ -32,6 +32,7 @@ class Timekeeper(View):
     template_name = 'timekeeper.html'
     context = {}
 
+
     def get(self, request, *args, **kwargs):  
         recent_projects = []
         for entry in TimeEntry.objects.all().order_by('-created_at'):
@@ -39,6 +40,20 @@ class Timekeeper(View):
                 recent_projects.append(entry.project)
         self.context["recent_projects"] = recent_projects
         return render(request, self.template_name, self.context)
+
+class TimeEntryDetailView(DetailView):
+    model = TimeEntry
+    template_name = 'timeentry.html'
+    context_object_name = 'time_entry'
+
+    def get_object(self, queryset=None):
+        uuid_ = self.kwargs.get('uuid')
+        return get_object_or_404(BusinessUnit, uuid=uuid_)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+       
+        return context        
 
 class FrontPage(View):
 
@@ -197,7 +212,7 @@ def create_time_entry(request):
         try:
             data = json.loads(request.body)
             start_time = data.get('start_time')
-            project_number = data.get('project_number')
+            project_number = data.get('project_number').upper().replace("PJT","")
             project_description = data.get('project_description')
 
           
