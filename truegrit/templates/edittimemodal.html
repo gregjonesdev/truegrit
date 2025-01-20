@@ -7,24 +7,28 @@
     <input type="time" class="form-control" id="time-entry-end" value="{% if time_entry.end_time %}{{ time_entry.end_time|date:'H:i' }}{% endif %}">
 </div>
 <!-- You can add more fields here -->
-{{ time_entry.project.name }}
+
 <script>
     // You can add a save button handler to submit the changes to the server
     $('#saveChanges').on('click', function() {
         var name = $('#time-entry-name').val();
-        var description = $('#time-entry-description').val();
-
+        var time_start = $('#time-entry-start').val();
+        var time_end = $('#time-entry-end').val();
+        const id = "{{time_entry.uuid}}"
         // You can now send these changes back to the server via an AJAX POST request to update the time entry
         $.ajax({
-            url: '/edit-timeentry/{{ time_entry.id }}/',  // Same URL or another one to handle the update
+            url: '/edit-time-entry/' + id + '/',  // Your Django edit-timeentry URL
             type: 'POST',
             data: {
                 name: name,
-                description: description,
+                time_start: time_start,
+                time_end: time_end,
                 csrfmiddlewaretoken: '{{ csrf_token }}'  // Include CSRF token for POST requests
             },
             success: function(response) {
-                alert('Time entry updated!');
+                console.log(response)
+                document.getElementById(response.entry_uuid + "-start").innerText = response.start_time
+                document.getElementById(response.entry_uuid + "-end").innerText = response.end_time
                 $('#editTimeEntryModal').modal('hide');  // Hide the modal on success
             },
             error: function(xhr, status, error) {

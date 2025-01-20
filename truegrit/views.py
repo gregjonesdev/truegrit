@@ -189,6 +189,7 @@ class BusinessUnitDetailView(DetailView):
         return context
 
 def edit_time_entry(request, id):
+    print("192")
     try:
         # Convert the 'id' from the URL to a UUID object
         time_entry_uuid = UUID(id)
@@ -202,9 +203,28 @@ def edit_time_entry(request, id):
     except TimeEntry.DoesNotExist:
         # If no object is found with that UUID, raise a 404 error
         raise Http404("Time entry not found.")
-
+    
     # Render the modal content with the time entry object
-    return render(request, 'edittimemodal.html', {'time_entry': time_entry})
+    if request.method == 'POST':
+        print("hell post")
+        time_entry_date = time_entry.start_time.date()
+        print(time_entry.start_time)
+        time_start = request.POST.get('time_start')  # Extract the time_start parameter
+        if time_start:
+            start_time_str = f"{time_entry_date} {time_start}"
+            time_entry.start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M")
+        time_end = request.POST.get('time_end')
+        if time_end and time_end > time_start:
+            end_time_str = f"{time_entry_date} {time_end}"
+            time_entry.end_time = datetime.strptime(end_time_str, "%Y-%m-%d %H:%M")
+        time_entry.save()
+        return JsonResponse({
+                "entry_uuid": time_entry.uuid,
+                "start_time": time_start, 
+                "end_time": time_end, 
+            })
+    else:
+        return render(request, 'edittimemodal.html', {'time_entry': time_entry})
 
     
 def create_time_entry(request):
