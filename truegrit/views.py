@@ -84,19 +84,19 @@ class Daily(View):
             target_date = datetime.today().date()
         print(target_date)
         self.context["friendly_date"] = target_date.strftime("%A, %m/%d")
-        projects = []
-        for project in Project.objects.all():
-            time_entries = project.timeentry_set.filter(start_time__date=target_date)
-            if len(time_entries) > 0:
-                print(project.uuid)
-                projects.append({
-                    "project": project,
-                    "date": request.GET.get('date', None),
-                    "time_entries": time_entries,
-                    "daily_hours": project.get_daily_hours(target_date)
-                })
-            project.get_daily_hours(target_date)
-        self.context["projects"] = projects  
+        # projects = []
+        # for project in Project.objects.all():
+        #     time_entries = project.timeentry_set.filter(start_time__date=target_date)
+        #     if len(time_entries) > 0:
+        #         print(project.uuid)
+        #         projects.append({
+        #             "project": project,
+        #             "date": request.GET.get('date', None),
+        #             "time_entries": time_entries,
+        #             "daily_hours": project.get_daily_hours(target_date)
+        #         })
+        #     project.get_daily_hours(target_date)
+        self.context["daily_time_entries"] = TimeEntry.objects.filter(start_time__date=target_date)  
         return render(request, self.template_name, self.context)
 
 class Weekly(View):

@@ -15,54 +15,32 @@
     </div>
 </div>
 <div class="col-9">
-    <div style="display: flex; flex-direction: row">
-        {% if projects|length > 0 %}
-            {% for each in projects %}
-            <div class="card" style="width: 18rem; margin:5px">
-            <div class="card-body">
-                <h5 class="card-title">{{ each.project.get_title }}</h5>
+    <table>
+        {% for entry in daily_time_entries %}
+            <tr style="margin: 2px">
+                <td class="btn btn-block btn-outline-secondary editButton" 
+                style="height: 34px; border-radius: 0; border-width: 0px; display: flex; justify-content: space-between"
+                data-timeentry="{{ entry.uuid }}">
+                    
+              
+                        <span>
+                            {{ entry.start_time|date:"g:i" }} - {{ entry.end_time|date:"g:i A" }}
+                        </span> 
+                        <small>
+                            <i class="fas fa-edit edit-icon"></i>
+                        </small>
         
-                <div class="card-text">
-                    <table class="table table-sm">
-                        <thead>
-                        <tr>
-                            <th scope="col">Start</th>
-                            <th scope="col">End</th>
-                            <th scope="col">Hours</th>
-                            <th scope="col"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            {% for entry in each.time_entries %}
-                                <tr>
-                                    <td id="{{entry.uuid}}-start">{{ entry.start_time|date:"H:i"  }}</td>
-                                    <td id="{{entry.uuid}}-end">{{ entry.end_time|date:"H:i" }}</td>
-                                    <td>{{ entry.get_duration }}</td>
-                                    <td style="padding: 0px; text-align: center">
-                                        <button 
-                                            class="btn btn-sm btn-outline-seconday editButton" 
-                                            style="margin: 0px; padding: 0px"
-                                            data-timeentry="{{ entry.uuid }}">
-                                        <i class="fas fa-edit edit-icon"></i>
-                                    </button></td>
-                                </tr>
-                                <p>{{ each.uuid }}</p>
-                            {% endfor %}
-                            <tr>
-                                <th scope="col" colspan="2">Total</th>
-                                <th scope="col">{{ each.daily_hours }}</th>
-                            </tr>
-                        </tbody>
-                    </table>
-                    </div>
-                    <a href="{% url 'project_detail' each.project.uuid %}?date={{each.date}}" class="btn btn-secondary btn-sm">Details</a>
-            </div>
-            </div>    
+                </td>
+                
+                <td>{{ entry.project.get_title }}</td>
+                <td>
+                    {% for each in entry.subtask_set.all %}
+                    {{each.description}}
+                    {% endfor %}
+                </td>
+            </tr>
         {% endfor %}
-        {% else %}
-        <div class="mt-2" style="padding-top: 6px;"><h5>No time entries today</h5></div>
-        {% endif %}
-    </div>
+    </table>
 </div>
 </div>
 <div class="modal" id="editTimeEntryModal" tabindex="-1" role="dialog">
@@ -85,6 +63,10 @@
 
 
 <script>
+    document.querySelector('[data-dismiss="modal"]').addEventListener('click', function () {
+    $('#editTimeEntryModal').modal('hide');
+});
+
     function formatDateForUrl(date) {
     var year = date.getFullYear();
     var month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is zero-indexed
