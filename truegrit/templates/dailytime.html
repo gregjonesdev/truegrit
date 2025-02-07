@@ -23,7 +23,7 @@
                 data-timeentry="{{ entry.uuid }}">
                     
               
-                        <span>
+                        <span id="{{entry.uuid}}-time">
                             {{ entry.start_time|date:"g:i" }} - {{ entry.end_time|date:"g:i A" }}
                         </span> 
                         <small>

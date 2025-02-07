@@ -27,8 +27,7 @@
             },
             success: function(response) {
                 console.log(response)
-                document.getElementById(response.entry_uuid + "-start").innerText = response.start_time
-                document.getElementById(response.entry_uuid + "-end").innerText = response.end_time
+                document.getElementById(response.entry_uuid + "-time").innerText = response.start_time + " - " + response.end_time
                 $('#editTimeEntryModal').modal('hide');  // Hide the modal on success
             },
             error: function(xhr, status, error) {

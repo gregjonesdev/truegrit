@@ -218,8 +218,8 @@ def edit_time_entry(request, id):
         time_entry.save()
         return JsonResponse({
                 "entry_uuid": time_entry.uuid,
-                "start_time": time_start, 
-                "end_time": time_end, 
+                "start_time": time_entry.start_time.strftime("%I:%M").lstrip('0'), 
+                "end_time": time_entry.end_time.strftime("%I:%M %p").lstrip('0'), 
             })
     else:
         return render(request, 'edittimemodal.html', {'time_entry': time_entry})
