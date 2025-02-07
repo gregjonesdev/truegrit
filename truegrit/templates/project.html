@@ -1,0 +1,34 @@
+{% extends '_timekeeperbase.html' %}
+
+{% block timekeeper_content %}
+
+<table class="table table-sm">
+    <thead>
+    <tr>
+        <th scope="col">Start</th>
+        <th scope="col">End</th>
+        <th scope="col">Hours</th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+
+{% for entry in entries %}
+    <tr >
+        <td>{{ entry.start_time.time }}</td>
+        <td>{{ entry.end_time.time }}</td>
+        <td>{{ entry.get_duration }}</td>
+        <td>
+            <ul>
+                {% for subtask in entry.subtask_set.all %}
+                <li>{{ subtask.description }}</li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+{% endblock timekeeper_content %}

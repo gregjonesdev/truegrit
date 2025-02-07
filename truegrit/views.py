@@ -41,19 +41,15 @@ class Timekeeper(View):
         self.context["recent_projects"] = recent_projects
         return render(request, self.template_name, self.context)
 
-class TimeEntryDetailView(DetailView):
-    model = TimeEntry
-    template_name = 'timeentry.html'
-    context_object_name = 'time_entry'
-
-    def get_object(self, queryset=None):
-        uuid_ = self.kwargs.get('uuid')
-        return get_object_or_404(BusinessUnit, uuid=uuid_)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-       
-        return context        
+def project_detail(request, uuid):
+    project = get_object_or_404(Project, uuid=uuid)
+    date = request.GET.get('date')
+    entries = []
+    for each in project.timeentry_set.all():
+        if each.get_duration() > 0 and str(each.start_time.date()) == date:
+            entries.append(each)
+    print(entries)        
+    return render(request, 'project.html', {'entries': entries})     
 
 class FrontPage(View):
 
@@ -87,13 +83,15 @@ class Daily(View):
         else:
             target_date = datetime.today().date()
         print(target_date)
-        self.context["target_date"] = target_date.strftime("%A, %m/%d")
+        self.context["friendly_date"] = target_date.strftime("%A, %m/%d")
         projects = []
         for project in Project.objects.all():
             time_entries = project.timeentry_set.filter(start_time__date=target_date)
             if len(time_entries) > 0:
+                print(project.uuid)
                 projects.append({
                     "project": project,
+                    "date": request.GET.get('date', None),
                     "time_entries": time_entries,
                     "daily_hours": project.get_daily_hours(target_date)
                 })
