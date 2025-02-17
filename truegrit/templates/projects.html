@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+
+{% block content %}
+
+<div style="display: flex; flex-flow: column nowrap; width: 300px;">
+    {% for project in projects %}
+        <div style="margin: 3px">
+            <a href="#" class="btn btn-outline-secondary btn-block" role="button">{{ project.get_title }}</a>
+        </div>
+
+    {% endfor %}
+  </div>
+
+
+
+{% endblock content %}

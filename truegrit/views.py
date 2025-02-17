@@ -148,6 +148,15 @@ class CameraManufacturerListView(ListView):
         context = super().get_context_data(**kwargs)
         return context        
 
+class ProjectListView(ListView):
+    model = Project
+    template_name = 'projects.html'  
+    context_object_name = 'projects' 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context          
+
 
 class BusinessUnitDetailView(DetailView):
     model = BusinessUnit
