@@ -11,6 +11,7 @@ from truegrit.views import (
     Timekeeper,
     project_detail,
     BusinessUnitListView,
+    CameraManufacturerListView,
     BusinessUnitDetailView,
 )
 
@@ -23,6 +24,10 @@ urlpatterns = [
         'business-units/', 
         BusinessUnitListView.as_view(), 
         name='business_units'),
+    path(
+        'camera-manufacturers/', 
+        CameraManufacturerListView.as_view(), 
+        name='camera_manufacturers'),    
     path(
         'business-unit/<uuid:uuid>/', 
         BusinessUnitDetailView.as_view(), 

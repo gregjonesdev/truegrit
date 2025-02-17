@@ -299,15 +299,27 @@ class SubTask(CoreModel):
 
 class Server(IPDevice):
 
-    # description
-    # location
-    # hostname
-    # alias
-    # serial number
+    description = models.CharField(
+        max_length=255
+    )
+    location = models.CharField(
+        max_length=255
+    )
+    hostname = models.CharField(
+        max_length=255
+    )
+    alias = models.CharField(
+        max_length=255
+    )
+    serial_number = models.CharField(
+        max_length=255
+    )
     # windows activation key
     # windows username
     # windows password
-    # project
+    project = models.ForeignKey(
+        Project, 
+        on_delete=models.CASCADE)
     # warranty expiration
 
     pass
@@ -326,16 +338,41 @@ class ServerRoleAssignment(CoreModel):
 
 class VPNGateway(CoreModel):
 
-    pass
-    # subdomain
-    # username
-    # password
-    # contact 
+    subdomain = models.CharField(
+        max_length=255
+    )
+    username = models.CharField(
+        max_length=255
+    )
 
-# person : name
 
-# employee(person)  
+class Person(CoreModel):
 
+    first_name = models.CharField(
+        max_length=255
+    )
+    last_name = models.CharField(
+        max_length=255
+    ) 
+
+class Company(CoreModel):
+
+    name = models.CharField(
+        max_length=255
+    )
+
+
+class Employee(CoreModel):
+
+    person = models.ForeignKey(
+        Person,
+        on_delete=models.CASCADE
+    )  
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE
+    )  
+    email = models.EmailField(unique=True)      
 
 class StreamUsage(CoreModel):
 
@@ -369,3 +406,26 @@ class StreamSettings(CoreModel):
     framerate = models.IntegerField()
     image_quality = models.IntegerField()
     keyframe_interval = models.IntegerField()
+
+
+class SchoolDistrict(CoreModel):
+
+    name = models.CharField(
+        max_length=255
+    )
+    acronym = models.CharField(
+        max_length=64
+    )
+
+class School(CoreModel):
+
+    name = models.CharField(
+        max_length=255
+    )
+    acronym = models.CharField(
+        max_length=64
+    )    
+    district = models.ForeignKey(
+        SchoolDistrict,
+        on_delete=models.CASCADE
+    )

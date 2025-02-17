@@ -214,7 +214,7 @@ class Command(BaseCommand):
         # self.seed_users(jsonData["users"])
         # self.seed_projectstatus(jsonData["project_status"])
         # self.seed_servermanufacturers(jsonData["server_manufacturers"])
-        # self.seed_cameramodels(jsonData["camera_models"])
+        self.seed_cameramodels(jsonData["camera_models"])
         # self.seed_serverroles(jsonData["server_roles"])
         self.seed_streamusages(jsonData["stream_usage"])
         # self.seed_installationmounttypes(jsonData["installation_mounttypes"])

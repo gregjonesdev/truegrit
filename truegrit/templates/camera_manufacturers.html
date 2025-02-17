@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+
+{% block content %}
+
+<div style="display: flex; flex-flow: column nowrap; width: 300px;">
+    {% for manufacturer in manufacturers %}
+        <div style="margin: 3px">
+            <a href="#" class="btn btn-outline-secondary btn-block" role="button">{{ manufacturer.name }}</a>
+        </div>
+
+    {% endfor %}
+  </div>
+
+
+
+{% endblock content %}

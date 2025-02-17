@@ -58,6 +58,11 @@
          "abbreviation": "IDF"
       }
    ],
+   "camera_manufacturers": [
+      "Axis",
+      "Hanwha",
+      "ACTi"
+   ],
    "camera_models": [
       {
           "manufacturer": "Axis",

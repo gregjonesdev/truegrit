@@ -19,6 +19,7 @@ from truegrit.models import (
     Project,
     ServerRole, 
     CameraModel,
+    CameraManufacturer,
     InstallationStatus,
     InstallationMountType,
     Network,
@@ -75,27 +76,13 @@ class Daily(View):
     context = {}
 
     def get(self, request, *args, **kwargs):
-        # date.today()
         target_date = request.GET.get('date', None)
     
         if target_date:
             target_date = datetime.strptime(target_date, '%Y-%m-%d').date()
         else:
             target_date = datetime.today().date()
-        print(target_date)
         self.context["friendly_date"] = target_date.strftime("%A, %m/%d")
-        # projects = []
-        # for project in Project.objects.all():
-        #     time_entries = project.timeentry_set.filter(start_time__date=target_date)
-        #     if len(time_entries) > 0:
-        #         print(project.uuid)
-        #         projects.append({
-        #             "project": project,
-        #             "date": request.GET.get('date', None),
-        #             "time_entries": time_entries,
-        #             "daily_hours": project.get_daily_hours(target_date)
-        #         })
-        #     project.get_daily_hours(target_date)
         self.context["daily_time_entries"] = TimeEntry.objects.filter(start_time__date=target_date)  
         return render(request, self.template_name, self.context)
 
@@ -151,6 +138,15 @@ class BusinessUnitListView(ListView):
                 to_do += Camera.objects.filter(network__business_unit=unit).count()
         print(to_do)
         return context
+
+class CameraManufacturerListView(ListView):
+    model = CameraManufacturer
+    template_name = 'camera_manufacturers.html'  
+    context_object_name = 'manufacturers' 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context        
 
 
 class BusinessUnitDetailView(DetailView):
