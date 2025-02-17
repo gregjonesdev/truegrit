@@ -296,3 +296,76 @@ class SubTask(CoreModel):
     description = models.CharField(
         max_length=255
     )
+
+class Server(IPDevice):
+
+    # description
+    # location
+    # hostname
+    # alias
+    # serial number
+    # windows activation key
+    # windows username
+    # windows password
+    # project
+    # warranty expiration
+
+    pass
+
+
+class ServerRoleAssignment(CoreModel):
+
+    server = models.ForeignKey(
+        Server,
+        on_delete=models.CASCADE
+    )   
+    role = models.ForeignKey(
+        ServerRole,
+        on_delete=models.CASCADE
+    )   
+
+class VPNGateway(CoreModel):
+
+    pass
+    # subdomain
+    # username
+    # password
+    # contact 
+
+# person : name
+
+# employee(person)  
+
+
+class StreamUsage(CoreModel):
+
+    name = models.CharField(
+        max_length=64
+    )
+
+class StreamResolutionDescription(CoreModel):
+
+    name = models.CharField(
+        max_length=64
+    )    
+
+
+class StreamSettings(CoreModel):
+
+    usage = models.ForeignKey(
+        StreamUsage,
+        on_delete=models.CASCADE
+    )   
+    resolution_description = models.ForeignKey(
+        StreamResolutionDescription,
+        on_delete=models.CASCADE,
+        null=True
+    )   
+    resolution = models.ForeignKey(
+        VideoQualityResolution,
+        on_delete=models.CASCADE,
+        null=True
+    )
+    framerate = models.IntegerField()
+    image_quality = models.IntegerField()
+    keyframe_interval = models.IntegerField()

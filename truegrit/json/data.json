@@ -152,6 +152,13 @@
          "name": "H.265/HEVC"
       }
    ],
+   "stream_usage": [
+      "Live",
+      "Recording",
+      "Remote",
+      "Low resolution",
+      "High resolution"
+   ],
    "video_unit_enrollment": [
       {
          "step": 0,

@@ -49,7 +49,7 @@ def project_detail(request, uuid):
         if each.get_duration() > 0 and str(each.start_time.date()) == date:
             entries.append(each)
     print(entries)        
-    return render(request, 'project.html', {'entries': entries})     
+    return render(request, 'timekeeper/project.html', {'entries': entries})     
 
 class FrontPage(View):
 
@@ -71,7 +71,7 @@ class FrontPage(View):
 
 class Daily(View):
 
-    template_name = 'dailytime.html'
+    template_name = 'timekeeper/dailytime.html'
     context = {}
 
     def get(self, request, *args, **kwargs):

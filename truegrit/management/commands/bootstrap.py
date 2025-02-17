@@ -195,18 +195,28 @@ class Command(BaseCommand):
                     name=status["name"]
                 ) 
                 new_status.set_fields_to_base()
-                new_status.save()                               
+                new_status.save()  
+
+    def seed_streamusages(self, usages):
+        for usage in usages:
+            try:
+                StreamUsage.objects.get(name=usage)
+            except ObjectDoesNotExist:
+                new_usage = StreamUsage(
+                    name=usage
+                )             
+                new_usage.set_fields_to_base()
+                new_usage.save()                                
 
 
     def handle(self, *args, **options):
-        for each in ServerRole.objects.all():
-            each.delete()
         jsonData = json.loads(open('./truegrit/json/data.json').read())
         # self.seed_users(jsonData["users"])
         # self.seed_projectstatus(jsonData["project_status"])
         # self.seed_servermanufacturers(jsonData["server_manufacturers"])
         # self.seed_cameramodels(jsonData["camera_models"])
-        self.seed_serverroles(jsonData["server_roles"])
+        # self.seed_serverroles(jsonData["server_roles"])
+        self.seed_streamusages(jsonData["stream_usage"])
         # self.seed_installationmounttypes(jsonData["installation_mounttypes"])
         # self.seed_installationstatus(jsonData["installation_status"])
         # self.seed_distributionframeroles(jsonData["distribution_frameroles"])
