@@ -1,4 +1,11 @@
 {
+   "server_roles": [
+      "Directory",
+      "Access Manager",
+      "Archiver",
+      "Mobile Server",
+      "IOT Server"
+   ],
    "project_status": [
       {
          "name":"lost"
@@ -77,17 +84,6 @@
           "name": "PNM-9085RQZ"
       }
   ],
-   "server_roles": [
-      {
-         "name":"archiver"
-      },
-      {
-         "name":"access manager"
-      },
-      {
-         "name":"directory"
-      }
-   ],
    "installation_mounttypes": [
       {
          "name":"pipe down"

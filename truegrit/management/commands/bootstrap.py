@@ -86,10 +86,10 @@ class Command(BaseCommand):
 
     def create_serverrole(self, serverrole):
         try: 
-            ServerRole.objects.get(name=serverrole["name"])
+            ServerRole.objects.get(name=serverrole)
         except ObjectDoesNotExist:    
             new_role = ServerRole(
-                name=serverrole["name"]
+                name=serverrole
             )
             new_role.set_fields_to_base()
             new_role.save()  
@@ -199,17 +199,19 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+        for each in ServerRole.objects.all():
+            each.delete()
         jsonData = json.loads(open('./truegrit/json/data.json').read())
-        self.seed_users(jsonData["users"])
-        self.seed_projectstatus(jsonData["project_status"])
-        self.seed_servermanufacturers(jsonData["server_manufacturers"])
-        self.seed_cameramodels(jsonData["camera_models"])
+        # self.seed_users(jsonData["users"])
+        # self.seed_projectstatus(jsonData["project_status"])
+        # self.seed_servermanufacturers(jsonData["server_manufacturers"])
+        # self.seed_cameramodels(jsonData["camera_models"])
         self.seed_serverroles(jsonData["server_roles"])
-        self.seed_installationmounttypes(jsonData["installation_mounttypes"])
-        self.seed_installationstatus(jsonData["installation_status"])
-        self.seed_distributionframeroles(jsonData["distribution_frameroles"])
-        self.seed_videocompressionstandards(jsonData["video_compression_standards"])
-        self.seed_videoqualityresolutions(jsonData["video_quality_resolutions"])
-        self.seed_camera_ip_status(jsonData["camera_ip_status"])
+        # self.seed_installationmounttypes(jsonData["installation_mounttypes"])
+        # self.seed_installationstatus(jsonData["installation_status"])
+        # self.seed_distributionframeroles(jsonData["distribution_frameroles"])
+        # self.seed_videocompressionstandards(jsonData["video_compression_standards"])
+        # self.seed_videoqualityresolutions(jsonData["video_quality_resolutions"])
+        # self.seed_camera_ip_status(jsonData["camera_ip_status"])
         #video compression resolutions
 

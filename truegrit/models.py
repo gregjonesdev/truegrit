@@ -55,8 +55,6 @@ class CameraModel(CoreModel):
     )
 
 
-
-
 class StoreChain(CoreModel):
     name = models.CharField(
         max_length=255, 
@@ -126,23 +124,33 @@ class Network(CoreModel):
         protocol='IPv4',
         null=True)
 
+class IPDevice(CoreModel):
 
-class Camera(CoreModel):
+    class Meta:
+        abstract = True 
 
-    model = models.ForeignKey(
-        CameraModel,
-        on_delete=models.CASCADE
-    )
     mac_address = models.CharField(
         max_length=12,
         null=True
     ) 
+
     network = models.ForeignKey(
         Network,
         on_delete=models.CASCADE,
         null=True
     )
-    ip_address = models.GenericIPAddressField(protocol='IPv4', blank=True, null=True)
+    ip_address = models.GenericIPAddressField(
+        protocol='IPv4', 
+        blank=True, 
+        null=True)
+
+
+class Camera(IPDevice):
+
+    model = models.ForeignKey(
+        CameraModel,
+        on_delete=models.CASCADE
+    )
     name = models.CharField(
         max_length=255,
         null=True
@@ -151,8 +159,7 @@ class Camera(CoreModel):
     def get_upnp_name(self):
         return "{}-{}".format(
             self.network.business_unit.identifier,
-            self.name)
-    
+            self.name)                 
 
 class CameraIPProcessStatus(CoreModel):
 
