@@ -5,7 +5,7 @@ import datetime
 from django.core.management.base import BaseCommand
 
 folder_path = r"C:\Users\gregoryjones\OneDrive - Preferred Technologies, LLC\Desktop\Pasadena ISD"
-
+results_folder_path = os.path.join(folder_path, "results")
 # Get today's date in D_M_YYYY format
 today = datetime.datetime.today()
 today_date = f"{today.month}_{today.day}_{today.year}"
@@ -49,7 +49,7 @@ class Command(BaseCommand):
 
         # If there are entities left, write them to a new CSV file
         if final_entities:
-            output_file = os.path.join(folder_path, f"Entities_with_Warning_{today_date}.csv")
+            output_file = os.path.join(results_folder_path, f"Entities_with_Warning_{today_date}.csv")
             
             # Write the list of entities to a new CSV file
             with open(output_file, mode='w', newline='', encoding='utf-8') as csvfile:
@@ -58,7 +58,7 @@ class Command(BaseCommand):
                 for entity in final_entities:
                     writer.writerow([entity])  # Write each entity as a new row
             
-            print(f"Entities with 'Warning' health status saved to: {output_file}")
+            print(f"\nEntities with 'Warning' health status saved to: {output_file.split('\\')[-1]}\n")
         else:
             print("No entities with 'Warning' health status found.")
             
